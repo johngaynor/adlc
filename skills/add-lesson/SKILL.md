@@ -5,27 +5,43 @@ description: Use when the user corrects the agent on something likely to recur, 
 
 # Add a lesson
 
-> ⚠️ **STUB — Stream D.** This skill is scaffolded but not yet implemented. Fill in
-> the Workflow below following [`CONVENTIONS.md`](../../CONVENTIONS.md) and
-> [`METHODOLOGY.md`](../../METHODOLOGY.md) (§ Lessons loop). Remove this banner when done.
-
 Close the self-improvement loop: capture a correction as a durable, structured
-lesson in `.claude/lessons.md`.
+lesson in `.claude/lessons.md`. See [`METHODOLOGY.md`](../../METHODOLOGY.md)
+§ Lessons loop.
 
-## Build contract (what this skill must do)
+## Arguments
 
-1. Infer the lesson from the correction in the conversation (or `$ARGUMENTS`).
-2. Write it in the standard format — **Context / Problem / Rule / Applies-to** — with
-   a short, specific title.
-3. Append to `.claude/lessons.md` (create it from `templates/lessons.md.template` if
-   missing). Do not duplicate an existing lesson — if one covers the same ground,
-   update it instead.
-4. Keep the rule general enough to prevent the class of mistake, specific enough to
-   act on. Cite the paths it applies to.
-5. Confirm what was recorded.
+- `$ARGUMENTS` (optional) — an explicit lesson to record. If absent, infer it from
+  the correction in the conversation.
 
-**Boundaries:** Never record secrets or one-off conversational context as a lesson —
-only durable rules. Ask First only if it's unclear whether the correction generalizes.
+## Workflow
 
-**Done when:** a well-formed entry exists in `.claude/lessons.md` and the user has
+1. **Identify the lesson.** From `$ARGUMENTS` or the recent correction, extract the
+   *generalizable* rule — the class of mistake, not the one-off instance.
+2. **Sanity-check it's worth recording.** Skip if it's ephemeral conversational
+   context or a one-time detail. Record only durable rules that will apply again. If
+   it's unclear whether it generalizes, ask.
+3. **Check for duplicates.** Read `.claude/lessons.md`. If an existing entry covers
+   the same ground, **update** it rather than adding a near-duplicate.
+4. **Write the entry** in the standard format, with a short, specific title:
+   ```
+   ## <short, specific title>
+   **Context**: where/when this came up.
+   **Problem**: what went wrong.
+   **Rule**: the durable rule that prevents it next time.
+   **Applies to**: the paths or areas this governs.
+   ```
+5. **Append** to `.claude/lessons.md` (create it from
+   `${CLAUDE_PLUGIN_ROOT}/templates/lessons.md.template`, or with the header inline,
+   if it doesn't exist).
+6. **Confirm** what was recorded and where.
+
+## Boundaries
+
+- **Never** record secrets, credentials, or one-off conversational context.
+- **Ask First** only when it's genuinely unclear whether the correction generalizes.
+
+## Done when
+
+A well-formed, non-duplicate entry exists in `.claude/lessons.md` and the user has
 seen it.

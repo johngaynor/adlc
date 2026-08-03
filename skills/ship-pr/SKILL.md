@@ -5,28 +5,36 @@ description: Use when work is complete and the user wants to open a pull request
 
 # Ship a PR
 
-> ⚠️ **STUB — Stream C.** This skill is scaffolded but not yet implemented. Fill in
-> the Workflow below following [`CONVENTIONS.md`](../../CONVENTIONS.md) and
-> [`METHODOLOGY.md`](../../METHODOLOGY.md). Remove this banner when done.
-
 Take completed work and ship it as a reviewable PR with the project's discipline:
-validation green, a clean branch, a clear description.
+validation green, a clean branch, a clear description. This skill commits and
+pushes — it runs only when the user has explicitly asked to open a PR.
 
-## Build contract (what this skill must do)
+## Workflow
 
-1. Run the project's Validation Commands (from the root `CLAUDE.md`) and refuse to
-   proceed if any fail — report the failure instead.
-2. If on the default branch, create a feature branch first (kebab-case, prefixed by
-   change type, e.g. `feat/`, `fix/`, `chore/`).
-3. Stage and commit with a conventional-commits message. End commit messages with
-   the project's required trailer if one exists.
-4. Push and open the PR with `gh pr create`, using a description that states: what
-   changed, why, how it was validated, and any follow-ups. Honor a
-   `.github/pull_request_template.md` if present.
-5. Report the PR URL.
+1. **Validate first.** Run the smallest relevant set of the project's Validation
+   Commands (from the root `CLAUDE.md`). If any fail, stop and report the failure —
+   do **not** open a PR on red. Show the actual output.
+2. **Branch if needed.** If on the default branch (`main`/`master`), create a
+   feature branch first, kebab-case and prefixed by change type: `feat/`, `fix/`,
+   `chore/`, `docs/`, `refactor/`.
+3. **Review the diff.** Run `git status` and `git diff` (staged + unstaged). Confirm
+   there are no secrets, debug output, or unrelated changes. Stage intentionally.
+4. **Commit.** Write a conventional-commits message (`type: summary`, body
+   explaining *why*). If the project mandates a commit trailer (check `CLAUDE.md`
+   and recent `git log`), include it.
+5. **Push & open.** Push the branch, then `gh pr create` against the default branch
+   with a body that states: **what** changed, **why**, **how it was validated**, and
+   any follow-ups. Honor `.github/pull_request_template.md` if present. Apply the
+   project's PR labels if it uses a label convention.
+6. **Report** the PR URL.
 
-**Boundaries:** Ask First before force-pushing or merging. Never commit secrets.
-Never open a PR with failing validation. Commit/push only as part of this
-explicitly-requested flow.
+## Boundaries
 
-**Done when:** the PR is open, validation passed, and the URL is reported.
+- **Ask First** before force-pushing, merging, or targeting a non-default base.
+- **Never** commit secrets, credentials, or tokens.
+- **Never** open a PR with failing validation, or claim validation passed without
+  running it.
+
+## Done when
+
+The PR is open, validation passed with evidence, and the URL is reported.

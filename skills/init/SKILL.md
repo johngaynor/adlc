@@ -50,7 +50,9 @@ confident, state what you found and proceed.
 
 ### 4. Write the files
 
-From the plugin's `templates/`, render and write:
+From the plugin's templates (available at `${CLAUDE_PLUGIN_ROOT}/templates/` — the
+plugin's install directory; reproduce the structure inline if that path is not
+resolvable at runtime), render and write:
 
 - **`CLAUDE.md`** (repo root) — from `templates/CLAUDE.md.template`, with every
   `{{PLACEHOLDER}}` filled from step 1. The Task Router must have real rows for

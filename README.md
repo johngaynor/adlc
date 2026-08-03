@@ -31,9 +31,9 @@ grow from.
 | Skill | What it does | Status |
 |-------|--------------|--------|
 | `/adlc:init` | Scaffold the harness into the current repo | ✅ implemented |
-| `/adlc:write-spec` | Write a phased spec before non-trivial work | 🚧 stub (Stream B) |
-| `/adlc:ship-pr` | Validate, branch, commit, and open a PR | 🚧 stub (Stream C) |
-| `/adlc:add-lesson` | Capture a correction as a durable lesson | 🚧 stub (Stream D) |
+| `/adlc:write-spec` | Write a phased spec before non-trivial work | ✅ implemented |
+| `/adlc:ship-pr` | Validate, branch, commit, and open a PR | ✅ implemented |
+| `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 
 ## Updating
 
@@ -63,29 +63,26 @@ adlc/
 │   ├── lessons.md.template
 │   └── spec.md.template
 └── skills/
-    ├── init/                # ✅ the opinionated scaffolder
-    ├── write-spec/          # 🚧 stub
-    ├── ship-pr/             # 🚧 stub
-    └── add-lesson/          # 🚧 stub
+    ├── init/                # the opinionated scaffolder (reference skill)
+    ├── write-spec/          # spec-first workflow
+    ├── ship-pr/             # validate → branch → commit → PR
+    └── add-lesson/          # self-improvement lessons loop
 ```
 
 ## Contributing / parallel work streams
 
-The shared **contract** (installable shell + methodology spine + skill conventions)
-is done, so the remaining skills are independent and can be built in parallel. Each
-is one `SKILL.md` file with a build contract already written inside it.
+All four skills are implemented. When adding or changing a skill, read
+[`CONVENTIONS.md`](./CONVENTIONS.md) (skill format) and
+[`METHODOLOGY.md`](./METHODOLOGY.md) (vocabulary), and use `skills/init/SKILL.md` as
+the worked example.
 
-| Stream | File | Contract |
-|--------|------|----------|
-| **A — Init scaffolder** | `skills/init/SKILL.md` + `templates/` | ✅ done (reference implementation — copy its shape) |
-| **B — Spec workflow** | `skills/write-spec/SKILL.md` | see the stub |
-| **C — PR workflow** | `skills/ship-pr/SKILL.md` | see the stub |
-| **D — Lessons loop** | `skills/add-lesson/SKILL.md` | see the stub |
-| **E — Docs & dogfood** | this README + a throwaway test repo | run `/adlc:init` end-to-end, fix rough edges |
-
-Before filling a stub, read [`CONVENTIONS.md`](./CONVENTIONS.md) (skill format) and
-[`METHODOLOGY.md`](./METHODOLOGY.md) (vocabulary). Use `skills/init/SKILL.md` as the
-worked example.
+| Stream | File | Status |
+|--------|------|--------|
+| **A — Init scaffolder** | `skills/init/SKILL.md` + `templates/` | ✅ implemented (reference skill) |
+| **B — Spec workflow** | `skills/write-spec/SKILL.md` | ✅ implemented |
+| **C — PR workflow** | `skills/ship-pr/SKILL.md` | ✅ implemented |
+| **D — Lessons loop** | `skills/add-lesson/SKILL.md` | ✅ implemented |
+| **E — Docs & dogfood** | this README + a throwaway test repo | ⏳ in progress |
 
 ## License
 
