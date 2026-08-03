@@ -1,0 +1,18 @@
+{
+  "name": "adlc",
+  "owner": { "name": "John Gaynor" },
+  "metadata": {
+    "description": "John Gaynor's AI Development Life Cycle harness.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "adlc",
+      "description": "Portable AI engineering harness: opinionated CLAUDE.md scaffolding, spec-first workflow, PR discipline, and a self-improvement lessons loop.",
+      "source": {
+        "source": "github",
+        "repo": "johngaynor/adlc"
+      }
+    }
+  ]
+}

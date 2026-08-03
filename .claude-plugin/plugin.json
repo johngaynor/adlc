@@ -1,0 +1,9 @@
+{
+  "name": "adlc",
+  "description": "AI Development Life Cycle — a portable engineering harness for any repo. Scaffolds an opinionated CLAUDE.md (Task Router + boundary-labeled rules), plus skills for spec-first development, PR discipline, and a self-improvement lessons loop.",
+  "version": "0.1.0",
+  "author": { "name": "John Gaynor" },
+  "homepage": "https://github.com/johngaynor/adlc",
+  "repository": "https://github.com/johngaynor/adlc",
+  "license": "MIT"
+}
