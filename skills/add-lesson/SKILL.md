@@ -21,8 +21,8 @@ lesson — one file per lesson in `.claude/lessons/`. See
 2. **Sanity-check it's worth recording.** Skip if it's ephemeral conversational
    context or a one-time detail. Record only durable rules that will apply again. If
    it's unclear whether it generalizes, ask.
-3. **Check for duplicates.** Read every file in `.claude/lessons/` (and a legacy
-   `.claude/lessons.md` if present). If an existing entry covers the same ground,
+3. **Check for duplicates.** Read every file in `.claude/lessons/` (and check any
+   legacy `.claude/lessons.md` if present). If an existing entry covers the same ground,
    **update** that file rather than adding a near-duplicate.
 4. **Write the lesson file** at `.claude/lessons/<kebab-title>.md` — filename from
    the title, short and specific; on a collision append `-2`, `-3`, …:
