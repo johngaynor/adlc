@@ -107,7 +107,50 @@ If any MCP call fails mid-flow, report it plainly, write nothing partial, and
 finish the rest of init normally. Never write a config containing unverified
 IDs.
 
-### 6. Report and hand off
+### 6. Offer Conductor lifecycle scripts (optional)
+
+[Conductor](https://conductor.build) runs Claude Code in one git worktree per
+workspace; fresh worktrees start without gitignored files or installed
+dependencies. This step scaffolds the `.conductor/settings.toml` that fixes that.
+It is **optional — offer it and skip cleanly if declined**. (If the repo also
+uses the Linear step, that step runs first: Linear shapes the workflow,
+Conductor shapes the environment.)
+
+1. **Offer** — ask whether to set up Conductor workspace scripts. If
+   `.conductor/settings.toml` or a legacy `conductor.json` already exists, do
+   **not** overwrite: show what you'd change and offer to merge instead (same
+   rule as `CLAUDE.md`). If declined, skip — write nothing Conductor-related.
+2. **Write `.conductor/settings.toml`** using only what step 1 detected:
+
+   ```toml
+   [scripts]
+   # Runs once when a Conductor workspace (git worktree) is created.
+   setup = """
+   [ -f "$CONDUCTOR_ROOT_PATH/.env" ] && cp "$CONDUCTOR_ROOT_PATH/.env" "$CONDUCTOR_WORKSPACE_PATH/.env"
+   mkdir -p "$CONDUCTOR_WORKSPACE_PATH/.claude"
+   [ -f "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" ] && cp "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" "$CONDUCTOR_WORKSPACE_PATH/.claude/settings.local.json"
+   {{INSTALL_COMMAND}}
+   """
+   # Runs on the workspace Run button.
+   run = "{{RUN_COMMAND}}"
+   ```
+
+   - `{{INSTALL_COMMAND}}` — the detected package manager's install (e.g.
+     `pnpm install`, `uv sync`). If the project has no dependency install,
+     drop the line.
+   - `{{RUN_COMMAND}}` — the detected dev/start command; fall back to the test
+     watcher if there is no server; **omit the `run` key entirely** if nothing
+     was detected. Never invent commands (same boundary as Validation
+     Commands).
+   - Keep only the copy lines for local files that plausibly exist in this
+     repo (e.g. drop the `.env` line if the project doesn't use one). Copied
+     files are gitignored, so they never leak into the worktree's branch.
+   - No `archive` script unless the stack demonstrably creates external
+     resources needing cleanup.
+3. **Commit with the scaffold** — the file is committed so every teammate's
+   Conductor picks it up.
+
+### 7. Report and hand off
 
 Summarize what you created and tell the user the immediate next moves:
 
@@ -126,6 +169,8 @@ Summarize what you created and tell the user the immediate next moves:
 - **Never** write `.adlc/config.json` with team or project IDs that did not
   come from a live Linear MCP response.
 - **Ask First** before replacing an existing `pm` block in `.adlc/config.json`.
+- **Never** write Conductor scripts the user declined, and never put commands in
+  `settings.toml` that detection did not find.
 
 ## Done when
 
@@ -133,4 +178,5 @@ Summarize what you created and tell the user the immediate next moves:
 Validation Commands reflect this specific project, and you've told the user what to
 review. If the user opted into Linear: `.adlc/config.json` exists with the `pm`
 block, every ID in it came from a live Linear MCP response, and `.gitignore`
-covers `.adlc/` (except `config.json`).
+covers `.adlc/` (except `config.json`). If the Conductor step was accepted,
+.conductor/settings.toml exists with only detected commands.
