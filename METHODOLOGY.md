@@ -89,6 +89,11 @@ corrected on something that will recur, it appends a structured entry to
 Over sessions, `lessons.md` becomes a codebase-specific memory that makes the
 harness measurably smarter. It is reviewed at session start.
 
+Lessons mature along a graduation ladder — **correction → lesson → rule → skill**:
+a recurring lesson becomes a `CLAUDE.md` rule, and one that describes a whole
+repeatable workflow becomes a project skill in `.ai/skills/` (see § Extending the
+harness with project skills).
+
 ---
 
 ## 5. Isolated parallel work

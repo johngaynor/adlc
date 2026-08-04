@@ -70,9 +70,11 @@ resolvable at runtime), render and write:
   committed.
 - **Project skills scaffold** — the tool-neutral home for this repo's own agent
   skills (see METHODOLOGY.md § "Extending the harness with project skills"):
-  - **`.ai/skills/README.md`** — from `templates/project-skills-README.md.template`.
-    This seed file is load-bearing: git doesn't track empty directories, so
-    without it a fresh clone would leave the symlink below dangling.
+  - **`.ai/skills/README.md`** — from `templates/project-skills-README.md.template`
+    (the SKILL.md contract, the correction → lesson → rule → skill ladder, and
+    that `/adlc:add-skill` authors skills here). This seed file is load-bearing:
+    git doesn't track empty directories, so without it a fresh clone would leave
+    the symlink below dangling.
   - **`.claude/skills`** — a *relative* symlink to the canonical directory:
     `ln -s ../.ai/skills .claude/skills`. Commit the symlink itself; it is what
     gives Claude Code native discovery of project skills (session skill list +

@@ -61,6 +61,12 @@ current checkout isn't on the task branch, `cd` into that worktree first.
      branch format (an ordinary `feat/...`-style branch with no issue identifier),
      skip this step silently — no error, no prompt to configure Linear. Behave
      exactly as the generic PR opener in the rest of this workflow.
+9. **Hand off.** Invoke the workflow bridge ([`/adlc:next`](../next/SKILL.md))
+   with `completedStage: pr` and the `taskRef` (when one resolved; with no
+   resolved task the bridge degrades silently, matching this stage's PM-optional
+   behavior). Per the bridge's own rules it will not chain into `/adlc:archive` —
+   that stage needs the PR *merged* — so it ends the turn with the after-merge
+   pointer instead.
 
 ## Boundaries
 
