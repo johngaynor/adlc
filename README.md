@@ -22,9 +22,11 @@ Then, inside any project you want to harness:
 /adlc:init
 ```
 
-`/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md` and
-a `.claude/lessons.md` — a strong starting point you grow from. It can also optionally connect the repo to Linear, which unlocks the
-lifecycle below.
+`/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
+a `.claude/lessons.md`, and a `.claude/skills/` README — a strong starting point
+you grow from: lessons accumulate, recurring ones become `CLAUDE.md` rules, and
+whole workflows graduate into repo-local skills via `/adlc:add-skill`. It can also
+optionally connect the repo to Linear, which unlocks the lifecycle below.
 
 ## The ADLC lifecycle
 
@@ -82,6 +84,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
+| `/adlc:add-skill` | Author a repo-local skill in `.claude/skills/`; graduates skill-sized lessons | ✅ implemented |
 
 ## Updating
 
@@ -108,9 +111,11 @@ adlc/
 ├── CONVENTIONS.md           # how to author skills in this plugin (the contract)
 ├── reference/
 │   └── pm-seam.md           # the PM operation contract every lifecycle skill consumes
-├── templates/               # files /adlc:init and /adlc:archive render into a target repo
+├── templates/               # files the skills render into a target repo
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
+│   ├── skill.md.template    # skeleton /adlc:add-skill renders into .claude/skills/
+│   ├── repo-skills-readme.md.template
 │   └── archive-summary.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
@@ -120,7 +125,8 @@ adlc/
     ├── execute/             # lifecycle: plan → branch/worktree → committed code
     ├── pr/                  # lifecycle: validate → branch → commit → PR
     ├── archive/             # lifecycle: merged PR → curated summary → closed issue
-    └── add-lesson/          # self-improvement lessons loop
+    ├── add-lesson/          # self-improvement: correction → lesson
+    └── add-skill/           # self-improvement: lesson/workflow → repo-local skill
 ```
 
 ## Contributing / parallel work streams
