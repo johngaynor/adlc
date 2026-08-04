@@ -24,15 +24,65 @@ Then, inside any project you want to harness:
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
 a `.claude/lessons.md`, and a `.ai/specs/` directory — a strong starting point you
-grow from.
+grow from. It can also optionally connect the repo to Linear, which unlocks the
+lifecycle below.
+
+## The ADLC lifecycle
+
+Six stages carry a task from a rough idea to a closed-out record, each its own skill:
+
+```
+brainstorm → spec → plan → execute → pr → archive
+```
+
+- **`/adlc:brainstorm`** — sharpen a rough idea into a crisp problem statement and
+  create the task's Linear issue (`## Idea`, status `Backlog`).
+- **`/adlc:spec`** — research and write the specification onto that same issue
+  (`## Specification`).
+- **`/adlc:plan`** — turn the spec into an ordered, phased plan and a progress
+  checklist (`## Plan`, `## Progress`), status `Todo`.
+- **`/adlc:execute`** — create the task's branch and git worktree, then work the
+  plan phase by phase, ticking `## Progress` live as each phase lands, status
+  `In Progress`.
+- **`/adlc:pr`** — validate, commit, push, and open the PR; the branch name lets
+  Linear auto-link it, and the issue advances to `In Review`.
+- **`/adlc:archive`** — once the PR merges, commit a curated summary to
+  `docs/adlc/` and close the issue, status `Done`.
+
+**Linear is the live workspace.** One Linear issue is the whole record for a task
+while it's in flight — its description holds the canonical `## Idea` /
+`## Specification` / `## Plan` / `## Progress` / `## Outcome` sections, upserted in
+place as each stage runs. Every lifecycle skill talks to Linear through a single
+seam (`reference/pm-seam.md`) instead of calling it ad hoc, so a future PM adapter
+could replace Linear without any skill changing.
+
+**The repo gets a curated summary, not a duplicate.** `/adlc:archive` writes a
+short `docs/adlc/{date}-{slug}.md` — what shipped, why, how, and any notable
+deviations — once the PR merges. It is deliberately not a copy of the full
+spec/plan; that detail stays in the (now closed) Linear issue.
+
+Task identity is derived, never a shared pointer: before code exists it's the
+Linear issue held in the agent's own session; once `/adlc:execute` creates the
+task branch, the branch name (`<initials>/<issue-identifier>-<slug>`) is what
+every later stage parses to find the task. Parallel tasks never collide.
+
+> **Requires: Linear MCP.** `/adlc:brainstorm` through `/adlc:archive` need a
+> Linear MCP server configured for the target repo — set it up via `/adlc:init`'s
+> optional Linear step. Without it, use `/adlc:write-spec` + `/adlc:pr` +
+> `/adlc:add-lesson` instead; they work standalone with no PM configured.
 
 ## Skills
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo | ✅ implemented |
-| `/adlc:write-spec` | Write a phased spec before non-trivial work | ✅ implemented |
-| `/adlc:ship-pr` | Validate, branch, commit, and open a PR | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo; optionally connect Linear | ✅ implemented |
+| `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (`## Idea`) | ✅ implemented |
+| `/adlc:spec` | Research and write the task's specification into Linear (`## Specification`) | ✅ implemented |
+| `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
+| `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
+| `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
+| `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
+| `/adlc:write-spec` | Write a repo-local phased spec before non-trivial work — the no-PM fallback for repos not using the Linear lifecycle | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 
 ## Updating
@@ -58,20 +108,30 @@ adlc/
 │   └── marketplace.json     # marketplace listing (this repo is its own marketplace)
 ├── METHODOLOGY.md           # the spine — the four ideas; every skill quotes this
 ├── CONVENTIONS.md           # how to author skills in this plugin (the contract)
-├── templates/               # files /adlc:init renders into a target repo
+├── reference/
+│   └── pm-seam.md           # the PM operation contract every lifecycle skill consumes
+├── templates/               # files /adlc:init and /adlc:archive render into a target repo
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
-│   └── spec.md.template
+│   ├── spec.md.template
+│   └── archive-summary.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
-    ├── write-spec/          # spec-first workflow
-    ├── ship-pr/             # validate → branch → commit → PR
+    ├── brainstorm/          # lifecycle: idea → Linear issue
+    ├── spec/                # lifecycle: idea → specification
+    ├── plan/                # lifecycle: spec → phased plan + progress checklist
+    ├── execute/             # lifecycle: plan → branch/worktree → committed code
+    ├── pr/                  # lifecycle: validate → branch → commit → PR
+    ├── archive/             # lifecycle: merged PR → curated summary → closed issue
+    ├── write-spec/          # spec-first workflow (no-PM fallback)
     └── add-lesson/          # self-improvement lessons loop
 ```
 
 ## Contributing / parallel work streams
 
-All four skills are implemented. When adding or changing a skill, read
+The original four v0.1 skills (streams A–D below) are implemented, and the six
+Linear-lifecycle skills (see "The ADLC lifecycle" above) have since been added
+alongside them. When adding or changing a skill, read
 [`CONVENTIONS.md`](./CONVENTIONS.md) (skill format) and
 [`METHODOLOGY.md`](./METHODOLOGY.md) (vocabulary), and use `skills/init/SKILL.md` as
 the worked example.
@@ -80,7 +140,7 @@ the worked example.
 |--------|------|--------|
 | **A — Init scaffolder** | `skills/init/SKILL.md` + `templates/` | ✅ implemented (reference skill) |
 | **B — Spec workflow** | `skills/write-spec/SKILL.md` | ✅ implemented |
-| **C — PR workflow** | `skills/ship-pr/SKILL.md` | ✅ implemented |
+| **C — PR workflow** | `skills/pr/SKILL.md` | ✅ implemented |
 | **D — Lessons loop** | `skills/add-lesson/SKILL.md` | ✅ implemented |
 | **E — Docs & dogfood** | this README + a throwaway test repo | ⏳ in progress |
 
