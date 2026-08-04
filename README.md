@@ -74,7 +74,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo; optionally connect Linear | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention); optionally connect Linear | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (`## Idea`) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into Linear (`## Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
@@ -82,6 +82,18 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
+
+## Project skills — extending the harness
+
+A harnessed repo can ship its *own* agent skills alongside the plugin's. The
+canonical home is tool-neutral and committed: `.ai/skills/<name>/SKILL.md`,
+in the open agent-skills format. `/adlc:init` scaffolds the plumbing: a
+committed relative symlink `.claude/skills → ../.ai/skills` (so Claude Code
+discovers project skills natively and `/<name>` invokes them), an `AGENTS.md`
+pointer for other harnesses, a README seed that keeps the symlink from dangling
+on fresh clones, and gitignore rules that keep `.ai/skills/` committed even
+where the rest of `.ai/` stays local. See METHODOLOGY.md § "Extending the
+harness with project skills" (including the Windows symlink caveat).
 
 ## Updating
 

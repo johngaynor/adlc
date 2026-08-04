@@ -120,6 +120,40 @@ renamed to proper feature branches; sensible platform-chosen names are kept.
 
 ---
 
+## Extending the harness with project skills
+
+The plugin's own skills (`adlc:*`) ship with the plugin and are never modified
+by consuming repos. A repo adds its *own* skills under one tool-neutral
+canonical home, committed to source control:
+
+```
+.ai/skills/<name>/SKILL.md
+```
+
+The SKILL.md format is the open agent-skills spec (YAML frontmatter with `name`
+and a trigger-style `description`, then an imperative body), so the *content*
+is portable across harnesses — only the discovery path was ever Claude-specific.
+`/adlc:init` scaffolds the plumbing that resolves that:
+
+- **`.claude/skills`** — a committed *relative* symlink to `../.ai/skills`,
+  giving Claude Code native discovery (session skill list + `/<name>`
+  invocation) at zero runtime cost.
+- **`AGENTS.md` pointer** — a short "Project skills" section directing other
+  harnesses at the same canonical files.
+- **`.ai/skills/README.md`** — a seed that keeps the directory present in git,
+  so the symlink never dangles on a fresh clone.
+- **Gitignore semantics** — `.ai/skills/` stays committed even where the rest
+  of `.ai/` is local (`.ai/*` + `!.ai/skills/`; a bare negation under a blanket
+  `.ai/` ignore has no effect, since git never descends into ignored
+  directories).
+
+**Windows caveat:** creating the symlink needs Developer Mode or
+`core.symlinks=true`. Where that's unavailable, `.claude/skills/` stays a real
+directory and skills in `.ai/skills/` are not auto-discovered by Claude Code —
+init reports this plainly instead of half-fixing it.
+
+---
+
 ## The three core principles
 
 - **Simplicity first** — make every change as simple as possible; touch minimal code.
