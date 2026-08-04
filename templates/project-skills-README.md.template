@@ -1,0 +1,36 @@
+# Project Skills
+
+The canonical, tool-neutral home for this repo's own agent skills — committed to
+source control. Claude Code discovers this directory through the `.claude/skills`
+symlink that points here; other harnesses are directed here by the pointer in
+`AGENTS.md`.
+
+## Adding a skill
+
+One skill per directory: `<skill-name>/SKILL.md` (kebab-case). The file follows
+the open agent-skills format — YAML frontmatter, then an imperative body:
+
+```yaml
+---
+name: <kebab-case, matches the folder>
+description: <one line, written as a trigger — "Use when...">
+---
+```
+
+`description` is the only thing an agent reads when deciding whether the skill
+applies — make it a trigger, not a title. In Claude Code, a skill added here
+appears in the next session's available-skills list and is invocable as
+`/<skill-name>`.
+
+## Where skills come from
+
+Skills here are the top rung of the harness's self-improvement ladder:
+**correction → lesson → rule → skill**. A correction becomes a
+`.claude/lessons.md` entry; a recurring lesson graduates into a `CLAUDE.md`
+rule; a lesson that describes a whole repeatable workflow — how we run
+migrations, how we cut a release — graduates into a skill here. The
+`/adlc:add-skill` skill authors them: it gates on skill-sized workflows,
+checks for duplicates, and handles the lesson-graduation bookkeeping.
+One-line rules do not belong here.
+
+> Scaffolded by [ADLC](https://github.com/johngaynor/adlc).

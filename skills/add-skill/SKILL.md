@@ -1,12 +1,15 @@
 ---
 name: add-skill
-description: Use when a repo-specific workflow deserves to become a repo-local skill — the user says "make this a skill", "add a skill for this", or a lessons.md entry has grown into a whole multi-step workflow. Authors .claude/skills/<name>/SKILL.md in the target repo.
+description: Use when a repo-specific workflow deserves to become a project skill — the user says "make this a skill", "add a skill for this", or a lessons.md entry has grown into a whole multi-step workflow. Authors .ai/skills/<name>/SKILL.md in the target repo.
 ---
 
-# Add a repo-local skill
+# Add a project skill
 
 Author a skill that belongs to *this repo* — a committed, team-shared workflow in
-`.claude/skills/<name>/SKILL.md` that Claude Code auto-loads. This is the top rung
+`.ai/skills/<name>/SKILL.md`, the canonical project-skills home that Claude Code
+discovers through the `.claude/skills` symlink (see
+[`METHODOLOGY.md`](../../METHODOLOGY.md) § Extending the harness with project
+skills). This is the top rung
 of the self-improvement ladder (see [`METHODOLOGY.md`](../../METHODOLOGY.md)
 § Lessons loop): **correction → lesson → rule → skill**. `/adlc:add-lesson`
 captures corrections; this skill graduates the ones that turn out to be whole
@@ -30,13 +33,13 @@ workflows.
    definition of done. If the candidate is a one-line rule or a single fact, say
    so and stop — it belongs in `.claude/lessons.md` (via `/adlc:add-lesson`) or
    under a `CLAUDE.md` boundary heading, not here.
-3. **Check for duplicates.** Read every existing `.claude/skills/*/SKILL.md` in
+3. **Check for duplicates.** Read every existing `.ai/skills/*/SKILL.md` in
    the repo. If one already covers this ground, **update** it rather than adding
    a near-duplicate — and skip to step 7.
 4. **Author the skill.** Render
    `${CLAUDE_PLUGIN_ROOT}/templates/skill.md.template` (reproduce its structure
    inline if the path is not resolvable) into
-   `.claude/skills/<kebab-name>/SKILL.md`, filling every `{{PLACEHOLDER}}` and
+   `.ai/skills/<kebab-name>/SKILL.md`, filling every `{{PLACEHOLDER}}` and
    dropping the template's guidance comments:
    - `name` — kebab-case, matches the directory.
    - `description` — a trigger, not a title: "Use when…", written so an agent
@@ -47,16 +50,18 @@ workflows.
    - Done when — how the agent proves the workflow succeeded.
 5. **Graduation bookkeeping** (graduation path only). Rewrite the source lesson's
    body in `.claude/lessons.md` to a single pointer line —
-   `**Graduated**: superseded by .claude/skills/<name>/ on <YYYY-MM-DD>` —
+   `**Graduated**: superseded by .ai/skills/<name>/ on <YYYY-MM-DD>` —
    keeping the entry's title. History stays greppable; guidance never lives in
    two places.
 6. **Wire the router** (optional). If the new skill is the guide for a class of
    tasks, offer to add or update the matching Task Router row in the repo's root
    `CLAUDE.md` so tasks route to it.
 7. **Verify and hand off.** Confirm the frontmatter parses (valid YAML, `name`
-   matches the directory) and no `{{…}}` placeholders remain. Remind the user the
-   skill loads in the *next* Claude Code session, and suggest committing it —
-   repo skills are shared with the team.
+   matches the directory), no `{{…}}` placeholders remain, and the repo's
+   `.claude/skills` symlink exists so Claude Code will discover the skill (if the
+   repo predates the convention, point the user at re-running `/adlc:init`).
+   Remind the user the skill loads in the *next* Claude Code session, and suggest
+   committing it — project skills are shared with the team.
 
 ## Boundaries
 
@@ -70,6 +75,6 @@ workflows.
 
 ## Done when
 
-A valid `.claude/skills/<name>/SKILL.md` exists (frontmatter parses, no unfilled
+A valid `.ai/skills/<name>/SKILL.md` exists (frontmatter parses, no unfilled
 placeholders), any graduated lesson points at it with its title intact, and the
 user knows it loads next session and should be committed.

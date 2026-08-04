@@ -45,8 +45,13 @@ confident, state what you found and proceed.
 - If a root `CLAUDE.md` already exists, do **not** overwrite it. Show the user the
   diff between what you'd generate and what's there, and offer to merge the Task
   Router / boundary sections in instead. Ask first.
-- If `.claude/lessons.md` or `.claude/skills/README.md` already exist, leave them
-  and only add what's missing.
+- If `.claude/lessons.md` already exists, leave it and only add what's missing.
+- Project-skills convention (step 4): if `.claude/skills` is already a symlink to
+  `../.ai/skills`, the whole scaffold is a no-op. If `.claude/skills` exists as a
+  **real directory** with content, do not touch it silently — offer to move its
+  contents into `.ai/skills/` and replace the directory with the symlink, and ask
+  first. If `.ai/skills/` already exists, leave its contents untouched and add
+  only what's missing (e.g. a missing `README.md` or `AGENTS.md` pointer).
 
 ### 4. Write the files
 
@@ -60,12 +65,39 @@ resolvable at runtime), render and write:
   migration → …"), not the generic examples. Seed 4–8 rows that match the stack.
 - **`.claude/lessons.md`** — from `templates/lessons.md.template` (empty log with
   the entry format documented at the top).
-- **`.claude/skills/README.md`** — from `templates/repo-skills-readme.md.template`
-  (what repo-local skills are, the correction → lesson → rule → skill ladder, and
-  that `/adlc:add-skill` authors them). Creates the `.claude/skills/` directory.
 - **`.gitignore`** — ensure a `.worktrees/` entry exists (append to the existing
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
+- **Project skills scaffold** — the tool-neutral home for this repo's own agent
+  skills (see METHODOLOGY.md § "Extending the harness with project skills"):
+  - **`.ai/skills/README.md`** — from `templates/project-skills-README.md.template`
+    (the SKILL.md contract, the correction → lesson → rule → skill ladder, and
+    that `/adlc:add-skill` authors skills here). This seed file is load-bearing:
+    git doesn't track empty directories, so without it a fresh clone would leave
+    the symlink below dangling.
+  - **`.claude/skills`** — a *relative* symlink to the canonical directory:
+    `ln -s ../.ai/skills .claude/skills`. Commit the symlink itself; it is what
+    gives Claude Code native discovery of project skills (session skill list +
+    `/<name>` invocation). **Windows caveat:** symlink creation needs Developer
+    Mode or `core.symlinks=true`. If creation fails, fall back to keeping
+    `.claude/skills/` as a real directory and tell the user plainly that it will
+    not auto-track `.ai/skills/` — don't half-fix it silently.
+  - **`AGENTS.md`** — ensure a short "Project skills" section pointing other
+    (non-Claude) harnesses at `.ai/skills/<name>/SKILL.md`. Create the file if
+    it's missing; if it exists without the section, append it; if the section is
+    already there, leave it alone.
+  - **`.gitignore` semantics** — `.ai/skills/` must stay committed even where
+    other `.ai/` content is local. If the repo ignores `.ai/` wholesale, rewrite
+    that entry to the exception-safe pair:
+
+    ```
+    .ai/*
+    !.ai/skills/
+    ```
+
+    (A bare `!.ai/skills/` under an ignored `.ai/` has no effect — git never
+    descends into ignored directories.) Path-specific ignores like `.ai/specs/`
+    need no change.
 
 ### 5. Connect Linear (optional)
 
@@ -121,6 +153,9 @@ Summarize what you created and tell the user the immediate next moves:
 ## Boundaries
 
 - **Never** overwrite an existing root `CLAUDE.md` without explicit confirmation.
+- **Never** move or delete an existing `.claude/skills/` directory (or its
+  contents) without explicit confirmation — the retrofit to a symlink is always
+  offered, never assumed.
 - **Ask First** before inventing validation commands you could not find — a wrong
   build command is worse than an empty one.
 - **Always** fill placeholders from real detection; leave a `TODO(adlc)` marker
@@ -131,8 +166,11 @@ Summarize what you created and tell the user the immediate next moves:
 
 ## Done when
 
-`CLAUDE.md`, `.claude/lessons.md`, `.claude/skills/README.md`, and a `.worktrees/`
-gitignore entry exist, the Task Router and Validation Commands reflect this
-specific project, and you've told the user what to review. If the user opted into Linear:
+`CLAUDE.md`, `.claude/lessons.md`, and a `.worktrees/` gitignore
+entry exist, the Task Router and Validation Commands reflect this specific
+project, and you've told the user what to review. The project-skills convention
+is in place: `.ai/skills/README.md` exists, `.claude/skills` is a relative
+symlink to `../.ai/skills` (or the Windows fallback was reported), `AGENTS.md`
+carries the pointer section, and `.ai/skills/` is not gitignored. If the user opted into Linear:
 `.adlc/config.json` exists with the `pm` block, every ID in it came from a live
 Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).

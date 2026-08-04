@@ -23,10 +23,11 @@ Then, inside any project you want to harness:
 ```
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
-a `.claude/lessons.md`, and a `.claude/skills/` README — a strong starting point
-you grow from: lessons accumulate, recurring ones become `CLAUDE.md` rules, and
-whole workflows graduate into repo-local skills via `/adlc:add-skill`. It can also
-optionally connect the repo to Linear, which unlocks the lifecycle below.
+a `.claude/lessons.md`, and the project-skills convention (`.ai/skills/` +
+discovery symlink, see below) — a strong starting point you grow from: lessons
+accumulate, recurring ones become `CLAUDE.md` rules, and whole workflows graduate
+into project skills via `/adlc:add-skill`. It can also optionally connect the
+repo to Linear, which unlocks the lifecycle below.
 
 ## The ADLC lifecycle
 
@@ -81,7 +82,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo; optionally connect Linear | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention); optionally connect Linear | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (`## Idea`) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into Linear (`## Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
@@ -89,7 +90,19 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
-| `/adlc:add-skill` | Author a repo-local skill in `.claude/skills/`; graduates skill-sized lessons | ✅ implemented |
+| `/adlc:add-skill` | Author a project skill in `.ai/skills/`; graduates skill-sized lessons | ✅ implemented |
+
+## Project skills — extending the harness
+
+A harnessed repo can ship its *own* agent skills alongside the plugin's. The
+canonical home is tool-neutral and committed: `.ai/skills/<name>/SKILL.md`,
+in the open agent-skills format. `/adlc:init` scaffolds the plumbing: a
+committed relative symlink `.claude/skills → ../.ai/skills` (so Claude Code
+discovers project skills natively and `/<name>` invokes them), an `AGENTS.md`
+pointer for other harnesses, a README seed that keeps the symlink from dangling
+on fresh clones, and gitignore rules that keep `.ai/skills/` committed even
+where the rest of `.ai/` stays local. See METHODOLOGY.md § "Extending the
+harness with project skills" (including the Windows symlink caveat).
 
 ## Updating
 
@@ -119,8 +132,8 @@ adlc/
 ├── templates/               # files the skills render into a target repo
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
-│   ├── skill.md.template    # skeleton /adlc:add-skill renders into .claude/skills/
-│   ├── repo-skills-readme.md.template
+│   ├── skill.md.template    # skeleton /adlc:add-skill renders into .ai/skills/
+│   ├── project-skills-README.md.template
 │   └── archive-summary.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
@@ -131,7 +144,7 @@ adlc/
     ├── pr/                  # lifecycle: validate → branch → commit → PR
     ├── archive/             # lifecycle: merged PR → curated summary → closed issue
     ├── add-lesson/          # self-improvement: correction → lesson
-    └── add-skill/           # self-improvement: lesson/workflow → repo-local skill
+    └── add-skill/           # self-improvement: lesson/workflow → project skill
 ```
 
 ## Contributing / parallel work streams
