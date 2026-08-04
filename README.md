@@ -23,7 +23,7 @@ Then, inside any project you want to harness:
 ```
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
-a `.claude/lessons.md`, and a `.ai/specs/` directory — a strong starting point you
+a `.claude/lessons/` directory, and a `.ai/specs/` directory — a strong starting point you
 grow from.
 
 ## Skills
@@ -34,6 +34,22 @@ grow from.
 | `/adlc:write-spec` | Write a phased spec before non-trivial work | ✅ implemented |
 | `/adlc:ship-pr` | Validate, branch, commit, and open a PR | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
+
+## Using with Conductor
+
+ADLC works inside [Conductor](https://conductor.build) out of the box: plugins
+are user-scoped, so `/adlc:*` skills load in every workspace, and everything
+init scaffolds is committed, so it travels into every worktree.
+
+`/adlc:init` offers one extra step for Conductor users: it scaffolds a
+`.conductor/settings.toml` whose setup script installs dependencies and copies
+gitignored local files (`.env`, `.claude/settings.local.json`) into new
+workspaces, and whose run script starts the detected dev command.
+
+One workspace per task is the intended shape: `/adlc:write-spec` at the start,
+`/adlc:ship-pr` from the workspace's own branch at the end, and lessons are one
+file each (`.claude/lessons/`), so parallel workspaces never merge-conflict on
+the lessons log.
 
 ## Updating
 
@@ -60,7 +76,7 @@ adlc/
 ├── CONVENTIONS.md           # how to author skills in this plugin (the contract)
 ├── templates/               # files /adlc:init renders into a target repo
 │   ├── CLAUDE.md.template
-│   ├── lessons.md.template
+│   ├── lessons-readme.md.template
 │   └── spec.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
