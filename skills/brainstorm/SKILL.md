@@ -26,8 +26,10 @@ lifecycle stage that runs before a Linear issue exists; every later stage assume
    `Backlog` — no separate `setStatus` call is needed; `createTask` sets it per the
    seam's Status Mapping.
 5. **Report and hand off.** Give the user the issue URL and hold its `taskRef` in
-   session context so `/adlc:spec` can pick it up next — there is no shared pointer
-   file (see `reference/pm-seam.md` § Task Identity Resolution).
+   session context — there is no shared pointer file (see `reference/pm-seam.md`
+   § Task Identity Resolution). Then invoke the workflow bridge
+   ([`/adlc:next`](../next/SKILL.md)) with `completedStage: brainstorm` and the
+   `taskRef` — the bridge owns the lifecycle order and what comes next.
 
 ## Boundaries
 

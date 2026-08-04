@@ -36,9 +36,12 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 5. **Write it back.** Call `writeSection(taskRef, "Specification", md)` per
    `reference/pm-seam.md` — this upserts the `## Specification` block; re-running
    this stage overwrites it cleanly rather than duplicating it.
-6. **Present for review.** Point the user at the Linear issue and get their
-   explicit review of the specification. This gate happens **before** `/adlc:plan`
-   runs — never let planning start on an unreviewed spec.
+6. **Report and hand off.** Point the user at the Linear issue and summarize the
+   key design decisions, then invoke the workflow bridge
+   ([`/adlc:next`](../next/SKILL.md)) with `completedStage: spec` and the
+   `taskRef`. The bridge's prompt *is* this stage's review gate: choosing
+   **Move to plan** is the user's explicit approval of the specification,
+   **Review first** shows the new `## Specification` before deciding.
 
 ## Boundaries
 
@@ -48,7 +51,12 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
   `/adlc:execute`.
 - **Never** invent a Linear section name outside the five canonical ones in
   `reference/pm-seam.md`.
+- **Never** let planning start on an unreviewed spec — approval arrives through
+  the bridge (**Move to plan**, or an explicit auto-mode opt-in per the bridge's
+  Boundaries), never by assumption.
 
 ## Done when
 
-The issue has a `## Specification` section and the user has reviewed it.
+The issue has a `## Specification` section and the hand-off has passed through
+the bridge — the user approved it (or auto mode chained on), or chose
+**Stop here** and the task rests cleanly at `Backlog`.

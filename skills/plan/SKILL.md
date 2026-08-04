@@ -39,9 +39,12 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 6. **Advance the status.** Call `setStatus(taskRef, "Todo")` per the seam's Status
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
-7. **Present for approval.** Point the user at the Linear issue and get their
-   explicit approval of the plan and phase breakdown. This gate happens **before**
-   `/adlc:execute` runs — never let coding start on an unapproved plan.
+7. **Report and hand off.** Point the user at the Linear issue and summarize the
+   phase breakdown, then invoke the workflow bridge
+   ([`/adlc:next`](../next/SKILL.md)) with `completedStage: plan` and the
+   `taskRef`. The bridge's prompt *is* this stage's approval gate: choosing
+   **Move to execute** is the user's explicit approval of the plan,
+   **Review first** shows the new `## Plan` and `## Progress` before deciding.
 
 ## Boundaries
 
@@ -52,8 +55,13 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
   reshaping the spec.
 - **Never** invent a Linear section name outside the five canonical ones in
   `reference/pm-seam.md`.
+- **Never** let coding start on an unapproved plan — approval arrives through
+  the bridge (**Move to execute**, or an explicit auto-mode opt-in per the
+  bridge's Boundaries), never by assumption.
 
 ## Done when
 
 The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), its status is
-`Todo`, and the user has approved the plan.
+`Todo`, and the hand-off has passed through the bridge — the user approved the
+plan (or auto mode chained on), or chose **Stop here** and the task rests
+cleanly at `Todo`.
