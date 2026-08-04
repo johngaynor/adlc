@@ -1,0 +1,35 @@
+---
+name: {{NAME}}
+description: {{DESCRIPTION}}
+---
+
+<!-- Authoring contract (drop these comments when rendering):
+     - `name` is kebab-case and matches this skill's directory name.
+     - `description` is the ONLY thing the agent sees when deciding whether this
+       skill applies. Make it a trigger, not a title: start with "Use when...".
+     - Voice is second person, imperative: "Read the spec.", not "You could...".
+     - The Workflow is numbered steps the agent executes literally. -->
+
+# {{TITLE}}
+
+{{PURPOSE}}
+
+## Arguments
+
+<!-- Delete this section if the skill takes no arguments. -->
+
+- `$ARGUMENTS` (optional) — {{ARGUMENTS_DESCRIPTION}}
+
+## Workflow
+
+{{WORKFLOW_STEPS}}
+
+## Boundaries
+
+<!-- File each rule under exactly one label: Always / Ask First / Never. -->
+
+{{BOUNDARIES}}
+
+## Done when
+
+{{DONE_WHEN}}
