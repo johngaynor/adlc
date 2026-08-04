@@ -32,6 +32,8 @@ often matches multiple rows; all apply. Only explore blindly when no row fits.
 - Prefer the simplest change that fully solves the problem.
 - Run the smallest relevant set of Validation Commands before claiming done.
 - Capture recurring corrections as lessons — see the Self-Improvement section.
+- Do PR-bound work in an isolated workspace (worktree): verify isolation first,
+  provision one only if absent.
 {{ALWAYS_EXTRA}}
 
 ## Ask First
@@ -48,6 +50,8 @@ often matches multiple rows; all apply. Only explore blindly when no row fits.
 - Never commit secrets, credentials, tokens, or private keys.
 - Never leave the build, typecheck, or tests broken.
 - Never edit generated files by hand.
+- Never commit directly to the main checkout — task work integrates through PRs
+  from isolated workspaces.
 {{NEVER_EXTRA}}
 
 ## Validation Commands

@@ -11,30 +11,28 @@ pushes — it runs only when the user has explicitly asked to open a PR.
 
 ## Workflow
 
-1. **Validate first.** Run the smallest relevant set of the project's Validation
-   Commands (from the root `CLAUDE.md`). If any fail, stop and report the failure —
-   do **not** open a PR on red. Show the actual output.
-2. **Branch if needed.** First detect a managed worktree: `CONDUCTOR_WORKSPACE_NAME`
-   is set in the environment, or `git rev-parse --git-dir` and
-   `git rev-parse --git-common-dir` print different paths (they differ exactly in
-   a linked worktree). In a managed worktree the current branch *is* the feature
-   branch — use it as-is; do **not** create a second branch or rename it — unless
-   the current branch IS the default branch (`main`/`master`): a linked worktree
-   can be checked out on main (e.g. `git worktree add ../main main`), in which
-   case create a feature branch as normal. Otherwise (not a managed worktree), if
-   on the default branch, create a feature branch first, kebab-case and prefixed
-   by change type: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`. The naming
-   convention applies only to branches this skill creates.
-3. **Review the diff.** Run `git status` and `git diff` (staged + unstaged). Confirm
-   there are no secrets, debug output, or unrelated changes. Stage intentionally.
-4. **Commit.** Write a conventional-commits message (`type: summary`, body
-   explaining *why*). If the project mandates a commit trailer (check `CLAUDE.md`
-   and recent `git log`), include it.
-5. **Push & open.** Push the branch, then `gh pr create` against the default branch
-   with a body that states: **what** changed, **why**, **how it was validated**, and
-   any follow-ups. Honor `.github/pull_request_template.md` if present. Apply the
-   project's PR labels if it uses a label convention.
-6. **Report** the PR URL.
+1. Run the project's Validation Commands (from the root `CLAUDE.md`) and refuse to
+   proceed if any fail — report the failure instead, showing the actual output.
+2. Get on a proper feature branch (kebab-case, prefixed by change type, e.g.
+   `feat/`, `fix/`, `chore/`) per METHODOLOGY.md idea 5. A managed worktree is
+   detected by `CONDUCTOR_WORKSPACE_NAME` being set in the environment, or by
+   `git rev-parse --git-dir` and `git rev-parse --git-common-dir` printing
+   different paths (they differ exactly in a linked worktree). Then:
+   - On a machine-generated branch (e.g. `worktree-*`): rename it
+     (`git branch -m <new-name>`) before pushing.
+   - On a sensibly-named branch already (e.g. platform-managed, such as a
+     Conductor workspace): keep it — do **not** create a second branch or
+     rename it.
+   - On the default branch (`main`/`master`) — even inside a linked worktree
+     (e.g. `git worktree add ../main main`): create the feature branch first.
+   The naming convention applies only to branches this skill creates or renames.
+3. Stage and commit with a conventional-commits message. End commit messages with
+   the project's required trailer if one exists.
+4. Push and open the PR with `gh pr create`, using a description that states: what
+   changed, why, how it was validated, and any follow-ups. Honor a
+   `.github/pull_request_template.md` if present.
+5. Report the PR URL. If working in an isolated workspace (worktree), note that
+   it is now disposable — the branch lives on the remote.
 
 ## Boundaries
 

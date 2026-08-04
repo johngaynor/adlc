@@ -10,7 +10,7 @@ it knows where code goes, what it's allowed to do without asking, and how to pro
 its work. It is framework-agnostic — it works on a Next.js monorepo, a Python
 service, or a React Native app equally.
 
-The methodology is four ideas. Adopt them in order; each is useful on its own.
+The methodology is five ideas. Adopt them in order; each is useful on its own.
 
 ---
 
@@ -87,6 +87,35 @@ merge-conflict on a shared log:
 
 Over sessions, `.claude/lessons/` becomes a codebase-specific memory that makes
 the harness measurably smarter. Every file there is reviewed at session start.
+
+---
+
+## 5. Isolated parallel work
+
+The unit of parallelism: **one task = one isolated workspace = one PR.** An agent
+never edits the main checkout — it stays on the default branch as the stable
+reference copy. Every PR-bound task, however small, happens in its own isolated
+workspace (a git worktree or equivalent) and integrates through a PR a human
+reviews and merges. With no shared mutable state before merge, any number of
+agents can work in parallel.
+
+The rule is the **invariant, not the mechanism** — detection over configuration:
+
+1. **Detect.** Before starting PR-bound work, check whether you are already
+   isolated: if `git rev-parse --git-dir` and `git rev-parse --git-common-dir`
+   differ, you are in a linked worktree — proceed, create nothing. (Guard: if
+   `git rev-parse --show-superproject-working-tree` prints a path, you are in a
+   submodule, not a worktree.) Platforms with built-in worktrees (e.g.
+   Conductor) pass this check automatically — zero configuration.
+2. **Provision natively.** Not isolated? Use the harness's native worktree
+   tool if one exists (e.g. Claude Code's built-in worktree support).
+3. **Fall back to git.** Otherwise: `git worktree add .worktrees/<task-slug>`,
+   with `.worktrees/` in `.gitignore`.
+
+**Lifecycle:** implement and validate inside the workspace; ship a PR from it;
+once the PR is pushed the workspace is disposable — the branch lives on the
+remote. At ship time, machine-generated branch names (e.g. `worktree-*`) are
+renamed to proper feature branches; sensible platform-chosen names are kept.
 
 ---
 
