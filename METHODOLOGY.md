@@ -73,19 +73,20 @@ repo, so the intent behind code is reproducible and reviewable. Small fixes skip
 this — just fix them.
 
 **The lessons loop.** Corrections are captured, not lost. When the agent is
-corrected on something that will recur, it appends a structured entry to
-`.claude/lessons.md`:
+corrected on something that will recur, it writes a structured entry as a new
+file in `.claude/lessons/` — one file per lesson, so parallel branches never
+merge-conflict on a shared log:
 
 ```
-## <short title>
+# <short title>
 **Context**: where this came up.
 **Problem**: what went wrong.
 **Rule**: the durable rule that prevents it.
 **Applies to**: the paths/areas this governs.
 ```
 
-Over sessions, `lessons.md` becomes a codebase-specific memory that makes the
-harness measurably smarter. It is reviewed at session start.
+Over sessions, `.claude/lessons/` becomes a codebase-specific memory that makes
+the harness measurably smarter. Every file there is reviewed at session start.
 
 ---
 
