@@ -4,8 +4,8 @@ Recurring patterns and mistakes to avoid on this codebase — **one file per
 lesson** in this directory. **Review every file here at session start.**
 
 Add a new file whenever the agent is corrected on something that will recur.
-One lesson per file means parallel branches (e.g. Conductor workspaces) never
-merge-conflict on a shared log.
+One lesson per file means parallel branches never merge-conflict on a shared
+log.
 
 - **Filename**: `<kebab-title>.md`, short and specific
   (e.g. `no-raw-sql-in-handlers.md`). On a name collision, append `-2`, `-3`, ….

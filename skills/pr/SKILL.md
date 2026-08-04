@@ -37,14 +37,12 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 3. **Branch if needed.** Get on a proper feature branch (kebab-case, prefixed by
    change type: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`) per
    METHODOLOGY.md idea 5. A managed worktree is detected by
-   `CONDUCTOR_WORKSPACE_NAME` being set in the environment, or by
    `git rev-parse --git-dir` and `git rev-parse --git-common-dir` printing
    different paths (they differ exactly in a linked worktree). Then:
    - On a machine-generated branch (e.g. `worktree-*`): rename it
      (`git branch -m <new-name>`) before pushing.
    - On a sensibly-named branch already (a task branch or platform-managed
-     name, such as a Conductor workspace): keep it — do **not** create a
-     second branch or rename it.
+     name): keep it — do **not** create a second branch or rename it.
    - On the default branch (`main`/`master`) — even inside a linked worktree
      (e.g. `git worktree add ../main main`): create the feature branch first.
    The naming convention applies only to branches this skill creates or renames.

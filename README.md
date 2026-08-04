@@ -85,22 +85,6 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:write-spec` | Write a repo-local phased spec before non-trivial work — the no-PM fallback for repos not using the Linear lifecycle | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 
-## Using with Conductor
-
-ADLC works inside [Conductor](https://conductor.build) out of the box: plugins
-are user-scoped, so `/adlc:*` skills load in every workspace, and everything
-init scaffolds is committed, so it travels into every worktree.
-
-`/adlc:init` offers one extra step for Conductor users: it scaffolds a
-`.conductor/settings.toml` whose setup script installs dependencies and copies
-gitignored local files (`.env`, `.claude/settings.local.json`) into new
-workspaces, and whose run script starts the detected dev command.
-
-One workspace per task is the intended shape: `/adlc:write-spec` at the start,
-`/adlc:pr` from the workspace's own branch at the end, and lessons are one
-file each (`.claude/lessons/`), so parallel workspaces never merge-conflict on
-the lessons log.
-
 ## Updating
 
 This plugin uses explicit versioning (`.claude-plugin/plugin.json` → `version`).
