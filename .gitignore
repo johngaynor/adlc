@@ -14,5 +14,5 @@ node_modules/
 # which is about target repos — this repo's specs/plans are session notes)
 .ai/specs/
 .ai/plans/
-docs/plans/
 docs/design/
+docs/plans/
