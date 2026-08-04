@@ -1,0 +1,26 @@
+# {{TITLE}}
+
+- **Date**: {{YYYY-MM-DD}}
+- **Linear issue**: {{ISSUE_URL}}
+- **PR(s)**: {{PR_LINKS}}
+
+## Specification
+
+{{SPECIFICATION — the issue's final `## Specification` section, verbatim}}
+
+## Plan
+
+{{PLAN — the issue's final `## Plan` section, verbatim}}
+
+## Notable deviations
+
+{{DEVIATIONS — assembled from the deviations `/adlc:execute` flagged in commit
+messages and checkpoint reports. Say "None." if the work matched the plan as
+approved.}}
+
+---
+
+> Exported, not summarized: this is the task's final spec and plan, landed in the
+> repo at archive time as the durable record for future agents. Exports live in
+> `.ai/specs/implemented/{YYYY-MM-DD}-{kebab-slug}.md`; tasks that introduced a
+> durable pattern also get a Task Router row in the root `CLAUDE.md` pointing here.
