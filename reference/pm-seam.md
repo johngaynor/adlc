@@ -4,12 +4,12 @@ Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`, `arch
 talks to the project-management system through this seam and nothing else — no skill
 calls Linear ad hoc. Linear is the only implementation for v1: one Linear issue is the
 whole record for a task, and its description is the canonical living document. A future
-PM adapter (Notion, Jira, ...) would implement the same eight operations against a
+PM adapter (Notion, Jira, ...) would implement the same nine operations against a
 different backend; skills would not change.
 
 ## Operations
 
-Eight operations make up the seam. Each is documented below with its signature, what
+Nine operations make up the seam. Each is documented below with its signature, what
 it does, and the concrete Linear MCP action it maps to.
 
 ### `createTask(title, ideaMarkdown) → taskRef`
@@ -43,6 +43,20 @@ Sets one checkbox in the `## Progress` section — the one whose text matches
 the section untouched.
 
 - **Linear MCP action:** update description checkbox.
+
+### `applyLabel(taskRef, labelName)`
+
+Idempotently ensures a team label named `labelName` exists and is applied to the
+issue. First look the label up by name on the issue's team; if it does not exist,
+create it team-level (Linear's default color). Then update the issue's labels to
+its **current set plus the new label**. The append-before-write is mandatory: the
+Linear MCP's label update replaces the issue's full label set, so writing only the
+new label would silently strip every label already on the issue. Applying a label
+the issue already has is a no-op — a stage that re-runs never duplicates a label
+or errors.
+
+- **Linear MCP actions:** list labels → create label (only if missing) → update
+  issue labels.
 
 ### `setStatus(taskRef, status)`
 
@@ -108,6 +122,13 @@ description: it locates that heading, replaces everything up to the next `##` he
 (or end of description), and leaves every other section untouched. A stage that
 re-runs overwrites its own section cleanly — it never duplicates it or disturbs a
 neighboring section.
+
+Labels mirror artifact presence on the issue's card. `spec` and `plan` are the only
+canonical labels — applied by their namesake stages via `applyLabel` the moment
+their section lands (`## Specification` and `## Plan` + `## Progress` respectively).
+They accumulate and are never removed: a rewritten spec keeps its `spec` label,
+because the artifact still exists. As with section names, no skill invents a label
+outside this list.
 
 ## Status Mapping
 

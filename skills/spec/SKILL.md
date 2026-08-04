@@ -36,7 +36,10 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 5. **Write it back.** Call `writeSection(taskRef, "Specification", md)` per
    `reference/pm-seam.md` — this upserts the `## Specification` block; re-running
    this stage overwrites it cleanly rather than duplicating it.
-6. **Report and hand off.** Point the user at the Linear issue and summarize the
+6. **Apply the `spec` label.** Call `applyLabel(taskRef, "spec")` per
+   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   applies it idempotently, so the card signals the artifact at a glance.
+7. **Report and hand off.** Point the user at the Linear issue and summarize the
    key design decisions, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: spec` and the
    `taskRef`. The bridge's prompt *is* this stage's review gate: choosing
@@ -57,6 +60,6 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Done when
 
-The issue has a `## Specification` section and the hand-off has passed through
-the bridge — the user approved it (or auto mode chained on), or chose
-**Stop here** and the task rests cleanly at `Backlog`.
+The issue has a `## Specification` section, carries the `spec` label, and the
+hand-off has passed through the bridge — the user approved it (or auto mode
+chained on), or chose **Stop here** and the task rests cleanly at `Backlog`.

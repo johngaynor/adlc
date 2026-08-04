@@ -39,7 +39,10 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 6. **Advance the status.** Call `setStatus(taskRef, "Todo")` per the seam's Status
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
-7. **Report and hand off.** Point the user at the Linear issue and summarize the
+7. **Apply the `plan` label.** Call `applyLabel(taskRef, "plan")` per
+   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   applies it idempotently, so the card signals the artifact at a glance.
+8. **Report and hand off.** Point the user at the Linear issue and summarize the
    phase breakdown, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: plan` and the
    `taskRef`. The bridge's prompt *is* this stage's approval gate: choosing
@@ -61,7 +64,7 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 
 ## Done when
 
-The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), its status is
-`Todo`, and the hand-off has passed through the bridge — the user approved the
-plan (or auto mode chained on), or chose **Stop here** and the task rests
-cleanly at `Todo`.
+The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), carries the
+`plan` label, its status is `Todo`, and the hand-off has passed through the
+bridge — the user approved the plan (or auto mode chained on), or chose
+**Stop here** and the task rests cleanly at `Todo`.
