@@ -78,6 +78,7 @@ Run the smallest set that proves your change:
 ## Self-Improvement (the lessons loop)
 
 Recurring mistakes get written down, not repeated. When corrected on something that
-will come up again, append a structured entry to [`.claude/lessons.md`](.claude/lessons.md)
-(Context / Problem / Rule / Applies-to). Review that file at the start of a session.
+will come up again, add a new file to [`.claude/lessons/`](.claude/lessons/) — one
+lesson per file (Context / Problem / Rule / Applies-to; format documented in that
+directory's README). Review every file there at the start of a session.
 The `/adlc:add-lesson` skill drives this.

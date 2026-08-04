@@ -1,0 +1,24 @@
+# Lessons
+
+Recurring patterns and mistakes to avoid on this codebase — **one file per
+lesson** in this directory. **Review every file here at session start.**
+
+Add a new file whenever the agent is corrected on something that will recur.
+One lesson per file means parallel branches (e.g. Conductor workspaces) never
+merge-conflict on a shared log.
+
+- **Filename**: `<kebab-title>.md`, short and specific
+  (e.g. `no-raw-sql-in-handlers.md`). On a name collision, append `-2`, `-3`, ….
+- **Format** — every lesson file follows this exactly:
+
+  ```
+  # <short, specific title>
+  **Context**: where/when this came up.
+  **Problem**: what went wrong.
+  **Rule**: the durable rule that prevents it next time.
+  **Applies to**: the paths or areas this governs.
+  ```
+
+A legacy single-file `.claude/lessons.md` keeps working — if present, read it
+too at session start, and split it into per-file entries here whenever
+convenient.
