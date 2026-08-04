@@ -2,22 +2,27 @@
 
 **Date**: 2026-08-03
 **Status**: approved design, not yet implemented
+**Supersedes**: Task 8 of `docs/plans/2026-08-03-linear-lifecycle.md` (this spec
+is the richer version of that task's "PM integration" step; the config surface
+is shared)
 
 ## What
 
 Add an optional Linear setup step to the `/adlc:init` skill. It connects the
 repo being initialized to a Linear project (one shared Linear workspace/team
 across many repos; each repo gets its own project — e.g. the `physiq` repo maps
-to a `physiq` project in Linear), and records that mapping in the generated root
-`CLAUDE.md`.
+to a `physiq` project in Linear), and records that mapping in a committed
+`.adlc/config.json` — the same config surface the ADLC lifecycle's PM seam
+reads.
 
 ## Why
 
 Linear is the source of work for these repos: issues are planned in Linear
 (by hand or, later, with Claude's help) and picked up from there. For any skill
 to operate on "this repo's issues," the repo needs a durable, committed record
-of which Linear team and project it belongs to. The root `CLAUDE.md` is that
-record — no extra config file.
+of which Linear team and project it belongs to. `.adlc/config.json` is that
+record: machine-readable for the PM seam, committed so every clone and
+collaborator resolves it without setup.
 
 ## Design
 
@@ -41,37 +46,46 @@ no new config file.
 4. **Project** — always ask. List the existing projects in the chosen team and
    ask the user to either select one or create a new one (default the
    new-project name to the repo name). Create via the MCP if requested.
-5. **Write the mapping** — append a `## Linear` section to the just-generated
-   root `CLAUDE.md`:
+5. **Write the mapping** — write `.adlc/config.json` in the target repo:
 
-   ```markdown
-   ## Linear
-   Work for this repo is tracked in Linear.
-   - **Team**: {name} ({id})
-   - **Project**: {name} ({id})
-   - **Always**: issues you create or update for this repo go under the
-     project above.
+   ```json
+   {
+     "pm": {
+       "provider": "linear",
+       "team": "<team key>",
+       "teamName": "<team name>",
+       "project": "<project id>",
+       "projectName": "<project name>"
+     }
+   }
    ```
+
+   The `provider` and `team` fields match what the lifecycle plan's Task 8
+   defined; `project`/`projectName` extend it with the repo → project mapping.
+6. **Gitignore** — ensure `.adlc/` is ignored *except* the shared config:
+   append `.adlc/*` and `!.adlc/config.json` to the target repo's
+   `.gitignore` (config is shared; any future task cache under `.adlc/` is
+   not).
 
 ### Idempotency
 
-Follows init's existing conflict rules: if a root `CLAUDE.md` already exists
-with a `## Linear` section, show it and ask before changing it. Re-running
-init on a repo that has a `CLAUDE.md` but no `## Linear` section offers just
-this step as the retrofit path.
+Follows init's existing conflict rules: if `.adlc/config.json` already exists
+with a `pm` block, show it and ask before changing it. Re-running init on a
+repo that is already scaffolded but has no PM config offers just this step as
+the retrofit path.
 
 ### Error handling
 
 If the MCP is unreachable or a call fails mid-flow: report it plainly, write
-nothing partial, and finish the rest of init normally. Never write a
-`## Linear` section containing unverified IDs.
+nothing partial, and finish the rest of init normally. Never write a config
+containing unverified IDs.
 
 ## Files touched
 
 - `skills/init/SKILL.md` — add the new step; renumber; extend Boundaries and
-  "Done when" to cover the optional Linear section.
-- `templates/CLAUDE.md.template` — no change required; the `## Linear` section
-  is appended conditionally by the skill, not baked into the template.
+  "Done when" to cover the optional PM config.
+- `templates/CLAUDE.md.template` — no change; the mapping lives in
+  `.adlc/config.json`, not `CLAUDE.md`.
 
 ## Out of scope (deferred)
 
@@ -81,3 +95,5 @@ nothing partial, and finish the rest of init normally. Never write a
 - Claude-driven board population (decomposing a goal into Linear issues).
 - Any always-on MCP reachability rule in `CLAUDE.md` (explicitly dropped; the
   MCP is verified once, during init).
+- The rest of the lifecycle plan (`docs/plans/2026-08-03-linear-lifecycle.md`)
+  — only its Task 8 is superseded by this spec.
