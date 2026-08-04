@@ -154,7 +154,12 @@ anywhere in the repo, so parallel agents cannot collide.
 ## Preconditions Contract
 
 Each stage reads the issue via `readTask` before acting and refuses to proceed if its
-required section(s) are missing, so the lifecycle cannot be run out of order.
+required section(s) are missing, so the lifecycle cannot be run out of order — with
+one deliberate exception: `pr` is PM-optional. It must also work as a generic PR
+opener with no Linear/PM configured at all, so it never hard-refuses on a missing
+precondition. Instead, when a task *does* resolve, it treats `## Progress` as a
+best-effort check: it warns and asks for confirmation if any box is unchecked,
+rather than refusing outright — see `skills/pr/SKILL.md`.
 
 | Stage | Requires (must already exist) |
 |---|---|
@@ -162,5 +167,5 @@ required section(s) are missing, so the lifecycle cannot be run out of order.
 | `spec` | `## Idea`. |
 | `plan` | `## Specification`. |
 | `execute` | `## Plan` and `## Progress`. |
-| `pr` | Every box in `## Progress` checked (execute's work is committed on the task branch). |
+| `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `## Progress` box is unchecked; if no task resolves, no precondition at all. |
 | `archive` | The task branch's PR is merged. |
