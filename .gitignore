@@ -3,6 +3,7 @@ node_modules/
 *.log
 .env
 .env.*
+.superpowers/
 
 # Claude Code local state (settings.json IS committed; local overrides are not)
 .claude/settings.local.json
@@ -13,3 +14,5 @@ node_modules/
 # which is about target repos — this repo's specs/plans are session notes)
 .ai/specs/
 .ai/plans/
+docs/design/
+docs/plans/

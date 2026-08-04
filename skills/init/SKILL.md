@@ -50,7 +50,9 @@ confident, state what you found and proceed.
 
 ### 4. Write the files
 
-From the plugin's `templates/`, render and write:
+From the plugin's templates (available at `${CLAUDE_PLUGIN_ROOT}/templates/` — the
+plugin's install directory; reproduce the structure inline if that path is not
+resolvable at runtime), render and write:
 
 - **`CLAUDE.md`** (repo root) — from `templates/CLAUDE.md.template`, with every
   `{{PLACEHOLDER}}` filled from step 1. The Task Router must have real rows for
@@ -65,12 +67,53 @@ From the plugin's `templates/`, render and write:
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
 
-### 5. Report and hand off
+### 5. Connect Linear (optional)
+
+Offer to connect this repo to Linear for issue tracking. If the user declines,
+skip this step entirely — write nothing Linear-related.
+
+If they accept:
+
+1. **Verify the Linear MCP with a live call** — list the workspace's teams via
+   the Linear MCP. If the MCP is not configured or the call fails, give the
+   user exact setup instructions for adding the Linear MCP server, then
+   continue init without Linear — they can re-run `/adlc:init` later to
+   retrofit just this step.
+2. **Choose the team** — exactly one team returned: use it and say which.
+   Multiple teams: ask the user to pick one.
+3. **Choose the project** — always ask. List the team's existing projects and
+   ask the user to select one **or** create a new one (default the new
+   project's name to the repo name). Create it via the MCP if requested.
+4. **Write `.adlc/config.json`** in the repo root:
+
+   ```json
+   {
+     "pm": {
+       "provider": "linear",
+       "team": "<team key>",
+       "teamName": "<team name>",
+       "project": "<project id>",
+       "projectName": "<project name>"
+     }
+   }
+   ```
+
+   If `.adlc/config.json` already exists with a `pm` block, show it and ask
+   before changing it.
+5. **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/*` and
+   `!.adlc/config.json` (the config is shared; anything else under `.adlc/`
+   is per-machine). Add the lines only if missing.
+
+If any MCP call fails mid-flow, report it plainly, write nothing partial, and
+finish the rest of init normally. Never write a config containing unverified
+IDs.
+
+### 6. Report and hand off
 
 Summarize what you created and tell the user the immediate next moves:
 
 - Review `CLAUDE.md` — especially the Task Router rows and Validation Commands.
-- The harness ships more skills: `/adlc:write-spec`, `/adlc:ship-pr`,
+- The harness ships more skills: `/adlc:write-spec`, `/adlc:pr`,
   `/adlc:add-lesson`. Mention they're available.
 - Suggest committing the scaffold.
 
@@ -81,9 +124,14 @@ Summarize what you created and tell the user the immediate next moves:
   build command is worse than an empty one.
 - **Always** fill placeholders from real detection; leave a `TODO(adlc)` marker
   where you genuinely could not determine a value, so it's greppable.
+- **Never** write `.adlc/config.json` with team or project IDs that did not
+  come from a live Linear MCP response.
+- **Ask First** before replacing an existing `pm` block in `.adlc/config.json`.
 
 ## Done when
 
 `CLAUDE.md`, `.claude/lessons.md`, `.ai/specs/`, and a `.worktrees/` gitignore
 entry exist, the Task Router and Validation Commands reflect this specific
-project, and you've told the user what to review.
+project, and you've told the user what to review. If the user opted into Linear:
+`.adlc/config.json` exists with the `pm` block, every ID in it came from a live
+Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
