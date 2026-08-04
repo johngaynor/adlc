@@ -85,3 +85,9 @@ Recurring mistakes get written down, not repeated. When corrected on something t
 will come up again, append a structured entry to [`.claude/lessons.md`](.claude/lessons.md)
 (Context / Problem / Rule / Applies-to). Review that file at the start of a session.
 The `/adlc:add-lesson` skill drives this.
+
+Lessons climb a ladder as they mature: **correction → lesson → rule → skill**. A
+recurring lesson graduates into a rule in this file; a lesson that describes a whole
+repeatable workflow graduates into a repo-local skill in
+[`.claude/skills/`](.claude/skills/README.md) — the `/adlc:add-skill` skill drives
+that.

@@ -1,0 +1,19 @@
+# Repo-local skills
+
+Skills in this directory are **this repo's own workflows** — committed, shared with
+the team, and auto-loaded by Claude Code from `.claude/skills/<name>/SKILL.md`.
+
+They are the top rung of the harness's self-improvement ladder:
+
+> **correction → lesson → rule → skill.** A correction becomes a `.claude/lessons.md`
+> entry. A recurring lesson graduates into a `CLAUDE.md` rule. A whole repeatable
+> *workflow* — how we run migrations, how we cut a release — graduates into a skill
+> here.
+
+Author one with `/adlc:add-skill` — it gates on skill-sized workflows, checks for
+duplicates, renders the standard skeleton, and handles the lesson-graduation
+bookkeeping. One-line rules do not belong here; they stay lessons or `CLAUDE.md`
+rules.
+
+Skills load at session start — a newly added skill is available in the *next*
+Claude Code session.

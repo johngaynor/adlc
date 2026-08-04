@@ -45,7 +45,8 @@ confident, state what you found and proceed.
 - If a root `CLAUDE.md` already exists, do **not** overwrite it. Show the user the
   diff between what you'd generate and what's there, and offer to merge the Task
   Router / boundary sections in instead. Ask first.
-- If `.claude/lessons.md` already exists, leave it and only add what's missing.
+- If `.claude/lessons.md` or `.claude/skills/README.md` already exist, leave them
+  and only add what's missing.
 
 ### 4. Write the files
 
@@ -59,6 +60,9 @@ resolvable at runtime), render and write:
   migration → …"), not the generic examples. Seed 4–8 rows that match the stack.
 - **`.claude/lessons.md`** — from `templates/lessons.md.template` (empty log with
   the entry format documented at the top).
+- **`.claude/skills/README.md`** — from `templates/repo-skills-readme.md.template`
+  (what repo-local skills are, the correction → lesson → rule → skill ladder, and
+  that `/adlc:add-skill` authors them). Creates the `.claude/skills/` directory.
 - **`.gitignore`** — ensure a `.worktrees/` entry exists (append to the existing
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
@@ -127,8 +131,8 @@ Summarize what you created and tell the user the immediate next moves:
 
 ## Done when
 
-`CLAUDE.md`, `.claude/lessons.md`, and a `.worktrees/` gitignore
-entry exist, the Task Router and Validation Commands reflect this specific
-project, and you've told the user what to review. If the user opted into Linear:
+`CLAUDE.md`, `.claude/lessons.md`, `.claude/skills/README.md`, and a `.worktrees/`
+gitignore entry exist, the Task Router and Validation Commands reflect this
+specific project, and you've told the user what to review. If the user opted into Linear:
 `.adlc/config.json` exists with the `pm` block, every ID in it came from a live
 Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
