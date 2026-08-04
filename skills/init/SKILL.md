@@ -165,7 +165,7 @@ Conductor shapes the environment.)
 Summarize what you created and tell the user the immediate next moves:
 
 - Review `CLAUDE.md` — especially the Task Router rows and Validation Commands.
-- The harness ships more skills: `/adlc:write-spec`, `/adlc:ship-pr`,
+- The harness ships more skills: `/adlc:write-spec`, `/adlc:pr`,
   `/adlc:add-lesson`. Mention they're available.
 - Suggest committing the scaffold.
 
