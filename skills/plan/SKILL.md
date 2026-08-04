@@ -39,7 +39,10 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 6. **Advance the status.** Call `setStatus(taskRef, "Todo")` per the seam's Status
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
-7. **Present for approval.** Point the user at the Linear issue and get their
+7. **Apply the `plan` label.** Call `applyLabel(taskRef, "plan")` per
+   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   applies it idempotently, so the card signals the artifact at a glance.
+8. **Present for approval.** Point the user at the Linear issue and get their
    explicit approval of the plan and phase breakdown. This gate happens **before**
    `/adlc:execute` runs — never let coding start on an unapproved plan.
 
@@ -55,5 +58,5 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 
 ## Done when
 
-The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), its status is
-`Todo`, and the user has approved the plan.
+The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), carries the
+`plan` label, its status is `Todo`, and the user has approved the plan.

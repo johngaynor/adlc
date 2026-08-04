@@ -36,7 +36,10 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 5. **Write it back.** Call `writeSection(taskRef, "Specification", md)` per
    `reference/pm-seam.md` — this upserts the `## Specification` block; re-running
    this stage overwrites it cleanly rather than duplicating it.
-6. **Present for review.** Point the user at the Linear issue and get their
+6. **Apply the `spec` label.** Call `applyLabel(taskRef, "spec")` per
+   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   applies it idempotently, so the card signals the artifact at a glance.
+7. **Present for review.** Point the user at the Linear issue and get their
    explicit review of the specification. This gate happens **before** `/adlc:plan`
    runs — never let planning start on an unreviewed spec.
 
@@ -51,4 +54,5 @@ archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Done when
 
-The issue has a `## Specification` section and the user has reviewed it.
+The issue has a `## Specification` section, carries the `spec` label, and the user
+has reviewed it.
