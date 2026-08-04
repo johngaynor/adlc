@@ -23,8 +23,8 @@ Then, inside any project you want to harness:
 ```
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md` and
-a `.claude/lessons.md` — a strong starting point you grow from. It can also optionally connect the repo to Linear, which unlocks the
-lifecycle below.
+a `.claude/lessons.md` — a strong starting point you grow from. It also connects
+the repo to Linear, which the lifecycle below requires.
 
 ## The ADLC lifecycle
 
@@ -65,21 +65,21 @@ Linear issue held in the agent's own session; once `/adlc:execute` creates the
 task branch, the branch name (`<initials>/<issue-identifier>-<slug>`) is what
 every later stage parses to find the task. Parallel tasks never collide.
 
-> **Requires: Linear MCP.** `/adlc:brainstorm` through `/adlc:archive` need a
-> Linear MCP server configured for the target repo — set it up via `/adlc:init`'s
-> optional Linear step. Without it, `/adlc:pr` and `/adlc:add-lesson` still work
-> standalone with no PM configured.
+> **Requires: Linear MCP.** The harness hard-requires Linear: every lifecycle
+> stage refuses to run until `/adlc:init` has connected the repo (a `pm` block in
+> `.adlc/config.json`, verified against a live Linear MCP). Set up the Linear MCP
+> server first — init walks you through it and is not complete without it.
 
 ## Skills
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo; optionally connect Linear | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo and connect Linear (required) | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (`## Idea`) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into Linear (`## Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
 | `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
-| `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
+| `/adlc:pr` | Validate, commit, and open the task's PR; advances the Linear task to `In Review` | ✅ implemented |
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 
