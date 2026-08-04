@@ -9,10 +9,7 @@
     {
       "name": "adlc",
       "description": "Portable AI engineering harness: opinionated CLAUDE.md scaffolding, spec-first workflow, PR discipline, and a self-improvement lessons loop.",
-      "source": {
-        "source": "github",
-        "repo": "johngaynor/adlc"
-      }
+      "source": "./"
     }
   ]
 }
