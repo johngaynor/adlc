@@ -48,8 +48,9 @@ brainstorm → spec → plan → execute → pr → archive
   `In Progress`.
 - **`/adlc:pr`** — validate, commit, push, and open the PR; the branch name lets
   Linear auto-link it, and the issue advances to `In Review`.
-- **`/adlc:archive`** — once the PR merges, commit a curated summary to
-  `docs/adlc/` and close the issue, status `Done`.
+- **`/adlc:archive`** — once the PR merges, export the final spec and plan to
+  `.ai/specs/implemented/` (wiring a Task Router row when the task earned one)
+  and close the issue, status `Done`.
 
 Stages hand off to each other through the workflow bridge, **`/adlc:next`**: each
 stage ends by offering *Move to next / Review first / Stop here* (or chains
@@ -63,10 +64,13 @@ place as each stage runs. Every lifecycle skill talks to Linear through a single
 seam (`reference/pm-seam.md`) instead of calling it ad hoc, so a future PM adapter
 could replace Linear without any skill changing.
 
-**The repo gets a curated summary, not a duplicate.** `/adlc:archive` writes a
-short `docs/adlc/{date}-{slug}.md` — what shipped, why, how, and any notable
-deviations — once the PR merges. It is deliberately not a copy of the full
-spec/plan; that detail stays in the (now closed) Linear issue.
+**The repo gets the record, not a retro.** Once the PR merges, `/adlc:archive`
+exports the issue's final `## Specification` and `## Plan` verbatim — plus any
+notable deviations — to `.ai/specs/implemented/{date}-{slug}.md`, the one
+committed subpath of the otherwise-local `.ai/` workspace. That file is the
+durable, greppable record future agent sessions read; tasks that introduced a
+durable pattern also get a Task Router row in the root `CLAUDE.md` pointing at
+it, so the archive is load-bearing rather than a filing cabinet.
 
 Task identity is derived, never a shared pointer: before code exists it's the
 Linear issue held in the agent's own session; once `/adlc:execute` creates the
@@ -134,7 +138,7 @@ adlc/
 │   ├── lessons.md.template
 │   ├── skill.md.template    # skeleton /adlc:add-skill renders into .ai/skills/
 │   ├── project-skills-README.md.template
-│   └── archive-summary.md.template
+│   └── spec-export.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
     ├── brainstorm/          # lifecycle: idea → Linear issue
@@ -142,7 +146,7 @@ adlc/
     ├── plan/                # lifecycle: spec → phased plan + progress checklist
     ├── execute/             # lifecycle: plan → branch/worktree → committed code
     ├── pr/                  # lifecycle: validate → branch → commit → PR
-    ├── archive/             # lifecycle: merged PR → curated summary → closed issue
+    ├── archive/             # lifecycle: merged PR → spec export → closed issue
     ├── add-lesson/          # self-improvement: correction → lesson
     └── add-skill/           # self-improvement: lesson/workflow → project skill
 ```

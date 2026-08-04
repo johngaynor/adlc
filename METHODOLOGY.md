@@ -71,8 +71,10 @@ gets a short spec *before* code: what, why, phases, and the test coverage it wil
 add. The spec lives on the task's card in the PM system — the `## Specification`
 section of its Linear issue, written by the lifecycle skills through the PM seam
 (`reference/pm-seam.md`) — never in repo-local spec files. The issue is the single
-source of truth while the task is in flight; at archive time the repo gets a
-curated summary, not a duplicate. Small fixes skip this — just fix them.
+source of truth while the task is in flight; at archive time the final spec and
+plan are exported verbatim to `.ai/specs/implemented/{date}-{slug}.md` as the
+repo's durable record for future agents, optionally routed via a Task Router row
+(see `skills/archive/SKILL.md`). Small fixes skip this — just fix them.
 
 **The lessons loop.** Corrections are captured, not lost. When the agent is
 corrected on something that will recur, it appends a structured entry to

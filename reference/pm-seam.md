@@ -144,7 +144,7 @@ Backlog → Todo → In Progress → In Review → Done
 | `Todo` | `plan` — once `## Plan` and `## Progress` are written |
 | `In Progress` | `execute` — once the task branch/worktree is created |
 | `In Review` | `pr` — once the PR is open |
-| `Done` | `archive` — once the repo summary is committed (`closeTask`) |
+| `Done` | `archive` — once the spec export is committed (`closeTask`) |
 
 `spec` does not change status; the issue stays `Backlog` while it gathers a
 specification. Status is a stakeholder-visible progress signal as much as it is task
