@@ -14,8 +14,12 @@ node_modules/
 .worktrees/
 
 # Local working docs / session notes — never committed; canonical specs live
-# on the task's Linear issue (METHODOLOGY.md idea 4)
-.ai/specs/
+# on the task's Linear issue (METHODOLOGY.md idea 4) while in flight. At archive
+# time the final spec+plan are exported to .ai/specs/implemented/, the one
+# committed subpath (a `!` re-include only works because the parent uses `*`,
+# not a directory ignore).
+.ai/specs/*
+!.ai/specs/implemented/
 .ai/plans/
 docs/design/
 docs/plans/
