@@ -16,14 +16,19 @@ validation green, a clean branch, a clear description.
 
 1. Run the project's Validation Commands (from the root `CLAUDE.md`) and refuse to
    proceed if any fail — report the failure instead.
-2. If on the default branch, create a feature branch first (kebab-case, prefixed by
-   change type, e.g. `feat/`, `fix/`, `chore/`).
+2. Get on a proper feature branch (kebab-case, prefixed by change type, e.g.
+   `feat/`, `fix/`, `chore/`) per METHODOLOGY.md idea 5:
+   - On a machine-generated branch (e.g. `worktree-*`): rename it
+     (`git branch -m <new-name>`) before pushing.
+   - On the default branch: create the feature branch first.
+   - On a sensibly-named branch already (e.g. platform-managed): keep it.
 3. Stage and commit with a conventional-commits message. End commit messages with
    the project's required trailer if one exists.
 4. Push and open the PR with `gh pr create`, using a description that states: what
    changed, why, how it was validated, and any follow-ups. Honor a
    `.github/pull_request_template.md` if present.
-5. Report the PR URL.
+5. Report the PR URL. If working in an isolated workspace (worktree), note that
+   it is now disposable — the branch lives on the remote.
 
 **Boundaries:** Ask First before force-pushing or merging. Never commit secrets.
 Never open a PR with failing validation. Commit/push only as part of this
