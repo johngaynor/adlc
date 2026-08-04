@@ -51,7 +51,15 @@ task branch, `cd` into that worktree first.
    sections inline if unresolvable) into that path, creating `docs/adlc/` if it
    doesn't exist. Fill in the title, date, Linear issue link, PR link(s), and
    the four drafted sections.
-5. **Commit the summary** on the task branch with a message naming the task.
+5. **Land the summary via an auto-merged docs-only PR.** By the time this stage
+   runs, the task's *code* PR (from `/adlc:pr`) is already merged, so the summary
+   needs its own way onto the base branch. Commit it on a short docs branch (e.g.
+   `<initials>/<issue-identifier>-archive`), push, and open a PR against the base.
+   This PR is **notes only** — a single documentation file, no code, no behavior
+   change — so it needs no code review or QA: auto-approve it and enable
+   auto-merge (`gh pr merge --auto --squash`, plus the repo's auto-merge /
+   skip-review label if it uses one). If the repo allows direct commits to the
+   base branch, commit the summary there directly and skip the PR.
 6. **Optionally record the outcome in Linear.** Call `writeSection(taskRef,
    "Outcome", prLinks)` per `reference/pm-seam.md` with the merged PR link(s), so
    the issue itself also shows how the task ended.
@@ -68,6 +76,11 @@ task branch, `cd` into that worktree first.
   without showing its contents and getting the user's go-ahead first — this
   stage runs on the same date/slug if re-invoked, so it must be safe to run
   twice.
+- **The archive summary PR is notes only** and may be auto-approved and
+  auto-merged — it carries one documentation file and nothing else. This is the
+  deliberate exception to the review discipline that governs the *code* PR from
+  `/adlc:pr`; **never** fold code or behavior changes into an archive PR to ride
+  its auto-merge.
 - **Never** copy the full `## Specification` or `## Plan` verbatim into the repo
   summary — curate it down to what/why/how and deviations; the issue remains the
   detailed record.
