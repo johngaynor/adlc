@@ -14,9 +14,14 @@ pushes — it runs only when the user has explicitly asked to open a PR.
 1. **Validate first.** Run the smallest relevant set of the project's Validation
    Commands (from the root `CLAUDE.md`). If any fail, stop and report the failure —
    do **not** open a PR on red. Show the actual output.
-2. **Branch if needed.** If on the default branch (`main`/`master`), create a
-   feature branch first, kebab-case and prefixed by change type: `feat/`, `fix/`,
-   `chore/`, `docs/`, `refactor/`.
+2. **Branch if needed.** First detect a managed worktree: `CONDUCTOR_WORKSPACE_NAME`
+   is set in the environment, or `git rev-parse --git-common-dir` resolves outside
+   this checkout's own `.git`. In a managed worktree the current branch *is* the
+   feature branch — use it as-is; do **not** create a second branch or rename it.
+   Otherwise, if on the default branch (`main`/`master`), create a feature branch
+   first, kebab-case and prefixed by change type: `feat/`, `fix/`, `chore/`,
+   `docs/`, `refactor/`. The naming convention applies only to branches this skill
+   creates.
 3. **Review the diff.** Run `git status` and `git diff` (staged + unstaged). Confirm
    there are no secrets, debug output, or unrelated changes. Stage intentionally.
 4. **Commit.** Write a conventional-commits message (`type: summary`, body
