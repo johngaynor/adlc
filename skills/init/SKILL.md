@@ -63,18 +63,20 @@ resolvable at runtime), render and write:
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
 
-### 5. Connect Linear (optional)
+### 5. Connect Linear (required)
 
-Offer to connect this repo to Linear for issue tracking. If the user declines,
-skip this step entirely — write nothing Linear-related.
-
-If they accept:
+Connect this repo to Linear for issue tracking. The whole lifecycle
+(`/adlc:brainstorm` → `/adlc:archive`) hard-requires it (see
+[`reference/pm-seam.md`](../../reference/pm-seam.md) § Preconditions Contract),
+so this step is not optional and there is no decline path — init is not
+complete until it succeeds.
 
 1. **Verify the Linear MCP with a live call** — list the workspace's teams via
    the Linear MCP. If the MCP is not configured or the call fails, give the
-   user exact setup instructions for adding the Linear MCP server, then
-   continue init without Linear — they can re-run `/adlc:init` later to
-   retrofit just this step.
+   user exact setup instructions for adding the Linear MCP server, finish the
+   rest of init, and end by stating plainly that **init is incomplete** until
+   this step succeeds — the user re-runs `/adlc:init` once the MCP works, and
+   it retrofits just this step.
 2. **Choose the team** — exactly one team returned: use it and say which.
    Multiple teams: ask the user to pick one.
 3. **Choose the project** — always ask. List the team's existing projects and
@@ -96,13 +98,13 @@ If they accept:
 
    If `.adlc/config.json` already exists with a `pm` block, show it and ask
    before changing it.
-5. **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/*` and
-   `!.adlc/config.json` (the config is shared; anything else under `.adlc/`
-   is per-machine). Add the lines only if missing.
+5. **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/` (the whole
+   directory is per-machine state — it points at a private PM workspace, so
+   each clone runs this step for itself). Add the line only if missing.
 
-If any MCP call fails mid-flow, report it plainly, write nothing partial, and
-finish the rest of init normally. Never write a config containing unverified
-IDs.
+If any MCP call fails mid-flow, report it plainly, write nothing partial,
+finish the rest of init, and end by stating init is incomplete (step 5.1).
+Never write a config containing unverified IDs.
 
 ### 6. Report and hand off
 
@@ -129,6 +131,7 @@ Summarize what you created and tell the user the immediate next moves:
 
 `CLAUDE.md`, `.claude/lessons.md`, and a `.worktrees/` gitignore
 entry exist, the Task Router and Validation Commands reflect this specific
-project, and you've told the user what to review. If the user opted into Linear:
-`.adlc/config.json` exists with the `pm` block, every ID in it came from a live
-Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
+project, and you've told the user what to review — **and** `.adlc/config.json`
+exists with the `pm` block, every ID in it came from a live Linear MCP
+response, and `.gitignore` covers `.adlc/`. Without the verified `pm` block,
+init is incomplete and must say so — never report it as done.
