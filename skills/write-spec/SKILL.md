@@ -5,6 +5,12 @@ description: Use when starting non-trivial work (roughly 3+ steps or an architec
 
 # Write a spec
 
+> **For repos using the Linear lifecycle**, prefer `/adlc:spec` — it writes the
+> specification straight into the task's Linear issue (`## Specification`) as
+> part of `brainstorm → spec → plan → execute → pr → archive`. `/adlc:write-spec`
+> remains the fallback for repos **not** using a PM system: it writes a
+> repo-local spec file instead.
+
 Drive spec-first development: turn a feature brief into a short, phased spec at
 `.ai/specs/{YYYY-MM-DD}-{kebab-title}.md` **before** any code is written. See
 [`METHODOLOGY.md`](../../METHODOLOGY.md) § Spec-first for why.
@@ -34,7 +40,7 @@ Drive spec-first development: turn a feature brief into a short, phased spec at
 6. **Surface Open Questions.** Present them to the user and keep `Status: draft`
    until they're resolved. Do not silently pick answers to material decisions.
 7. **Report.** Give the created path and suggest the next move (implement, or
-   `/adlc:ship-pr` once done).
+   `/adlc:pr` once done).
 
 ## Boundaries
 
