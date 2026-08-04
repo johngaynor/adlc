@@ -22,9 +22,8 @@ Then, inside any project you want to harness:
 /adlc:init
 ```
 
-`/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
-a `.claude/lessons.md`, and a `.ai/specs/` directory — a strong starting point you
-grow from. It can also optionally connect the repo to Linear, which unlocks the
+`/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md` and
+a `.claude/lessons.md` — a strong starting point you grow from. It can also optionally connect the repo to Linear, which unlocks the
 lifecycle below.
 
 ## The ADLC lifecycle
@@ -68,8 +67,8 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 > **Requires: Linear MCP.** `/adlc:brainstorm` through `/adlc:archive` need a
 > Linear MCP server configured for the target repo — set it up via `/adlc:init`'s
-> optional Linear step. Without it, use `/adlc:write-spec` + `/adlc:pr` +
-> `/adlc:add-lesson` instead; they work standalone with no PM configured.
+> optional Linear step. Without it, `/adlc:pr` and `/adlc:add-lesson` still work
+> standalone with no PM configured.
 
 ## Skills
 
@@ -82,7 +81,6 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
-| `/adlc:write-spec` | Write a repo-local phased spec before non-trivial work — the no-PM fallback for repos not using the Linear lifecycle | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 
 ## Updating
@@ -113,7 +111,6 @@ adlc/
 ├── templates/               # files /adlc:init and /adlc:archive render into a target repo
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
-│   ├── spec.md.template
 │   └── archive-summary.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
@@ -123,7 +120,6 @@ adlc/
     ├── execute/             # lifecycle: plan → branch/worktree → committed code
     ├── pr/                  # lifecycle: validate → branch → commit → PR
     ├── archive/             # lifecycle: merged PR → curated summary → closed issue
-    ├── write-spec/          # spec-first workflow (no-PM fallback)
     └── add-lesson/          # self-improvement lessons loop
 ```
 
@@ -139,7 +135,7 @@ the worked example.
 | Stream | File | Status |
 |--------|------|--------|
 | **A — Init scaffolder** | `skills/init/SKILL.md` + `templates/` | ✅ implemented (reference skill) |
-| **B — Spec workflow** | `skills/write-spec/SKILL.md` | ✅ implemented |
+| **B — Spec workflow** | `skills/spec/SKILL.md` — superseded by the lifecycle; specs live on the Linear issue | ✅ implemented |
 | **C — PR workflow** | `skills/pr/SKILL.md` | ✅ implemented |
 | **D — Lessons loop** | `skills/add-lesson/SKILL.md` | ✅ implemented |
 | **E — Docs & dogfood** | this README + a throwaway test repo | ⏳ in progress |

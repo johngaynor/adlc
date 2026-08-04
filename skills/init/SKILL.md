@@ -1,13 +1,13 @@
 ---
 name: init
-description: Use when a repo has no ADLC harness yet (no root CLAUDE.md, or the user asks to "set up ADLC", "initialize the harness", "add the AI conventions"). Scaffolds an opinionated CLAUDE.md with a Task Router and boundary-labeled rules, a lessons.md, and a specs directory — tailored to the project's detected stack.
+description: Use when a repo has no ADLC harness yet (no root CLAUDE.md, or the user asks to "set up ADLC", "initialize the harness", "add the AI conventions"). Scaffolds an opinionated CLAUDE.md with a Task Router and boundary-labeled rules, plus a lessons.md — tailored to the project's detected stack.
 ---
 
 # Initialize the ADLC harness
 
 Scaffold this project with the ADLC engineering harness: an opinionated root
-`CLAUDE.md` (Task Router + Always/Ask-First/Never/Validation), a `.claude/lessons.md`
-self-improvement log, and a `.ai/specs/` directory. Read
+`CLAUDE.md` (Task Router + Always/Ask-First/Never/Validation) and a
+`.claude/lessons.md` self-improvement log. Read
 [`METHODOLOGY.md`](../../METHODOLOGY.md) and [`CONVENTIONS.md`](../../CONVENTIONS.md)
 if you need the vocabulary — do not redefine it here.
 
@@ -45,8 +45,7 @@ confident, state what you found and proceed.
 - If a root `CLAUDE.md` already exists, do **not** overwrite it. Show the user the
   diff between what you'd generate and what's there, and offer to merge the Task
   Router / boundary sections in instead. Ask first.
-- If `.claude/lessons.md` or `.ai/specs/` already exist, leave them and only add
-  what's missing.
+- If `.claude/lessons.md` already exists, leave it and only add what's missing.
 
 ### 4. Write the files
 
@@ -60,9 +59,6 @@ resolvable at runtime), render and write:
   migration → …"), not the generic examples. Seed 4–8 rows that match the stack.
 - **`.claude/lessons.md`** — from `templates/lessons.md.template` (empty log with
   the entry format documented at the top).
-- **`.ai/specs/README.md`** — from `templates/spec.md.template`'s sibling note, or
-  a short pointer explaining the `{YYYY-MM-DD}-{kebab-title}.md` convention. Create
-  the `.ai/specs/` directory.
 - **`.gitignore`** — ensure a `.worktrees/` entry exists (append to the existing
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
@@ -113,8 +109,9 @@ IDs.
 Summarize what you created and tell the user the immediate next moves:
 
 - Review `CLAUDE.md` — especially the Task Router rows and Validation Commands.
-- The harness ships more skills: `/adlc:write-spec`, `/adlc:pr`,
-  `/adlc:add-lesson`. Mention they're available.
+- The harness ships more skills: the lifecycle (`/adlc:brainstorm` →
+  `/adlc:archive`, Linear required), `/adlc:pr`, `/adlc:add-lesson`. Mention
+  they're available.
 - Suggest committing the scaffold.
 
 ## Boundaries
@@ -130,7 +127,7 @@ Summarize what you created and tell the user the immediate next moves:
 
 ## Done when
 
-`CLAUDE.md`, `.claude/lessons.md`, `.ai/specs/`, and a `.worktrees/` gitignore
+`CLAUDE.md`, `.claude/lessons.md`, and a `.worktrees/` gitignore
 entry exist, the Task Router and Validation Commands reflect this specific
 project, and you've told the user what to review. If the user opted into Linear:
 `.adlc/config.json` exists with the `pm` block, every ID in it came from a live

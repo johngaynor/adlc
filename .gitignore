@@ -10,8 +10,8 @@ node_modules/
 .claude/worktrees/
 .worktrees/
 
-# Working docs stay local in this repo (departure from METHODOLOGY.md idea 4,
-# which is about target repos — this repo's specs/plans are session notes)
+# Local working docs / session notes — never committed; canonical specs live
+# on the task's Linear issue (METHODOLOGY.md idea 4)
 .ai/specs/
 .ai/plans/
 docs/design/

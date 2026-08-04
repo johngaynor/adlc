@@ -68,9 +68,11 @@ Two habits that compound over time:
 
 **Spec-first.** Non-trivial work (roughly 3+ steps or an architectural decision)
 gets a short spec *before* code: what, why, phases, and the test coverage it will
-add. Specs live in `.ai/specs/{YYYY-MM-DD}-{kebab-title}.md` and ship with the
-repo, so the intent behind code is reproducible and reviewable. Small fixes skip
-this — just fix them.
+add. The spec lives on the task's card in the PM system — the `## Specification`
+section of its Linear issue, written by the lifecycle skills through the PM seam
+(`reference/pm-seam.md`) — never in repo-local spec files. The issue is the single
+source of truth while the task is in flight; at archive time the repo gets a
+curated summary, not a duplicate. Small fixes skip this — just fix them.
 
 **The lessons loop.** Corrections are captured, not lost. When the agent is
 corrected on something that will recur, it appends a structured entry to
