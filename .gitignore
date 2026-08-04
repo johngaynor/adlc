@@ -5,6 +5,9 @@ node_modules/
 .env.*
 .superpowers/
 
+# ADLC per-machine state stays local (points at a private PM workspace)
+.adlc/
+
 # Claude Code local state (settings.json IS committed; local overrides are not)
 .claude/settings.local.json
 .claude/worktrees/
