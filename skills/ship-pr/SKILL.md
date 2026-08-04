@@ -1,6 +1,6 @@
 ---
 name: ship-pr
-description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". Runs validation, commits on a fresh branch, pushes, and opens a PR with a structured description.
+description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". Runs validation, commits on the feature branch (creating it if needed), pushes, and opens a PR with a structured description.
 ---
 
 # Ship a PR
@@ -15,13 +15,16 @@ pushes — it runs only when the user has explicitly asked to open a PR.
    Commands (from the root `CLAUDE.md`). If any fail, stop and report the failure —
    do **not** open a PR on red. Show the actual output.
 2. **Branch if needed.** First detect a managed worktree: `CONDUCTOR_WORKSPACE_NAME`
-   is set in the environment, or `git rev-parse --git-common-dir` resolves outside
-   this checkout's own `.git`. In a managed worktree the current branch *is* the
-   feature branch — use it as-is; do **not** create a second branch or rename it.
-   Otherwise, if on the default branch (`main`/`master`), create a feature branch
-   first, kebab-case and prefixed by change type: `feat/`, `fix/`, `chore/`,
-   `docs/`, `refactor/`. The naming convention applies only to branches this skill
-   creates.
+   is set in the environment, or `git rev-parse --git-dir` and
+   `git rev-parse --git-common-dir` print different paths (they differ exactly in
+   a linked worktree). In a managed worktree the current branch *is* the feature
+   branch — use it as-is; do **not** create a second branch or rename it — unless
+   the current branch IS the default branch (`main`/`master`): a linked worktree
+   can be checked out on main (e.g. `git worktree add ../main main`), in which
+   case create a feature branch as normal. Otherwise (not a managed worktree), if
+   on the default branch, create a feature branch first, kebab-case and prefixed
+   by change type: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`. The naming
+   convention applies only to branches this skill creates.
 3. **Review the diff.** Run `git status` and `git diff` (staged + unstaged). Confirm
    there are no secrets, debug output, or unrelated changes. Stage intentionally.
 4. **Commit.** Write a conventional-commits message (`type: summary`, body

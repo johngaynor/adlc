@@ -29,6 +29,8 @@ Inspect the repo to fill the template accurately. Do not guess — read files:
 - **Validation commands**: read `scripts` in `package.json` (or `Makefile`,
   `justfile`, `pyproject`) to find the *real* build / typecheck / lint / test
   commands. These become the `Validation Commands` block — never invent them.
+  Also note the dev/start command if one exists; the Conductor step's
+  `{{RUN_COMMAND}}` consumes it.
 - **Structure**: monorepo (workspaces / `packages/*` / `apps/*`) vs single package.
   A monorepo gets Task Router rows and a note to add nested `CLAUDE.md` files.
 - **Existing conventions**: a `README`, `CONTRIBUTING.md`, or existing docs that
@@ -125,19 +127,19 @@ Conductor shapes the environment.)
    ```toml
    [scripts]
    # Runs once when a Conductor workspace (git worktree) is created.
-   setup = """
-   [ -f "$CONDUCTOR_ROOT_PATH/.env" ] && cp "$CONDUCTOR_ROOT_PATH/.env" "$CONDUCTOR_WORKSPACE_PATH/.env"
+   setup = '''
+   [ -f "$CONDUCTOR_ROOT_PATH/.env" ] && cp "$CONDUCTOR_ROOT_PATH/.env" "$CONDUCTOR_WORKSPACE_PATH/.env" || true
    mkdir -p "$CONDUCTOR_WORKSPACE_PATH/.claude"
-   [ -f "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" ] && cp "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" "$CONDUCTOR_WORKSPACE_PATH/.claude/settings.local.json"
+   [ -f "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" ] && cp "$CONDUCTOR_ROOT_PATH/.claude/settings.local.json" "$CONDUCTOR_WORKSPACE_PATH/.claude/settings.local.json" || true
    {{INSTALL_COMMAND}}
-   """
+   '''
    # Runs on the workspace Run button.
-   run = "{{RUN_COMMAND}}"
+   run = '{{RUN_COMMAND}}'
    ```
 
    - `{{INSTALL_COMMAND}}` — the detected package manager's install (e.g.
      `pnpm install`, `uv sync`). If the project has no dependency install,
-     drop the line.
+     drop the line. It goes last in `setup`, after the copy guards.
    - `{{RUN_COMMAND}}` — the detected dev/start command; fall back to the test
      watcher if there is no server; **omit the `run` key entirely** if nothing
      was detected. Never invent commands (same boundary as Validation
@@ -145,6 +147,11 @@ Conductor shapes the environment.)
    - Keep only the copy lines for local files that plausibly exist in this
      repo (e.g. drop the `.env` line if the project doesn't use one). Copied
      files are gitignored, so they never leak into the worktree's branch.
+   - Every guard line (`[ -f X ] && cp X Y`) must end in `|| true` so it stays
+     status-neutral — the script's exit code reflects a fine run, not the
+     presence or absence of an optional file. Use the `'''…'''` literal
+     string for `setup` and `'…'` for `run` so backslashes in detected
+     commands pass through unescaped.
    - No `archive` script unless the stack demonstrably creates external
      resources needing cleanup.
 3. **Commit with the scaffold** — the file is committed so every teammate's
@@ -179,4 +186,4 @@ Validation Commands reflect this specific project, and you've told the user what
 review. If the user opted into Linear: `.adlc/config.json` exists with the `pm`
 block, every ID in it came from a live Linear MCP response, and `.gitignore`
 covers `.adlc/` (except `config.json`). If the Conductor step was accepted,
-.conductor/settings.toml exists with only detected commands.
+`.conductor/settings.toml` exists with only detected commands.
