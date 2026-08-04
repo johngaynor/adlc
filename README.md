@@ -48,6 +48,11 @@ brainstorm → spec → plan → execute → pr → archive
 - **`/adlc:archive`** — once the PR merges, commit a curated summary to
   `docs/adlc/` and close the issue, status `Done`.
 
+Stages hand off to each other through the workflow bridge, **`/adlc:next`**: each
+stage ends by offering *Move to next / Review first / Stop here* (or chains
+automatically if you ask for auto mode), so you never have to remember the next
+command — and `/adlc:next` on its own resumes a task at whatever comes next.
+
 **Linear is the live workspace.** One Linear issue is the whole record for a task
 while it's in flight — its description holds the canonical `## Idea` /
 `## Specification` / `## Plan` / `## Progress` / `## Outcome` sections, upserted in
