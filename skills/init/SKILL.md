@@ -1,13 +1,13 @@
 ---
 name: init
-description: Use when a repo has no ADLC harness yet (no root CLAUDE.md, or the user asks to "set up ADLC", "initialize the harness", "add the AI conventions"). Scaffolds an opinionated CLAUDE.md with a Task Router and boundary-labeled rules, a lessons.md, and a specs directory — tailored to the project's detected stack.
+description: Use when a repo has no ADLC harness yet (no root CLAUDE.md, or the user asks to "set up ADLC", "initialize the harness", "add the AI conventions"). Scaffolds an opinionated CLAUDE.md with a Task Router and boundary-labeled rules, a lessons directory, and a specs directory — tailored to the project's detected stack.
 ---
 
 # Initialize the ADLC harness
 
 Scaffold this project with the ADLC engineering harness: an opinionated root
-`CLAUDE.md` (Task Router + Always/Ask-First/Never/Validation), a `.claude/lessons.md`
-self-improvement log, and a `.ai/specs/` directory. Read
+`CLAUDE.md` (Task Router + Always/Ask-First/Never/Validation), a `.claude/lessons/`
+self-improvement log (one file per lesson), and a `.ai/specs/` directory. Read
 [`METHODOLOGY.md`](../../METHODOLOGY.md) and [`CONVENTIONS.md`](../../CONVENTIONS.md)
 if you need the vocabulary — do not redefine it here.
 
@@ -45,8 +45,9 @@ confident, state what you found and proceed.
 - If a root `CLAUDE.md` already exists, do **not** overwrite it. Show the user the
   diff between what you'd generate and what's there, and offer to merge the Task
   Router / boundary sections in instead. Ask first.
-- If `.claude/lessons.md` or `.ai/specs/` already exist, leave them and only add
-  what's missing.
+- If `.claude/lessons/` or `.ai/specs/` already exist, leave them and only add
+  what's missing. A legacy `.claude/lessons.md` is left in place untouched — the
+  lessons README explains it stays readable.
 
 ### 4. Write the files
 
@@ -58,8 +59,9 @@ resolvable at runtime), render and write:
   `{{PLACEHOLDER}}` filled from step 1. The Task Router must have real rows for
   this project (e.g. "Add an API route → …", "Add a UI screen → …", "Write a
   migration → …"), not the generic examples. Seed 4–8 rows that match the stack.
-- **`.claude/lessons.md`** — from `templates/lessons.md.template` (empty log with
-  the entry format documented at the top).
+- **`.claude/lessons/README.md`** — from `templates/lessons-readme.md.template`
+  (create the `.claude/lessons/` directory; the README documents the
+  one-file-per-lesson format and the session-start review rule).
 - **`.ai/specs/README.md`** — from `templates/spec.md.template`'s sibling note, or
   a short pointer explaining the `{YYYY-MM-DD}-{kebab-title}.md` convention. Create
   the `.ai/specs/` directory.
@@ -127,7 +129,7 @@ Summarize what you created and tell the user the immediate next moves:
 
 ## Done when
 
-`CLAUDE.md`, `.claude/lessons.md`, and `.ai/specs/` exist, the Task Router and
+`CLAUDE.md`, `.claude/lessons/`, and `.ai/specs/` exist, the Task Router and
 Validation Commands reflect this specific project, and you've told the user what to
 review. If the user opted into Linear: `.adlc/config.json` exists with the `pm`
 block, every ID in it came from a live Linear MCP response, and `.gitignore`
