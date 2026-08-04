@@ -61,6 +61,9 @@ From the plugin's `templates/`, render and write:
 - **`.ai/specs/README.md`** — from `templates/spec.md.template`'s sibling note, or
   a short pointer explaining the `{YYYY-MM-DD}-{kebab-title}.md` convention. Create
   the `.ai/specs/` directory.
+- **`.gitignore`** — ensure a `.worktrees/` entry exists (append to the existing
+  file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
+  committed.
 
 ### 5. Report and hand off
 
@@ -81,6 +84,6 @@ Summarize what you created and tell the user the immediate next moves:
 
 ## Done when
 
-`CLAUDE.md`, `.claude/lessons.md`, and `.ai/specs/` exist, the Task Router and
-Validation Commands reflect this specific project, and you've told the user what to
-review.
+`CLAUDE.md`, `.claude/lessons.md`, `.ai/specs/`, and a `.worktrees/` gitignore
+entry exist, the Task Router and Validation Commands reflect this specific
+project, and you've told the user what to review.
