@@ -13,6 +13,10 @@ the Linear issue — the sixth and final stage of the ADLC lifecycle
 needs what shipped, why, and how, so it stays a light record rather than a
 duplicate of Linear.
 
+Run this stage from the task worktree `execute` created — its branch is the
+task pointer `resolveCurrentTask` parses. If the current checkout isn't on the
+task branch, `cd` into that worktree first.
+
 ## Arguments
 
 - `taskRef` (optional) — the Linear issue URL or identifier to archive. If
@@ -37,12 +41,16 @@ duplicate of Linear.
    - **Notable deviations from the plan** — anything flagged as a deviation
      during `/adlc:execute` (see its Boundaries); write "None" if there weren't
      any.
-4. **Render the file.** Copy
+4. **Render the file.** Target path is `docs/adlc/{YYYY-MM-DD}-{kebab-slug}.md` —
+   date from `date +%F`, slug derived from the issue title. This stage must be
+   safe to run twice (see `CONVENTIONS.md`): before writing, check whether that
+   file already exists. If it does, show its current contents to the user and
+   ask before overwriting — never clobber it silently. Once clear to write (the
+   file doesn't exist, or the user confirmed the overwrite), copy
    `${CLAUDE_PLUGIN_ROOT}/templates/archive-summary.md.template` (reproduce its
-   sections inline if unresolvable) into `docs/adlc/{YYYY-MM-DD}-{kebab-slug}.md`
-   — date from `date +%F`, slug derived from the issue title — creating
-   `docs/adlc/` if it doesn't exist. Fill in the title, date, Linear issue link,
-   PR link(s), and the four drafted sections.
+   sections inline if unresolvable) into that path, creating `docs/adlc/` if it
+   doesn't exist. Fill in the title, date, Linear issue link, PR link(s), and
+   the four drafted sections.
 5. **Commit the summary** on the task branch with a message naming the task.
 6. **Optionally record the outcome in Linear.** Call `writeSection(taskRef,
    "Outcome", prLinks)` per `reference/pm-seam.md` with the merged PR link(s), so
@@ -56,6 +64,10 @@ duplicate of Linear.
 
 - **Ask First** before calling `closeTask` — never close the issue without the
   user's explicit go-ahead on the drafted summary.
+- **Never** overwrite an existing `docs/adlc/{YYYY-MM-DD}-{kebab-slug}.md`
+  without showing its contents and getting the user's go-ahead first — this
+  stage runs on the same date/slug if re-invoked, so it must be safe to run
+  twice.
 - **Never** copy the full `## Specification` or `## Plan` verbatim into the repo
   summary — curate it down to what/why/how and deviations; the issue remains the
   detailed record.

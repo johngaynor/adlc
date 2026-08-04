@@ -60,10 +60,11 @@ Resolve the task before anything else, in this order:
 4. **Work the plan phase by phase.** Re-read `## Progress` and take the phases in
    order. For each unchecked box:
    - **Implement** the phase exactly as `## Plan` describes it.
-   - **Verify** it using the consuming repo's own Validation Commands (see
-     [`METHODOLOGY.md`](../../METHODOLOGY.md) § 3) — the smallest relevant set
-     for what the phase touched. A phase is not done until its verification
-     passes; show the actual output, not a claim.
+   - **Verify** it using the Validation Commands in the consuming repo's root
+     `CLAUDE.md` (see [`METHODOLOGY.md`](../../METHODOLOGY.md) § 3 for what the
+     label means) — the smallest relevant set for what the phase touched. A
+     phase is not done until its verification passes; show the actual output,
+     not a claim.
    - **Commit** the phase's work on the task branch with a message naming the
      phase, so the phase stays independently reviewable.
    - **Tick it.** Call `tickPhase(taskRef, phaseText)` per
