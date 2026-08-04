@@ -14,3 +14,4 @@ node_modules/
 .ai/specs/
 .ai/plans/
 docs/plans/
+docs/design/
