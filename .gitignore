@@ -4,3 +4,13 @@ node_modules/
 .env
 .env.*
 .superpowers/
+
+# Claude Code local state (settings.json IS committed; local overrides are not)
+.claude/settings.local.json
+.claude/worktrees/
+.worktrees/
+
+# Working docs stay local in this repo (departure from METHODOLOGY.md idea 4,
+# which is about target repos — this repo's specs/plans are session notes)
+.ai/specs/
+.ai/plans/

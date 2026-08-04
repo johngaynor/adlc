@@ -34,9 +34,14 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    - If no task resolves (no PM/Linear configured, or the current branch doesn't
      match the task branch format), proceed with no further action here — this
      stage still works as a plain PR opener.
-3. **Branch if needed.** If on the default branch (`main`/`master`), create a
-   feature branch first, kebab-case and prefixed by change type: `feat/`, `fix/`,
-   `chore/`, `docs/`, `refactor/`.
+3. **Branch if needed.** Get on a proper feature branch (kebab-case, prefixed by
+   change type: `feat/`, `fix/`, `chore/`, `docs/`, `refactor/`) per
+   METHODOLOGY.md idea 5:
+   - On a machine-generated branch (e.g. `worktree-*`): rename it
+     (`git branch -m <new-name>`) before pushing.
+   - On the default branch (`main`/`master`): create the feature branch first.
+   - On a sensibly-named branch already (a task branch or platform-managed
+     name): keep it.
 4. **Review the diff.** Run `git status` and `git diff` (staged + unstaged). Confirm
    there are no secrets, debug output, or unrelated changes. Stage intentionally.
 5. **Commit.** Write a conventional-commits message (`type: summary`, body
@@ -46,7 +51,8 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    with a body that states: **what** changed, **why**, **how it was validated**, and
    any follow-ups. Honor `.github/pull_request_template.md` if present. Apply the
    project's PR labels if it uses a label convention.
-7. **Report** the PR URL.
+7. **Report** the PR URL. If working in an isolated workspace (worktree), note
+   that it is now disposable — the branch lives on the remote.
 8. **Advance the task, if one resolved.** Reuse the `taskRef` resolved in step 2.
    - If it resolved to an issue, call `setStatus(taskRef, "In Review")`. The
      branch name is also what let Linear auto-link this PR to the issue, so no

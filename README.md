@@ -7,7 +7,7 @@ discipline, and a self-improvement lessons loop.
 
 The methodology is deliberately framework-agnostic — it works on a TypeScript
 monorepo, a Python service, or a mobile app. See [`METHODOLOGY.md`](./METHODOLOGY.md)
-for the four ideas it's built on.
+for the five ideas it's built on.
 
 ## Install
 
@@ -106,7 +106,7 @@ adlc/
 ├── .claude-plugin/
 │   ├── plugin.json          # plugin manifest
 │   └── marketplace.json     # marketplace listing (this repo is its own marketplace)
-├── METHODOLOGY.md           # the spine — the four ideas; every skill quotes this
+├── METHODOLOGY.md           # the spine — the five ideas; every skill quotes this
 ├── CONVENTIONS.md           # how to author skills in this plugin (the contract)
 ├── reference/
 │   └── pm-seam.md           # the PM operation contract every lifecycle skill consumes
