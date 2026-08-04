@@ -91,6 +91,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:archive` | Commit a curated repo summary and close the Linear issue | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 | `/adlc:add-skill` | Author a project skill in `.ai/skills/`; graduates skill-sized lessons | ✅ implemented |
+| `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR Linear issues to `Done` | ✅ implemented |
 
 ## Project skills — extending the harness
 
