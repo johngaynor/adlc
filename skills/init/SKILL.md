@@ -86,18 +86,24 @@ resolvable at runtime), render and write:
     (non-Claude) harnesses at `.ai/skills/<name>/SKILL.md`. Create the file if
     it's missing; if it exists without the section, append it; if the section is
     already there, leave it alone.
-  - **`.gitignore` semantics** — `.ai/skills/` must stay committed even where
-    other `.ai/` content is local. If the repo ignores `.ai/` wholesale, rewrite
-    that entry to the exception-safe pair:
+  - **`.gitignore` semantics** — two `.ai/` subpaths must stay committed even
+    where other `.ai/` content is local: `.ai/skills/` (project skills) and
+    `.ai/specs/implemented/` (spec exports landed by `/adlc:archive`). If the
+    repo ignores `.ai/` wholesale, rewrite that entry to the exception-safe
+    ladder:
 
     ```
     .ai/*
     !.ai/skills/
+    !.ai/specs/
+    .ai/specs/*
+    !.ai/specs/implemented/
     ```
 
-    (A bare `!.ai/skills/` under an ignored `.ai/` has no effect — git never
-    descends into ignored directories.) Path-specific ignores like `.ai/specs/`
-    need no change.
+    (A bare `!` re-include under an ignored directory has no effect — git never
+    descends into ignored directories, so every parent level needs a `*`
+    pattern plus its own re-include.) A path-specific `.ai/specs/` directory
+    ignore must likewise become `.ai/specs/*` + `!.ai/specs/implemented/`.
 
 ### 5. Connect Linear (optional)
 
@@ -171,6 +177,7 @@ entry exist, the Task Router and Validation Commands reflect this specific
 project, and you've told the user what to review. The project-skills convention
 is in place: `.ai/skills/README.md` exists, `.claude/skills` is a relative
 symlink to `../.ai/skills` (or the Windows fallback was reported), `AGENTS.md`
-carries the pointer section, and `.ai/skills/` is not gitignored. If the user opted into Linear:
+carries the pointer section, and neither `.ai/skills/` nor `.ai/specs/implemented/`
+is gitignored. If the user opted into Linear:
 `.adlc/config.json` exists with the `pm` block, every ID in it came from a live
 Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
