@@ -72,9 +72,11 @@ Resolve the task before anything else, in this order:
    - **Checkpoint.** Report what was done and the verification evidence to the
      user before moving to the next phase, so they have a natural point to
      redirect, pause, or call out something the plan missed.
-5. **Stop when every box is checked.** Report the final state of `## Progress`
-   and the branch it's committed on. Do **not** open a pull request here — that
-   is `/adlc:pr`.
+5. **Report and hand off when every box is checked.** Report the final state of
+   `## Progress` and the branch it's committed on, then invoke the workflow
+   bridge ([`/adlc:next`](../next/SKILL.md)) with `completedStage: execute` and
+   the `taskRef`. Do **not** open a pull request from this stage — shipping is
+   `/adlc:pr`, which the bridge offers as the next step.
 
 ## Boundaries
 
