@@ -1,15 +1,15 @@
 ---
 name: cleanup
-description: Use when merged work has left debris behind — stale worktrees, dead local/remote branches, or Linear cards whose PR merged but never reached Done. Sweeps both automatically and reports what was removed and what was skipped and why.
+description: Use when merged work has left debris behind — stale worktrees, dead local/remote branches, or PM cards whose PR merged but never reached Done. Sweeps both automatically and reports what was removed and what was skipped and why.
 ---
 
 # Cleanup
 
 Sweep the debris that accumulates after PRs merge: task worktrees (and their
-local/remote branches) that lingered past their merge, and Linear issues whose
+local/remote branches) that lingered past their merge, and PM issues whose
 PR landed but whose status never advanced to `Done`. This is a **utility skill,
 not a lifecycle stage** (see [`METHODOLOGY.md`](../../METHODOLOGY.md)): it can
-run at any time, writes no Linear sections or labels, and does not invoke
+run at any time, writes no card sections or labels, and does not invoke
 `/adlc:next`. It runs fully automatically — no per-item confirmation prompts.
 Safety comes from conservative criteria instead: only worktrees that are
 **merged AND clean** are ever touched, so unmerged or dirty work (including
@@ -44,12 +44,12 @@ parallel in-flight sessions) is never at risk.
    Anything failing a check is left untouched and recorded for the report with
    its reason: dirty / unmerged / unpushed commits / locked / detached.
 
-3. **Linear sweep.** Go through the pm-seam only
+3. **PM sweep.** Go through the pm-seam only
    ([`reference/pm-seam.md`](../../reference/pm-seam.md)): `findTasks`,
-   `readTask`, `closeTask` — no new operations. If no PM/Linear is configured,
+   `readTask`, `closeTask` — no new operations. If no PM is configured,
    skip this step silently (the same PM-optional posture as `/adlc:pr`).
    - Find issues that are **not** `Done`/`Canceled` and carry a task identity: a
-     `gitBranchName` or attached PR whose branch matches the task format
+     provider-linked branch (e.g. Linear's `gitBranchName`) or attached PR whose branch matches the task format
      `<initials>/<issue-identifier>-<slug>`.
    - For each candidate, resolve its PR's merge state — from the issue's PR
      attachment metadata when present, else
@@ -70,7 +70,7 @@ parallel in-flight sessions) is never at risk.
 - **Never** touch the main checkout, the current session's worktree, or any
   dirty, unmerged, unpushed, locked, or detached worktree — list them in the
   report instead.
-- **Never** write Linear sections or labels — no `# Outcome`, no summaries;
+- **Never** write card sections or labels — no `# Outcome`, no summaries;
   moving a missed issue to `Done` is a lightweight safety net behind the
   post-merge poller `/adlc:pr` spawns, nothing more.
 - **Never** prompt per item — the sweep is fully automatic by design; the

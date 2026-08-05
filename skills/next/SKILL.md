@@ -19,7 +19,7 @@ reads the task (via `readTask` / `findTasks` per
 Both optional. An invoking stage passes both; a standalone invocation may pass
 neither.
 
-- `taskRef` — the Linear issue URL or identifier. If omitted: use the `taskRef`
+- `taskRef` — the issue URL or identifier. If omitted: use the `taskRef`
   already held in the session's context; otherwise call `resolveCurrentTask()`
   (parses a task branch, if on one); otherwise call `findTasks(open lifecycle
   tasks)` per `reference/pm-seam.md` and ask the user which — do not guess when
@@ -75,7 +75,7 @@ neither.
      threading task identity per `reference/pm-seam.md` § Task Identity
      Resolution: the `taskRef` stays in session context for pre-code stages;
      code stages resolve it from the task branch. No pointer file, ever.
-   - **Review first** — show what the completed stage just wrote (its Linear
+   - **Review first** — show what the completed stage just wrote (its card
      section; for `execute`, the final `# Progress` state and the branch),
      then re-present this same prompt.
    - **Stop here** — end the turn cleanly. The task is left exactly as if the

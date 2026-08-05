@@ -9,7 +9,7 @@ Bring a conflicted PR branch back to mergeable by merging the default branch int
 it and resolving only conflicts that are trivial beyond doubt. This is a
 **utility skill, not a lifecycle stage** (see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)) — the same posture as `/adlc:cleanup`:
-it can run at any time, writes no Linear sections, labels, or statuses, and does
+it can run at any time, writes no card sections, labels, or statuses, and does
 not invoke `/adlc:next`. It touches git and `gh` only. Safety comes from three
 hard rules: merge, never rebase (so a plain push always suffices and force-push
 never enters the picture); resolve all-or-nothing (one doubtful hunk aborts the
@@ -92,7 +92,7 @@ The procedure is identical in both modes; only the escalation path differs.
 - **Never** hand-edit content to reconcile the two sides — that is a human
   decision; the three categories are the whole authority of this skill.
 - **Never** work in the main checkout, or in a dirty or out-of-sync worktree.
-- **Never** write Linear sections, labels, or statuses — this is a utility
+- **Never** write card sections, labels, or statuses — this is a utility
   skill outside the lifecycle; the card is not this skill's concern.
 - **Ask First** (standalone mode only) before resolving any non-trivial hunk
   with the user — present both sides' intent and get an explicit choice per

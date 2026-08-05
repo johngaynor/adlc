@@ -1,18 +1,18 @@
 ---
 name: plan
-description: Use when an ADLC task has an approved spec and needs its technical plan — after /adlc:spec. Writes a phased plan and a progress checklist into the Linear issue.
+description: Use when an ADLC task has an approved spec and needs its technical plan — after /adlc:spec. Writes a phased plan and a progress checklist into the task's card in the configured PM.
 ---
 
 # Plan
 
 Turn a task's `# Specification` into a phased technical plan and a live progress
-checklist on the same Linear issue — the third stage of the ADLC lifecycle
+checklist on the same issue — the third stage of the ADLC lifecycle
 (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Arguments
 
-- `taskRef` (optional) — the Linear issue URL or identifier to plan. If omitted:
+- `taskRef` (optional) — the issue URL or identifier to plan. If omitted:
   1. Use the `taskRef` already held in the session's context (set by a prior
      `/adlc:spec` in this same session).
   2. Otherwise call `findTasks(has "# Specification", no "# Technical plan")` per
@@ -42,9 +42,9 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
 7. **Apply the `plan` label.** Call `applyLabel(taskRef, "plan")` per
-   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   `reference/pm-seam.md` — this auto-creates the label if missing and
    applies it idempotently, so the card signals the artifact at a glance.
-8. **Report and hand off.** Point the user at the Linear issue and summarize the
+8. **Report and hand off.** Point the user at the issue and summarize the
    phase breakdown, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: plan` and the
    `taskRef`. The bridge's prompt *is* this stage's approval gate: choosing
