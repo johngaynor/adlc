@@ -66,6 +66,15 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    resolved a Linear issue — with no task there is nothing to close, so skip
    this step silently. Spawn a **background subagent** (the harness's background
    agent facility) whose sole job is:
+   - Hold an **active polling loop for its entire lifetime**: check, wait
+     in-process, check again. The poller must **never** arm a watcher, monitor,
+     or scheduled wake-up and then exit, expecting an event to resume it — that
+     pattern has already failed in practice (PHY-168: the agent armed a
+     4-minute monitor and exited; the monitor never fired, and the card sat in
+     `In Review` for 20+ minutes after the merge until it was closed by hand).
+     An agent that cannot hold a live loop in its harness must say so in its
+     spawn report instead of pretending to poll — the card then falls to the
+     `/adlc:cleanup` safety net knowingly, not silently.
    - Poll the PR's merge state at a modest interval (a few minutes between
      checks): `gh pr view <pr-url> --json state,mergedAt,mergeable,mergeStateStatus`.
    - When the PR reports merged, call `closeTask(taskRef)` per
@@ -113,6 +122,9 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 - **Never** let the poller force-push or resolve a conflict outside
   `resolve-conflict`'s triviality test — non-trivial conflicts are reported,
   never guessed at.
+- **Never** let the poller arm-and-exit — an exited agent waiting to be resumed
+  by a watcher or monitor is not a poller (PHY-168 proved the resume never
+  comes). It loops actively for its whole lifetime, or reports that it can't.
 - **Never** let a poller spawn failure block or fail PR creation — report it and
   point at `/adlc:cleanup` as the fallback.
 
