@@ -88,13 +88,13 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
 - **Never** invent an artifact outside the canonical layout in
   `reference/pm-seam.md`.
 - **Never** let planning start on an unreviewed spec — approval arrives through
-  the bridge (**Move to plan**, or an explicit auto-mode opt-in per the bridge's
-  Boundaries), never by assumption.
+  the bridge (**Move to plan**, or an explicit Run-to-PR horizon per the
+  bridge's Boundaries), never by assumption.
 
 ## Done when
 
 The card has a `# Specification` block (summary paragraph, topic collapsibles,
 and a Risks & unknowns dropdown) that clears every quality bar in step 4,
 carries the `spec` label, and the hand-off has passed through the bridge — the
-user approved it (or auto mode chained on), or chose **Stop here** and the task
-rests cleanly at `Backlog`.
+user approved it (or their Run-to-PR horizon chained on), or chose **Stop here**
+and the task rests cleanly at `Backlog`.

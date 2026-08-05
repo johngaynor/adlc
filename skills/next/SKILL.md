@@ -1,6 +1,6 @@
 ---
 name: next
-description: Use when an ADLC lifecycle stage has just finished and the task should hand off to whatever stage comes next, or to resume an in-flight task at its next step — presents Move to next / Review first / Stop here, or chains automatically in auto mode.
+description: Use when an ADLC lifecycle stage has just finished and the task should hand off to whatever stage comes next, or to resume an in-flight task at its next step — presents Move to next / Run to PR / Review first / Stop here; a chosen Run-to-PR horizon chains the task's remaining stages automatically, and the execute→pr hop never prompts.
 ---
 
 # Next (the workflow bridge)
@@ -57,17 +57,25 @@ neither.
    | execute | pr |
    | pr | none — lifecycle complete; the poller closes the card on merge |
 
-3. **Handle the terminal row first.**
-   - After **pr**: in *both* modes, do not prompt and do not chain — the
-     lifecycle is complete. End the turn noting that the background poller
-     `/adlc:pr` spawned will move the card to `Done` when the PR merges, with
-     `/adlc:cleanup` as the fallback if the session ends before then.
+3. **Handle the fixed transitions first.** These never prompt, with or without a
+   horizon:
+   - After **execute**: invoke `/adlc:pr` immediately, threading `taskRef`
+     forward — the execute→pr hop is always automatic. Execute has already
+     checkpointed every phase with the user, and the PR itself is the review
+     artifact for the code; the pr stage's own gates (its unchecked-boxes
+     confirmation, validation failures) remain the only stops.
+   - After **pr**: do not chain — the lifecycle is complete. End the turn noting
+     that the background poller `/adlc:pr` spawned will move the card to `Done`
+     when the PR merges, with `/adlc:cleanup` as the fallback if the session
+     ends before then.
    - A task already at `Done`: report that the lifecycle is complete and stop.
-4. **Check the mode.** Auto mode is active only if the user explicitly opted in
-   during this session ("run it in auto mode", "take it through the
-   lifecycle") — never infer it. In auto mode, skip the prompt and invoke the
-   next stage's skill immediately, threading `taskRef` forward. Otherwise
-   continue to step 5.
+4. **Check the horizon.** The Run-to-PR horizon is active for this task only if
+   the user chose **Run to PR** at one of its earlier hand-off prompts, or asked
+   for it in their own words ("run it all the way to PR", "take it through the
+   lifecycle", "auto mode" — any such request maps to this horizon). It is
+   per-task and held in session context only — never inferred, never persisted.
+   With the horizon active, skip the prompt and invoke the next stage's skill
+   immediately, threading `taskRef` forward. Otherwise continue to step 5.
 5. **Present the hand-off prompt.** Use the `AskUserQuestion` tool (single
    select; fall back to a plain-text question if the tool is unavailable),
    always naming the concrete next stage:
@@ -75,26 +83,37 @@ neither.
      threading task identity per `reference/pm-seam.md` § Task Identity
      Resolution: the `taskRef` stays in session context for pre-code stages;
      code stages resolve it from the task branch. No pointer file, ever.
+     When the completed stage is **plan**, label this option
+     **Move to execute — continues through to PR**: execute→pr never prompts
+     (step 3), so approving the plan is the last gate before the PR.
+   - **Run to PR** — set the Run-to-PR horizon for this task and invoke the
+     next stage immediately; every remaining hand-off chains without
+     prompting. Omit this option at the plan hand-off, where it would be
+     identical to Move to execute.
    - **Review first** — show what the completed stage just wrote (its Linear
      section; for `execute`, the final `# Progress` state and the branch),
      then re-present this same prompt.
    - **Stop here** — end the turn cleanly. The task is left exactly as if the
      bridge didn't exist: resumable later via the normal stage command or
      `/adlc:next`.
-6. **Hand off.** Choosing **Move to next** *is* the user's explicit approval of
-   the completed stage's output — the review gate that stage would otherwise
-   carry itself. Invoke the next stage's skill; its own precondition gate still
-   applies unchanged and will refuse if the task isn't actually ready.
+6. **Hand off.** Choosing **Move to next** or **Run to PR** *is* the user's
+   explicit approval of the completed stage's output — the review gate that
+   stage would otherwise carry itself. Invoke the next stage's skill; its own
+   precondition gate still applies unchanged and will refuse if the task isn't
+   actually ready.
 
 ## Boundaries
 
-- **Never** infer auto mode — it is an explicit, user-stated opt-in held in
-  session context for this session only.
+- **Never** infer the Run-to-PR horizon — it is an explicit, per-task opt-in
+  (the **Run to PR** option, or the user's own words) held in session context
+  for this session only. A new session starts with no horizon and prompts
+  normally.
 - **Never** waive a stage's preconditions or its mid-stage Ask First gates —
-  auto mode skips only this between-stage prompt; everything inside a stage
-  (brainstorm's approval before `createTask`, execute's deviation Ask First,
-  pr's unchecked-boxes confirmation) fires exactly as written.
-- **Never** chain past `pr`, in either mode — the lifecycle ends there; closing
+  the horizon and the automatic execute→pr hop skip only between-stage
+  prompts; everything inside a stage (brainstorm's approval before
+  `createTask`, execute's deviation Ask First, pr's unchecked-boxes
+  confirmation) fires exactly as written.
+- **Never** chain past `pr`, horizon or not — the lifecycle ends there; closing
   the card is the poller's job, not the bridge's.
 - **Never** write to the issue from this skill — the bridge reads via the
   pm-seam only, and never invents a section name outside the canonical five.

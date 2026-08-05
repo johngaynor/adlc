@@ -76,7 +76,8 @@ Resolve the task before anything else, in this order:
    `# Progress` and the branch it's committed on, then invoke the workflow
    bridge ([`/adlc:next`](../next/SKILL.md)) with `completedStage: execute` and
    the `taskRef`. Do **not** open a pull request from this stage — shipping is
-   `/adlc:pr`, which the bridge offers as the next step.
+   `/adlc:pr`, which the bridge invokes automatically: the execute→pr hop never
+   prompts, in any mode.
 
 ## Boundaries
 
