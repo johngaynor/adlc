@@ -146,8 +146,8 @@ Summarize what you created and tell the user the immediate next moves:
 
 - Review `CLAUDE.md` — especially the Task Router rows and Validation Commands.
 - The harness ships more skills: the lifecycle (`/adlc:brainstorm` →
-  `/adlc:archive`, Linear required), `/adlc:pr`, `/adlc:add-lesson`. Mention
-  they're available.
+  `/adlc:pr`, Linear required for all but `/adlc:pr`), `/adlc:add-lesson`.
+  Mention they're available.
 - Suggest committing the scaffold.
 
 ## Boundaries

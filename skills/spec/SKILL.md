@@ -6,8 +6,8 @@ description: Use when an ADLC task has an idea and needs its specification writt
 # Spec
 
 Turn a task's `## Idea` into a reviewed specification on the same Linear issue — the
-second stage of the ADLC lifecycle (`brainstorm → spec → plan → execute → pr →
-archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
+second stage of the ADLC lifecycle (`brainstorm → spec → plan → execute → pr`,
+see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Arguments
 

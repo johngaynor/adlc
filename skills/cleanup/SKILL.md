@@ -70,9 +70,9 @@ parallel in-flight sessions) is never at risk.
 - **Never** touch the main checkout, the current session's worktree, or any
   dirty, unmerged, unpushed, locked, or detached worktree — list them in the
   report instead.
-- **Never** write Linear sections or labels, and never do `/adlc:archive`'s job —
-  no `## Outcome`, no summaries; moving a missed issue to `Done` is a lightweight
-  safety net, and `/adlc:archive` remains the proper archival path.
+- **Never** write Linear sections or labels — no `## Outcome`, no summaries;
+  moving a missed issue to `Done` is a lightweight safety net behind the
+  post-merge poller `/adlc:pr` spawns, nothing more.
 - **Never** prompt per item — the sweep is fully automatic by design; the
   merged+clean criteria are the safety mechanism (each git/gh command still
   passes through the harness's normal permission prompts).
