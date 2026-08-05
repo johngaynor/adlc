@@ -78,8 +78,6 @@ Run the smallest set that proves your change:
   `/adlc:brainstorm` → `/adlc:spec` skills drive this.
 - **Verification:** run Validation Commands and confirm output before saying "done".
   Evidence before assertions.
-- **Project skills:** reusable agent skills live in `.ai/skills/<name>/SKILL.md`
-  (Claude Code discovers them via the `.claude/skills` symlink; see `.ai/skills/README.md`).
 
 ## Self-Improvement (the lessons loop)
 
@@ -90,5 +88,7 @@ The `/adlc:add-lesson` skill drives this.
 
 Lessons climb a ladder as they mature: **correction → lesson → rule → skill**. A
 recurring lesson graduates into a rule in this file; a lesson that describes a whole
-repeatable workflow graduates into a project skill in
-[`.ai/skills/`](.ai/skills/README.md) — the `/adlc:add-skill` skill drives that.
+repeatable workflow graduates into a project skill — the `/adlc:add-skill` skill
+drives that.
+<!-- TBD(project-skills): where project skills live and how they're discovered is
+parked while the convention is redesigned; /adlc:add-skill asks where to write. -->

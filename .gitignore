@@ -15,7 +15,5 @@ node_modules/
 
 # Local working docs / session notes — never committed; canonical specs live
 # on the task's Linear issue (METHODOLOGY.md idea 4)
-.ai/specs/
-.ai/plans/
 docs/design/
 docs/plans/
