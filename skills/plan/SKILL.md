@@ -47,9 +47,11 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 8. **Report and hand off.** Point the user at the Linear issue and summarize the
    phase breakdown, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: plan` and the
-   `taskRef`. The bridge's prompt *is* this stage's approval gate: choosing
-   **Move to execute** is the user's explicit approval of the plan,
-   **Review first** shows the new `# Technical plan` and `# Progress` before deciding.
+   `taskRef`. The bridge's prompt *is* this stage's approval gate — and the
+   last gate before the PR, since the execute→pr hop never prompts: choosing
+   **Move to execute — continues through to PR** is the user's explicit
+   approval of the plan, **Review first** shows the new `# Technical plan` and
+   `# Progress` before deciding.
 
 ## Boundaries
 
@@ -61,12 +63,12 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 - **Never** invent an artifact outside the canonical layout in
   `reference/pm-seam.md`.
 - **Never** let coding start on an unapproved plan — approval arrives through
-  the bridge (**Move to execute**, or an explicit auto-mode opt-in per the
+  the bridge (**Move to execute**, or an explicit Run-to-PR horizon per the
   bridge's Boundaries), never by assumption.
 
 ## Done when
 
 The issue has `# Technical plan` and `# Progress` (one `- [ ]` per phase), carries the
 `plan` label, its status is `Todo`, and the hand-off has passed through the
-bridge — the user approved the plan (or auto mode chained on), or chose
-**Stop here** and the task rests cleanly at `Todo`.
+bridge — the user approved the plan (or their Run-to-PR horizon chained on), or
+chose **Stop here** and the task rests cleanly at `Todo`.
