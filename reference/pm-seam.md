@@ -36,11 +36,16 @@ a stage never duplicates a block. Block boundaries per artifact (layout under
 
 - `Brainstorm` — from the start of the description to the first `---` divider (the
   untitled preamble plus its collapsed Notes block).
-- `Specification` — from the `---` divider immediately before the `# Specification`
-  heading to the next `## <name>` heading (`## Plan`, `## Progress`, `## Outcome`)
-  or, if none exists yet, the end of the description.
-- `Plan` / `Progress` / `Outcome` — legacy `##` sections: from the `## <name>`
-  heading line to the next `##` heading or end of description.
+- `Specification` / `Technical plan` / `Progress` / `Outcome` — from the `---`
+  divider immediately before the block's `# <name>` heading to the divider
+  immediately before the next `# <name>` heading or, if none, the end of the
+  description. A divider *inside* a block (like the one before the spec's
+  Risks & unknowns dropdown) belongs to that block — boundaries are the dividers
+  that directly precede an H1 heading.
+
+A card still carrying legacy `## <name>` sections from before this layout is
+migrated on touch: the first stage that would write one of these blocks rewrites
+the legacy section into its H1-after-divider form.
 
 - **Linear MCP action:** update issue description.
 
@@ -48,16 +53,16 @@ a stage never duplicates a block. Block boundaries per artifact (layout under
 
 Reads the issue and parses its description into a map of artifact name → markdown
 body using the block boundaries defined under `writeSection` — the untitled preamble
-parses as `Brainstorm`, the `# Specification` block as `Specification`, the legacy
-`##` sections under their own names — plus the `## Progress` checklist as a list of
-`{text, done}` entries, and the issue's current status. This is how every stage
+parses as `Brainstorm`, each `# <name>` block under its own name — plus the
+`# Progress` checklist as a list of `{text, done}` entries, and the issue's current
+status. This is how every stage
 determines its precondition before acting.
 
 - **Linear MCP action:** read issue.
 
 ### `tickPhase(taskRef, phaseText, done=true)`
 
-Sets one checkbox in the `## Progress` section — the one whose text matches
+Sets one checkbox in the `# Progress` block — the one whose text matches
 `phaseText` — to checked (or unchecked, if `done=false`). Leaves every other line in
 the section untouched.
 
@@ -95,7 +100,7 @@ poller `pr` spawns when the PR merges, and by `/adlc:cleanup` as the safety net.
 ### `findTasks(filter) → taskRef[]`
 
 Queries Linear for issues matching `filter` — for example, "has `# Specification`, no
-`## Plan`" — so a stage can offer a resume candidate when the caller has no `taskRef`
+`# Technical plan`" — so a stage can offer a resume candidate when the caller has no `taskRef`
 in hand. "Brainstormed but not specced" means a non-empty description with no
 `# Specification` heading; where Linear's search cannot express a filter reliably,
 fall back to label presence (`spec`, `plan`) as the signal.
@@ -115,10 +120,10 @@ issue. See [Task Identity Resolution](#task-identity-resolution).
 ## Linear Data Model
 
 One Linear issue is the whole record for one task. Its description is a markdown
-document that accumulates one artifact per lifecycle stage. The two early artifacts
-use a glanceable layout — brief prose visible, detail tucked into Linear `>>>`
-collapsibles, stages separated by `---` dividers — while the later artifacts keep
-plain `##` sections:
+document that accumulates one artifact per lifecycle stage, every artifact in the
+same glanceable layout — brief prose visible, detail tucked into Linear `>>>`
+collapsibles, blocks separated by `---` dividers, one H1 heading per block after
+the untitled preamble:
 
 ```
 Title:  <feature name>
@@ -133,9 +138,11 @@ Description:
   ---
   >>> ### Risks & unknowns … >>>         ← spec (blockers resolved before plan)
   ---
-  ## Plan                                ← written by plan
-  ## Progress                            ← written by plan (checklist), ticked by execute
-  ## Outcome                             ← written when a task closes without a code PR (optional)
+  # Technical plan                       ← written by plan
+  ---
+  # Progress                             ← written by plan (checklist), ticked by execute
+  ---
+  # Outcome                              ← written when a task closes without a code PR (optional)
 ```
 
 The canonical artifacts, exact and case-sensitive where named, are:
@@ -148,12 +155,17 @@ The canonical artifacts, exact and case-sensitive where named, are:
   what the spec discovered, one `>>>` collapsible per topic, then a `---` and a
   collapsed `>>> ### Risks & unknowns` block. Anything listed there as a blocker must
   be resolved before the technical plan.
-- **`## Plan`, `## Progress`, `## Outcome`** — legacy `##` sections, unchanged.
+- **`Technical plan`** — the `# Technical plan` H1 block: the phased plan written by
+  `plan`.
+- **`Progress`** — the `# Progress` H1 block: the phase checklist written by `plan`
+  and ticked by `execute`.
+- **`Outcome`** — the `# Outcome` H1 block, optional: written when a task closes
+  without a code PR.
 
 No skill invents an artifact outside this list.
 
-`## Progress` holds a markdown checklist, one `- [ ]` line per plan phase, with line
-text matching the phase names from `## Plan`. `execute` flips boxes to `- [x]` as
+`# Progress` holds a markdown checklist, one `- [ ]` line per plan phase, with line
+text matching the phase names from `# Technical plan`. `execute` flips boxes to `- [x]` as
 phases complete via `tickPhase`. Phases live as a checklist inside the issue rather
 than as Linear sub-issues, to keep the whole task in one place.
 
@@ -164,8 +176,9 @@ neighboring one.
 
 Labels mirror artifact presence on the issue's card. `spec` and `plan` are the only
 canonical labels — applied by their namesake stages via `applyLabel` the moment
-their artifact lands (`# Specification` and `## Plan` + `## Progress` respectively).
-They accumulate and are never removed: a rewritten spec keeps its `spec` label,
+their artifact lands (`# Specification` and `# Technical plan` + `# Progress`
+respectively; the label keeps the name `plan` even though its section is titled
+`# Technical plan`). They accumulate and are never removed: a rewritten spec keeps its `spec` label,
 because the artifact still exists. As with section names, no skill invents a label
 outside this list.
 
@@ -180,7 +193,7 @@ Backlog → Todo → In Progress → In Review → Done
 | Status | Set by |
 |---|---|
 | `Backlog` | `brainstorm` — set at issue creation (`createTask`) |
-| `Todo` | `plan` — once `## Plan` and `## Progress` are written |
+| `Todo` | `plan` — once `# Technical plan` and `# Progress` are written |
 | `In Progress` | `execute` — once the task branch/worktree is created |
 | `In Review` | `pr` — once the PR is open |
 | `Done` | the post-merge poller `pr` spawns — once the PR merges (`closeTask`); `/adlc:cleanup` is the safety net |
@@ -198,7 +211,7 @@ anywhere in the repo, so parallel agents cannot collide.
   code has changed. The task's identity is the Linear `taskRef` held in the invoking
   agent's own session context — returned by `createTask` in `brainstorm` and threaded
   forward. Cross-session resume (a different agent, or the same agent later) works by
-  calling `findTasks` with a filter like "has `# Specification`, no `## Plan`", or by
+  calling `findTasks` with a filter like "has `# Specification`, no `# Technical plan`", or by
   the user pasting the issue URL. There is no pointer file to read.
 - **Code stages (`execute`, `pr`):** `execute` creates a git branch named
   `<initials>/<issue-identifier>-<slug>` (for example `jg/eng-142-linear-lifecycle`) in
@@ -217,7 +230,7 @@ Each stage reads the issue via `readTask` before acting and refuses to proceed i
 required section(s) are missing, so the lifecycle cannot be run out of order — with
 one deliberate exception: `pr` is PM-optional. It must also work as a generic PR
 opener with no Linear/PM configured at all, so it never hard-refuses on a missing
-precondition. Instead, when a task *does* resolve, it treats `## Progress` as a
+precondition. Instead, when a task *does* resolve, it treats `# Progress` as a
 best-effort check: it warns and asks for confirmation if any box is unchecked,
 rather than refusing outright — see `skills/pr/SKILL.md`.
 
@@ -226,5 +239,5 @@ rather than refusing outright — see `skills/pr/SKILL.md`.
 | `brainstorm` | Nothing — this is the foundation stage; it creates the issue. |
 | `spec` | The brainstorm artifact — a non-empty description with no `# Specification` heading yet. |
 | `plan` | `# Specification`. |
-| `execute` | `## Plan` and `## Progress`. |
-| `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `## Progress` box is unchecked; if no task resolves, no precondition at all. |
+| `execute` | `# Technical plan` and `# Progress`. |
+| `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `# Progress` box is unchecked; if no task resolves, no precondition at all. |
