@@ -67,14 +67,24 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    this step silently. Spawn a **background subagent** (the harness's background
    agent facility) whose sole job is:
    - Poll the PR's merge state at a modest interval (a few minutes between
-     checks): `gh pr view <pr-url> --json state,mergedAt`.
+     checks): `gh pr view <pr-url> --json state,mergedAt,mergeable,mergeStateStatus`.
    - When the PR reports merged, call `closeTask(taskRef)` per
      [`reference/pm-seam.md`](../../reference/pm-seam.md) — the issue moves to
      `Done` — and report that it did so.
+   - When the PR reports `mergeable: CONFLICTING`, run the
+     [`resolve-conflict`](../resolve-conflict/SKILL.md) procedure in its
+     background mode: trivial conflicts are resolved, validated, and plain-pushed;
+     anything non-trivial is reported and left untouched. `mergeable: UNKNOWN`
+     means GitHub is still computing — not a conflict; check again next poll.
+     Cap resolution at **2 attempts per PR** — a conflict recurring after a
+     successful resolution means the default branch keeps moving in the same
+     area and a human should look. Report every action taken (resolved and
+     pushed, escalated, or capped out).
    - If the PR is closed without merging, or the poll budget runs out (stop
      after roughly a day of polling), report and leave the card untouched.
    - The poller writes **nothing else** — no sections, no labels, no
-     worktree/branch removal.
+     worktree/branch removal. Its only write outside the `Done` status is the
+     merge-commit push made through the `resolve-conflict` procedure above.
 
    Known limitation: the poller lives only as long as this session. If the
    session ends before the PR merges, the card stays `In Review` until
@@ -96,8 +106,13 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 - **Never** let the `In Review` status update block or fail PR creation — task
   resolution is best-effort and always secondary to the PR itself, and its absence
   (no PM configured, or an unmapped branch) is not an error.
-- **Never** let the poller write anything beyond the `Done` status — no sections,
+- **Never** let the poller write anything beyond the `Done` status and the
+  merge-commit push made through the
+  [`resolve-conflict`](../resolve-conflict/SKILL.md) procedure — no sections,
   no labels, no worktree or branch removal.
+- **Never** let the poller force-push or resolve a conflict outside
+  `resolve-conflict`'s triviality test — non-trivial conflicts are reported,
+  never guessed at.
 - **Never** let a poller spawn failure block or fail PR creation — report it and
   point at `/adlc:cleanup` as the fallback.
 
@@ -105,6 +120,7 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 
 The PR is open, validation passed with evidence, and the URL is reported. When
 `resolveCurrentTask()` resolved a Linear issue from the branch, its status is now
-`In Review` and the background poller is watching the PR to move it to `Done` on
-merge; when it didn't (no PM configured, or a non-task branch), the PR alone is
-the completed artifact.
+`In Review` and the background poller is watching the PR — moving it to `Done` on
+merge, and clearing trivial merge conflicts along the way via
+[`resolve-conflict`](../resolve-conflict/SKILL.md); when it didn't (no PM
+configured, or a non-task branch), the PR alone is the completed artifact.
