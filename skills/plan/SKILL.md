@@ -15,7 +15,7 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 - `taskRef` (optional) — the Linear issue URL or identifier to plan. If omitted:
   1. Use the `taskRef` already held in the session's context (set by a prior
      `/adlc:spec` in this same session).
-  2. Otherwise call `findTasks(has "# Specification", no "## Plan")` per
+  2. Otherwise call `findTasks(has "# Specification", no "# Technical plan")` per
      [`reference/pm-seam.md`](../../reference/pm-seam.md) and ask the user which
      candidate to plan — do not guess when more than one matches.
 
@@ -31,13 +31,13 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
    independently-committable phases. Each phase should be small enough to verify and
    commit on its own, and named clearly enough that its text can double as a
    checklist item later.
-4. **Write the plan.** Call `writeSection(taskRef, "Plan", md)` per
+4. **Write the plan.** Call `writeSection(taskRef, "Technical plan", md)` per
    `reference/pm-seam.md` with the phase-by-phase plan — this upserts the
-   `## Plan` block; re-running this stage overwrites it cleanly rather than
+   `# Technical plan` block; re-running this stage overwrites it cleanly rather than
    duplicating it.
 5. **Write the progress checklist.** Call `writeSection(taskRef, "Progress",
    checklist)` with one `- [ ]` line per phase, its text matching the phase name
-   from `## Plan` exactly — `/adlc:execute` ticks these boxes by that same text.
+   from `# Technical plan` exactly — `/adlc:execute` ticks these boxes by that same text.
 6. **Advance the status.** Call `setStatus(taskRef, "Todo")` per the seam's Status
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
@@ -49,7 +49,7 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: plan` and the
    `taskRef`. The bridge's prompt *is* this stage's approval gate: choosing
    **Move to execute** is the user's explicit approval of the plan,
-   **Review first** shows the new `## Plan` and `## Progress` before deciding.
+   **Review first** shows the new `# Technical plan` and `# Progress` before deciding.
 
 ## Boundaries
 
@@ -66,7 +66,7 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 
 ## Done when
 
-The issue has `## Plan` and `## Progress` (one `- [ ]` per phase), carries the
+The issue has `# Technical plan` and `# Progress` (one `- [ ]` per phase), carries the
 `plan` label, its status is `Todo`, and the hand-off has passed through the
 bridge — the user approved the plan (or auto mode chained on), or chose
 **Stop here** and the task rests cleanly at `Todo`.
