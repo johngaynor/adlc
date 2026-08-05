@@ -57,9 +57,13 @@ brainstorm → spec → plan → execute → pr
   (`/adlc:cleanup` is the safety net if the session ends first).
 
 Stages hand off to each other through the workflow bridge, **`/adlc:next`**: each
-stage ends by offering *Move to next / Review first / Stop here* (or chains
-automatically if you ask for auto mode), so you never have to remember the next
-command — and `/adlc:next` on its own resumes a task at whatever comes next.
+stage ends by offering *Move to next / Run to PR / Review first / Stop here*, so
+you never have to remember the next command — and `/adlc:next` on its own
+resumes a task at whatever comes next. Choosing **Run to PR** sets that task's
+autonomy horizon: every remaining stage chains automatically through to the
+open PR, which becomes your review surface. The execute→pr hop never prompts in
+any mode — once a plan is approved and executed, the PR follows immediately —
+so the plan hand-off is the last decision point in every task's lifecycle.
 
 **Linear is the live workspace.** One Linear issue is the whole record for a task
 while it's in flight — its description holds the canonical artifacts (the
