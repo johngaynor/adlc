@@ -71,8 +71,9 @@ gets a short spec *before* code: what, why, phases, and the test coverage it wil
 add. The spec lives on the task's card in the PM system — the `# Specification`
 block of its Linear issue, written by the lifecycle skills through the PM seam
 (`reference/pm-seam.md`) — never in repo-local spec files. The issue is the single
-source of truth while the task is in flight; at archive time the repo gets a
-curated summary, not a duplicate. Small fixes skip this — just fix them.
+source of truth while the task is in flight and its durable record after: when
+the PR merges, the card simply closes — the repo carries the merged code and its
+PR description, not a duplicate write-up. Small fixes skip this — just fix them.
 
 **The lessons loop.** Corrections are captured, not lost. When the agent is
 corrected on something that will recur, it appends a structured entry to

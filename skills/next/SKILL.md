@@ -7,7 +7,7 @@ description: Use when an ADLC lifecycle stage has just finished and the task sho
 
 Hand a task off from the lifecycle stage that just finished to the one that comes
 next — the connective tissue of the ADLC lifecycle (`brainstorm → spec → plan →
-execute → pr → archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)). Every
+execute → pr`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)). Every
 stage with a successor invokes this skill as its final step, and it can also be
 invoked standalone to resume a task at whatever comes next. The bridge is the
 single owner of the lifecycle order: no stage names its own successor. It only
@@ -34,8 +34,8 @@ neither.
   | `# Specification`, no `## Plan` | spec |
   | `## Plan` + `## Progress`, status `Todo` | plan |
   | `## Progress` all checked, status `In Progress` | execute |
-  | Status `In Review` | pr |
-  | Status `Done` | archive |
+  | Status `In Review` | pr — the poller closes the card when the PR merges |
+  | Status `Done` | lifecycle complete |
 
   If the observed state is mid-stage instead (e.g. unchecked `## Progress`
   boxes with status `In Progress`), the task's next step is *resuming that same
@@ -55,15 +55,14 @@ neither.
    | spec | plan |
    | plan | execute |
    | execute | pr |
-   | pr | *(deferred)* archive |
-   | archive | none — lifecycle complete |
+   | pr | none — lifecycle complete; the poller closes the card on merge |
 
-3. **Handle the terminal rows first.**
-   - After **archive**: report that the lifecycle is complete and stop.
-   - After **pr**: in *both* modes, do not prompt and do not chain — `archive`
-     requires the PR to be *merged*, an external event that hasn't happened yet.
-     End the turn with the pointer: "once the PR merges, run `/adlc:archive`."
-     Never chain into a stage guaranteed to refuse.
+3. **Handle the terminal row first.**
+   - After **pr**: in *both* modes, do not prompt and do not chain — the
+     lifecycle is complete. End the turn noting that the background poller
+     `/adlc:pr` spawned will move the card to `Done` when the PR merges, with
+     `/adlc:cleanup` as the fallback if the session ends before then.
+   - A task already at `Done`: report that the lifecycle is complete and stop.
 4. **Check the mode.** Auto mode is active only if the user explicitly opted in
    during this session ("run it in auto mode", "take it through the
    lifecycle") — never infer it. In auto mode, skip the prompt and invoke the
@@ -94,9 +93,9 @@ neither.
 - **Never** waive a stage's preconditions or its mid-stage Ask First gates —
   auto mode skips only this between-stage prompt; everything inside a stage
   (brainstorm's approval before `createTask`, execute's deviation Ask First,
-  pr's unchecked-boxes confirmation, archive's `closeTask` confirmation) fires
-  exactly as written.
-- **Never** chain `pr → archive`, in either mode.
+  pr's unchecked-boxes confirmation) fires exactly as written.
+- **Never** chain past `pr`, in either mode — the lifecycle ends there; closing
+  the card is the poller's job, not the bridge's.
 - **Never** write to the issue from this skill — the bridge reads via the
   pm-seam only, and never invents a section name outside the canonical five.
 - **Never** persist the mode or the `taskRef` to a file — session context only,
@@ -105,6 +104,6 @@ neither.
 ## Done when
 
 Either the next stage's skill has been invoked with the task identity carried
-forward, or the turn ended cleanly — Stop here, the deferred-archive pointer, or
-lifecycle complete — with the task in a state indistinguishable from a run
+forward, or the turn ended cleanly — Stop here, or lifecycle complete with the
+poller watching the PR — with the task in a state indistinguishable from a run
 without the bridge.

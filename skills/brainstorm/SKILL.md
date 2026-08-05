@@ -7,7 +7,7 @@ description: Use when starting a new piece of work from a rough idea — the use
 
 Sharpen a rough idea into a crisp problem statement, then create — or retrofit —
 the task's Linear card — the first stage of the ADLC lifecycle (`brainstorm → spec
-→ plan → execute → pr → archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
+→ plan → execute → pr`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 This is the only lifecycle stage that can run before a Linear card exists; every
 later stage assumes one.
 

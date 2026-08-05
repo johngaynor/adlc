@@ -7,7 +7,7 @@ description: Use when an ADLC task has an approved spec and needs its technical 
 
 Turn a task's `# Specification` into a phased technical plan and a live progress
 checklist on the same Linear issue — the third stage of the ADLC lifecycle
-(`brainstorm → spec → plan → execute → pr → archive`, see
+(`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Arguments

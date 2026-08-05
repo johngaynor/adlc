@@ -7,7 +7,7 @@ description: Use when an ADLC task is planned and it's time to write code — af
 
 Turn a task's approved `## Plan` into committed code, one phase at a time, with
 live progress ticked in the same Linear issue — the fourth stage of the ADLC
-lifecycle (`brainstorm → spec → plan → execute → pr → archive`, see
+lifecycle (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). This is the first stage where code
 changes happen, and the first stage to have a git identity of its own: it is
 where the task branch and its worktree are born.
@@ -52,8 +52,8 @@ Resolve the task before anything else, in this order:
      (substitute the repo's actual default branch if it isn't `main`). The
      worktree directory is a sibling of the current checkout, never inside it.
    - Move all further work in this run into that new worktree. This is what
-     keeps parallel task execution isolated, and it is what lets `/adlc:pr` and
-     `/adlc:archive` later resolve the same task by parsing the branch name.
+     keeps parallel task execution isolated, and it is what lets `/adlc:pr`
+     later resolve the same task by parsing the branch name.
 3. **Advance the status.** Call `setStatus(taskRef, "In Progress")` per the
    seam's Status Mapping — do this once, right after the branch/worktree exists
    (or immediately, on a resumed run, if the issue isn't already `In Progress`).
@@ -86,8 +86,8 @@ Resolve the task before anything else, in this order:
 - **Ask First** before deviating from the agreed `## Plan` — if a phase turns
   out to need a different approach than planned, flag it to the user before
   proceeding. If a deviation is approved, call it out plainly in that phase's
-  commit message and in the checkpoint report so `/adlc:archive` can surface it
-  later as a "notable deviation" — never let it pass silently.
+  commit message and in the checkpoint report so `/adlc:pr` can surface it in
+  the PR description as a "notable deviation" — never let it pass silently.
 - **Never** tick a phase (`tickPhase`) or move to the next one while its
   verification is failing.
 - **Never** invent an artifact outside the canonical layout in

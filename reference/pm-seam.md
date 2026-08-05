@@ -1,6 +1,6 @@
 # The PM Seam
 
-Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`, `archive`)
+Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`)
 talks to the project-management system through this seam and nothing else — no skill
 calls Linear ad hoc. Linear is the only implementation for v1: one Linear issue is the
 whole record for a task, and its description is the canonical living document. A future
@@ -87,7 +87,8 @@ Sets the issue's workflow state to one of the exact status values (see
 ### `closeTask(taskRef)`
 
 Sets the issue's status to `Done`. Equivalent to `setStatus(taskRef, "Done")`, named
-separately because it is the terminal call the `archive` stage makes.
+separately because it is the lifecycle's terminal call — made by the post-merge
+poller `pr` spawns when the PR merges, and by `/adlc:cleanup` as the safety net.
 
 - **Linear MCP action:** set state `Done`.
 
@@ -105,7 +106,7 @@ fall back to label presence (`spec`, `plan`) as the signal.
 
 Resolves the task for the current agent without a shared pointer. Pre-code stages
 (`brainstorm`, `spec`, `plan`) use the `taskRef` already held in the agent's session
-context. Code stages (`execute`, `pr`, `archive`) parse the current git branch
+context. Code stages (`execute`, `pr`) parse the current git branch
 (`<initials>/<issue-identifier>-<slug>`), extract the issue identifier, and look up the
 issue. See [Task Identity Resolution](#task-identity-resolution).
 
@@ -134,7 +135,7 @@ Description:
   ---
   ## Plan                                ← written by plan
   ## Progress                            ← written by plan (checklist), ticked by execute
-  ## Outcome                             ← written by archive (optional)
+  ## Outcome                             ← written when a task closes without a code PR (optional)
 ```
 
 The canonical artifacts, exact and case-sensitive where named, are:
@@ -182,7 +183,7 @@ Backlog → Todo → In Progress → In Review → Done
 | `Todo` | `plan` — once `## Plan` and `## Progress` are written |
 | `In Progress` | `execute` — once the task branch/worktree is created |
 | `In Review` | `pr` — once the PR is open |
-| `Done` | `archive` — once the repo summary is committed (`closeTask`) |
+| `Done` | the post-merge poller `pr` spawns — once the PR merges (`closeTask`); `/adlc:cleanup` is the safety net |
 
 `spec` does not change status; the issue stays `Backlog` while it gathers a
 specification. Status is a stakeholder-visible progress signal as much as it is task
@@ -199,7 +200,7 @@ anywhere in the repo, so parallel agents cannot collide.
   forward. Cross-session resume (a different agent, or the same agent later) works by
   calling `findTasks` with a filter like "has `# Specification`, no `## Plan`", or by
   the user pasting the issue URL. There is no pointer file to read.
-- **Code stages (`execute`, `pr`, `archive`):** `execute` creates a git branch named
+- **Code stages (`execute`, `pr`):** `execute` creates a git branch named
   `<initials>/<issue-identifier>-<slug>` (for example `jg/eng-142-linear-lifecycle`) in
   its own git worktree the moment code changes begin. From that point the branch is the
   per-agent task pointer: `resolveCurrentTask` parses the current branch name, extracts
@@ -227,4 +228,3 @@ rather than refusing outright — see `skills/pr/SKILL.md`.
 | `plan` | `# Specification`. |
 | `execute` | `## Plan` and `## Progress`. |
 | `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `## Progress` box is unchecked; if no task resolves, no precondition at all. |
-| `archive` | The task branch's PR is merged. |

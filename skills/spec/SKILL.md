@@ -7,7 +7,7 @@ description: Use when an ADLC task has been brainstormed and needs its specifica
 
 Turn a task's brainstorm artifact into a reviewed specification on the same Linear
 card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan → execute
-→ pr → archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
+→ pr`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Arguments
 
