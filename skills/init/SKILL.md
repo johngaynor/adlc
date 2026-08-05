@@ -140,11 +140,60 @@ If any MCP call fails mid-flow, report it plainly, write nothing partial, and
 finish the rest of init normally. Never write a config containing unverified
 IDs.
 
-### 6. Report and hand off
+### 6. Scaffold permissions
+
+Set up permission settings so the ADLC lifecycle runs without constant
+prompts. Two layers, two files — every write is **additive-if-missing**:
+add only rules that aren't already present, never remove or rewrite existing
+ones, so a re-run of `/adlc:init` produces zero diff.
+
+1. **Committed `.claude/settings.json` — the safe git/gh allowlist.** Ask
+   first (this file changes the team's permission posture for everyone;
+   default to yes):
+   - If the file is absent, write it from `templates/settings.json.template`
+     verbatim — `allow` for `Bash(git *)` / `Bash(gh *)`, `ask` guards for
+     `gh repo delete *`, `gh secret *`, and the `gh api` DELETE forms.
+   - If it exists, read-merge-write: add only the template's missing
+     `allow`/`ask` entries, preserve everything already there, and show the
+     diff before saving. If the file is not valid JSON, report that plainly
+     and write nothing.
+2. **Per-user `.claude/settings.local.json` — the MCP grants.** Detect which
+   MCP servers are actually configured (`claude mcp list` — one
+   `name: target - status` line per server) and scaffold grants only for
+   servers that exist, using the detected name as the rule prefix (a
+   claude.ai connector named `X` appears as `mcp__claude_ai_X__<tool>`).
+   Merge into the file with the same additive-if-missing rule, creating it
+   if absent:
+   - **linear** (required by the PM seam) — allow exactly the seam's tool
+     set: `get_issue`, `save_issue`, `list_issues`, `list_issue_labels`,
+     `create_issue_label`, `list_issue_statuses`, `list_teams`, `get_team`,
+     `list_projects`, `save_project`, `list_milestones`, `get_milestone`,
+     `list_comments`, `save_comment` — each as
+     `mcp__<server>__<tool>`. Never grant `delete_*` tools; those keep
+     prompting. If no Linear server is configured, report the setup
+     instructions and skip — same posture as step 5.
+   - **github** — read-only grants: `mcp__<server>__get_*`,
+     `mcp__<server>__list_*`, `mcp__<server>__search_*`,
+     `mcp__<server>__pull_request_read`, `mcp__<server>__issue_read`
+     (allow rules accept tool-name globs after a literal server prefix).
+     Writes stay on the `gh` CLI, which layer 1 already covers.
+   - **notion** — read-only grants: the server's search and fetch tools
+     (e.g. `notion-search`, `notion-fetch`). Notion writes keep prompting.
+   - Servers not configured are skipped silently; servers beyond these
+     three are out of scope — the user adds their own rules.
+3. **Gitignore** — `settings.local.json` is not ignored automatically:
+   ensure the repo's `.gitignore` contains `.claude/settings.local.json`,
+   adding the line only if missing.
+
+### 7. Report and hand off
 
 Summarize what you created and tell the user the immediate next moves:
 
 - Review `CLAUDE.md` — especially the Task Router rows and Validation Commands.
+- Which permission files were written or merged (step 6), and that MCP
+  grants live in `settings.local.json` — a user who wants them to follow
+  their account across repos can promote them to `~/.claude/settings.json`
+  themselves; init never writes outside the repo.
 - The harness ships more skills: the lifecycle (`/adlc:brainstorm` →
   `/adlc:pr`, Linear required for all but `/adlc:pr`), `/adlc:add-lesson`.
   Mention they're available.
@@ -163,6 +212,12 @@ Summarize what you created and tell the user the immediate next moves:
 - **Never** write `.adlc/config.json` with team or project IDs that did not
   come from a live Linear MCP response.
 - **Ask First** before replacing an existing `pm` block in `.adlc/config.json`.
+- **Ask First** before writing the committed `.claude/settings.json` — it sets
+  the whole team's permission posture.
+- **Never** write permission rules outside the repo (`~/.claude/` stays the
+  user's own), never grant destructive MCP tools (`delete_*` and kin), and
+  never remove or rewrite a permission rule the user already has — permission
+  writes are additive-if-missing only.
 
 ## Done when
 
@@ -171,6 +226,10 @@ entry exist, the Task Router and Validation Commands reflect this specific
 project, and you've told the user what to review. The project-skills convention
 is in place: `.ai/skills/README.md` exists, `.claude/skills` is a relative
 symlink to `../.ai/skills` (or the Windows fallback was reported), `AGENTS.md`
-carries the pointer section, and `.ai/skills/` is not gitignored. If the user opted into Linear:
+carries the pointer section, and `.ai/skills/` is not gitignored. Permissions
+are scaffolded: `.claude/settings.json` carries the git/gh allowlist (or the
+user declined), `settings.local.json` carries grants for the MCP servers that
+were actually detected, and `.gitignore` covers `.claude/settings.local.json`.
+If the user opted into Linear:
 `.adlc/config.json` exists with the `pm` block, every ID in it came from a live
 Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
