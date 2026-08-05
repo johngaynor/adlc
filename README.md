@@ -50,7 +50,8 @@ brainstorm → spec → plan → execute → pr
   `In Progress`.
 - **`/adlc:pr`** — validate, commit, push, and open the PR; the branch name lets
   Linear auto-link it, and the issue advances to `In Review`. A background
-  poller then watches the PR and moves the issue to `Done` when it merges
+  poller then watches the PR, clears trivial merge conflicts via
+  `/adlc:resolve-conflict`, and moves the issue to `Done` when it merges
   (`/adlc:cleanup` is the safety net if the session ends first).
 
 Stages hand off to each other through the workflow bridge, **`/adlc:next`**: each
@@ -93,6 +94,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 | `/adlc:add-skill` | Author a project skill in `.ai/skills/`; graduates skill-sized lessons | ✅ implemented |
 | `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR Linear issues to `Done` | ✅ implemented |
+| `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
 
 ## Project skills — extending the harness
 
