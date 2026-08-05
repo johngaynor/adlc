@@ -26,12 +26,12 @@ neither.
   more than one matches.
 - `completedStage` — the stage that just finished, passed by the stage that
   invokes the bridge. If omitted, infer it from `readTask(taskRef)` — the
-  canonical sections present plus the status:
+  artifacts present plus the status:
 
   | Observed state | Last completed stage |
   |---|---|
-  | `## Idea` only | brainstorm |
-  | `## Specification`, no `## Plan` | spec |
+  | Brainstorm artifact only (non-empty description, no `# Specification`) | brainstorm |
+  | `# Specification`, no `## Plan` | spec |
   | `## Plan` + `## Progress`, status `Todo` | plan |
   | `## Progress` all checked, status `In Progress` | execute |
   | Status `In Review` | pr |

@@ -38,9 +38,11 @@ brainstorm → spec → plan → execute → pr → archive
 ```
 
 - **`/adlc:brainstorm`** — sharpen a rough idea into a crisp problem statement and
-  create the task's Linear issue (`## Idea`, status `Backlog`).
+  create (or retrofit) the task's Linear issue: a brief 1–2 sentence description
+  with key findings in a collapsed `### Notes` block, status `Backlog`.
 - **`/adlc:spec`** — research and write the specification onto that same issue
-  (`## Specification`).
+  (`# Specification` — summary paragraph, collapsible topic sections, and a
+  Risks & unknowns dropdown).
 - **`/adlc:plan`** — turn the spec into an ordered, phased plan and a progress
   checklist (`## Plan`, `## Progress`), status `Todo`.
 - **`/adlc:execute`** — create the task's branch and git worktree, then work the
@@ -57,9 +59,10 @@ automatically if you ask for auto mode), so you never have to remember the next
 command — and `/adlc:next` on its own resumes a task at whatever comes next.
 
 **Linear is the live workspace.** One Linear issue is the whole record for a task
-while it's in flight — its description holds the canonical `## Idea` /
-`## Specification` / `## Plan` / `## Progress` / `## Outcome` sections, upserted in
-place as each stage runs. Every lifecycle skill talks to Linear through a single
+while it's in flight — its description holds the canonical artifacts (the
+brainstorm preamble with its Notes dropdown, the `# Specification` block, and the
+`## Plan` / `## Progress` / `## Outcome` sections), upserted in place as each
+stage runs. Every lifecycle skill talks to Linear through a single
 seam (`reference/pm-seam.md`) instead of calling it ad hoc, so a future PM adapter
 could replace Linear without any skill changing.
 
@@ -83,8 +86,8 @@ every later stage parses to find the task. Parallel tasks never collide.
 | Skill | What it does | Status |
 |-------|--------------|--------|
 | `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention); optionally connect Linear | ✅ implemented |
-| `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (`## Idea`) | ✅ implemented |
-| `/adlc:spec` | Research and write the task's specification into Linear (`## Specification`) | ✅ implemented |
+| `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (brief description + collapsed Notes) | ✅ implemented |
+| `/adlc:spec` | Research and write the task's specification into Linear (`# Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
 | `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` | ✅ implemented |

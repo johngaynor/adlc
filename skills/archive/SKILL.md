@@ -9,7 +9,7 @@ Close out a finished task: leave a curated, durable summary in the repo and clos
 the Linear issue — the sixth and final stage of the ADLC lifecycle
 (`brainstorm → spec → plan → execute → pr → archive`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). The issue already holds the full
-`## Specification` and `## Plan` for anyone who wants the detail — the repo only
+`# Specification` and `## Plan` for anyone who wants the detail — the repo only
 needs what shipped, why, and how, so it stays a light record rather than a
 duplicate of Linear.
 
@@ -32,7 +32,7 @@ task branch, `cd` into that worktree first.
    the task's PR is merged (check the PR opened by `/adlc:pr`, or ask the user
    for its URL/state if it isn't already known). If it is not merged, refuse and
    tell the user to finish `/adlc:pr` and get it merged first.
-3. **Draft the curated summary.** Read `## Idea`, `## Specification`, `## Plan`,
+3. **Draft the curated summary.** Read the brainstorm artifact, `# Specification`, `## Plan`,
    and `## Progress` for context, then write a short new document — **not** a
    copy of any of them — covering:
    - **What shipped** — the concrete, user-visible outcome.
@@ -81,11 +81,11 @@ task branch, `cd` into that worktree first.
   deliberate exception to the review discipline that governs the *code* PR from
   `/adlc:pr`; **never** fold code or behavior changes into an archive PR to ride
   its auto-merge.
-- **Never** copy the full `## Specification` or `## Plan` verbatim into the repo
+- **Never** copy the full `# Specification` or `## Plan` verbatim into the repo
   summary — curate it down to what/why/how and deviations; the issue remains the
   detailed record.
 - **Never** run this stage against a task whose PR isn't merged yet.
-- **Never** invent a Linear section name outside the five canonical ones in
+- **Never** invent an artifact outside the canonical layout in
   `reference/pm-seam.md`.
 
 ## Done when

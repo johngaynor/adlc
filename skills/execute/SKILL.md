@@ -90,7 +90,7 @@ Resolve the task before anything else, in this order:
   later as a "notable deviation" — never let it pass silently.
 - **Never** tick a phase (`tickPhase`) or move to the next one while its
   verification is failing.
-- **Never** invent a Linear section name outside the five canonical ones in
+- **Never** invent an artifact outside the canonical layout in
   `reference/pm-seam.md`, and never open the PR from this stage.
 
 ## Done when
