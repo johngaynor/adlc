@@ -31,13 +31,13 @@ neither.
   | Observed state | Last completed stage |
   |---|---|
   | Brainstorm artifact only (non-empty description, no `# Specification`) | brainstorm |
-  | `# Specification`, no `## Plan` | spec |
-  | `## Plan` + `## Progress`, status `Todo` | plan |
-  | `## Progress` all checked, status `In Progress` | execute |
+  | `# Specification`, no `# Technical plan` | spec |
+  | `# Technical plan` + `# Progress`, status `Todo` | plan |
+  | `# Progress` all checked, status `In Progress` | execute |
   | Status `In Review` | pr — the poller closes the card when the PR merges |
   | Status `Done` | lifecycle complete |
 
-  If the observed state is mid-stage instead (e.g. unchecked `## Progress`
+  If the observed state is mid-stage instead (e.g. unchecked `# Progress`
   boxes with status `In Progress`), the task's next step is *resuming that same
   stage* — offer that in the prompt instead of a successor.
 
@@ -76,7 +76,7 @@ neither.
      Resolution: the `taskRef` stays in session context for pre-code stages;
      code stages resolve it from the task branch. No pointer file, ever.
    - **Review first** — show what the completed stage just wrote (its Linear
-     section; for `execute`, the final `## Progress` state and the branch),
+     section; for `execute`, the final `# Progress` state and the branch),
      then re-present this same prompt.
    - **Stop here** — end the turn cleanly. The task is left exactly as if the
      bridge didn't exist: resumable later via the normal stage command or

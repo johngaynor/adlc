@@ -29,7 +29,7 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    This is best-effort, not a precondition: `pr` also works with no PM/Linear
    configured at all.
    - If it resolves to an issue, call `readTask(taskRef)` and check the
-     `## Progress` checklist. If any box is still unchecked, warn the user that
+     `# Progress` checklist. If any box is still unchecked, warn the user that
      not every planned phase is done and ask for confirmation before proceeding
      — do not hard-block; shipping partial work as a PR can be intentional.
    - If no task resolves (no PM/Linear configured, or the current branch doesn't
@@ -89,7 +89,7 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 
 - **Ask First** before force-pushing, merging, or targeting a non-default base.
 - **Ask First** before opening the PR when a resolved task has unchecked
-  `## Progress` boxes — warn and get confirmation, never hard-block.
+  `# Progress` boxes — warn and get confirmation, never hard-block.
 - **Never** commit secrets, credentials, or tokens.
 - **Never** open a PR with failing validation, or claim validation passed without
   running it.

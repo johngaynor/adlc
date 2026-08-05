@@ -5,7 +5,7 @@ description: Use when an ADLC task is planned and it's time to write code — af
 
 # Execute
 
-Turn a task's approved `## Plan` into committed code, one phase at a time, with
+Turn a task's approved `# Technical plan` into committed code, one phase at a time, with
 live progress ticked in the same Linear issue — the fourth stage of the ADLC
 lifecycle (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). This is the first stage where code
@@ -27,13 +27,13 @@ Resolve the task before anything else, in this order:
 2. **Not yet in a task worktree:** use the `taskRef` argument if given, otherwise
    the `taskRef` already held in the session's context (set by a prior
    `/adlc:plan` in this same session), otherwise call `findTasks(status "Todo",
-   has "## Plan")` per `reference/pm-seam.md` and ask the user which candidate to
+   has "# Technical plan")` per `reference/pm-seam.md` and ask the user which candidate to
    execute — do not guess when more than one matches.
 
 ## Workflow
 
 1. **Read and gate on the precondition.** Call `readTask(taskRef)`. It must have
-   both `## Plan` and `## Progress`. If either is missing, refuse and tell the
+   both `# Technical plan` and `# Progress`. If either is missing, refuse and tell the
    user to run `/adlc:plan` first — never start coding against an unplanned task.
 2. **Create the branch and worktree.** This only happens once, on the first run
    for this task (see Arguments step 1 above):
@@ -57,9 +57,9 @@ Resolve the task before anything else, in this order:
 3. **Advance the status.** Call `setStatus(taskRef, "In Progress")` per the
    seam's Status Mapping — do this once, right after the branch/worktree exists
    (or immediately, on a resumed run, if the issue isn't already `In Progress`).
-4. **Work the plan phase by phase.** Re-read `## Progress` and take the phases in
+4. **Work the plan phase by phase.** Re-read `# Progress` and take the phases in
    order. For each unchecked box:
-   - **Implement** the phase exactly as `## Plan` describes it.
+   - **Implement** the phase exactly as `# Technical plan` describes it.
    - **Verify** it using the Validation Commands in the consuming repo's root
      `CLAUDE.md` (see [`METHODOLOGY.md`](../../METHODOLOGY.md) § 3 for what the
      label means) — the smallest relevant set for what the phase touched. A
@@ -68,12 +68,12 @@ Resolve the task before anything else, in this order:
    - **Commit** the phase's work on the task branch with a message naming the
      phase, so the phase stays independently reviewable.
    - **Tick it.** Call `tickPhase(taskRef, phaseText)` per
-     `reference/pm-seam.md`, using the exact phase text from `## Progress`.
+     `reference/pm-seam.md`, using the exact phase text from `# Progress`.
    - **Checkpoint.** Report what was done and the verification evidence to the
      user before moving to the next phase, so they have a natural point to
      redirect, pause, or call out something the plan missed.
 5. **Report and hand off when every box is checked.** Report the final state of
-   `## Progress` and the branch it's committed on, then invoke the workflow
+   `# Progress` and the branch it's committed on, then invoke the workflow
    bridge ([`/adlc:next`](../next/SKILL.md)) with `completedStage: execute` and
    the `taskRef`. Do **not** open a pull request from this stage — shipping is
    `/adlc:pr`, which the bridge offers as the next step.
@@ -83,7 +83,7 @@ Resolve the task before anything else, in this order:
 - **Never** run this skill's implementation work outside the task's own
   worktree once it exists — a resumed run always continues inside it, never in
   the original checkout or a new one.
-- **Ask First** before deviating from the agreed `## Plan` — if a phase turns
+- **Ask First** before deviating from the agreed `# Technical plan` — if a phase turns
   out to need a different approach than planned, flag it to the user before
   proceeding. If a deviation is approved, call it out plainly in that phase's
   commit message and in the checkpoint report so `/adlc:pr` can surface it in
@@ -95,5 +95,5 @@ Resolve the task before anything else, in this order:
 
 ## Done when
 
-Every box in `## Progress` is checked, the issue's status is `In Progress`, and
+Every box in `# Progress` is checked, the issue's status is `In Progress`, and
 all completed phases are committed on the task branch inside its own worktree.

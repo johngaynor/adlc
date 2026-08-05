@@ -44,9 +44,9 @@ brainstorm → spec → plan → execute → pr
   (`# Specification` — summary paragraph, collapsible topic sections, and a
   Risks & unknowns dropdown).
 - **`/adlc:plan`** — turn the spec into an ordered, phased plan and a progress
-  checklist (`## Plan`, `## Progress`), status `Todo`.
+  checklist (`# Technical plan`, `# Progress`), status `Todo`.
 - **`/adlc:execute`** — create the task's branch and git worktree, then work the
-  plan phase by phase, ticking `## Progress` live as each phase lands, status
+  plan phase by phase, ticking `# Progress` live as each phase lands, status
   `In Progress`.
 - **`/adlc:pr`** — validate, commit, push, and open the PR; the branch name lets
   Linear auto-link it, and the issue advances to `In Review`. A background
@@ -61,7 +61,7 @@ command — and `/adlc:next` on its own resumes a task at whatever comes next.
 **Linear is the live workspace.** One Linear issue is the whole record for a task
 while it's in flight — its description holds the canonical artifacts (the
 brainstorm preamble with its Notes dropdown, the `# Specification` block, and the
-`## Plan` / `## Progress` / `## Outcome` sections), upserted in place as each
+`# Technical plan` / `# Progress` / `# Outcome` sections), upserted in place as each
 stage runs. Every lifecycle skill talks to Linear through a single
 seam (`reference/pm-seam.md`) instead of calling it ad hoc, so a future PM adapter
 could replace Linear without any skill changing.
@@ -87,7 +87,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention); optionally connect Linear | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (brief description + collapsed Notes) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into Linear (`# Specification`) | ✅ implemented |
-| `/adlc:plan` | Write the phased plan and progress checklist into Linear (`## Plan`, `## Progress`) | ✅ implemented |
+| `/adlc:plan` | Write the phased plan and progress checklist into Linear (`# Technical plan`, `# Progress`) | ✅ implemented |
 | `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` and spawns the post-merge poller that closes it | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
