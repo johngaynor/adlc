@@ -46,12 +46,6 @@ confident, state what you found and proceed.
   diff between what you'd generate and what's there, and offer to merge the Task
   Router / boundary sections in instead. Ask first.
 - If `.claude/lessons.md` already exists, leave it and only add what's missing.
-- Project-skills convention (step 4): if `.claude/skills` is already a symlink to
-  `../.ai/skills`, the whole scaffold is a no-op. If `.claude/skills` exists as a
-  **real directory** with content, do not touch it silently — offer to move its
-  contents into `.ai/skills/` and replace the directory with the symlink, and ask
-  first. If `.ai/skills/` already exists, leave its contents untouched and add
-  only what's missing (e.g. a missing `README.md` or `AGENTS.md` pointer).
 
 ### 4. Write the files
 
@@ -68,36 +62,10 @@ resolvable at runtime), render and write:
 - **`.gitignore`** — ensure a `.worktrees/` entry exists (append to the existing
   file, or create it), so fallback worktrees (METHODOLOGY.md idea 5) are never
   committed.
-- **Project skills scaffold** — the tool-neutral home for this repo's own agent
-  skills (see METHODOLOGY.md § "Extending the harness with project skills"):
-  - **`.ai/skills/README.md`** — from `templates/project-skills-README.md.template`
-    (the SKILL.md contract, the correction → lesson → rule → skill ladder, and
-    that `/adlc:add-skill` authors skills here). This seed file is load-bearing:
-    git doesn't track empty directories, so without it a fresh clone would leave
-    the symlink below dangling.
-  - **`.claude/skills`** — a *relative* symlink to the canonical directory:
-    `ln -s ../.ai/skills .claude/skills`. Commit the symlink itself; it is what
-    gives Claude Code native discovery of project skills (session skill list +
-    `/<name>` invocation). **Windows caveat:** symlink creation needs Developer
-    Mode or `core.symlinks=true`. If creation fails, fall back to keeping
-    `.claude/skills/` as a real directory and tell the user plainly that it will
-    not auto-track `.ai/skills/` — don't half-fix it silently.
-  - **`AGENTS.md`** — ensure a short "Project skills" section pointing other
-    (non-Claude) harnesses at `.ai/skills/<name>/SKILL.md`. Create the file if
-    it's missing; if it exists without the section, append it; if the section is
-    already there, leave it alone.
-  - **`.gitignore` semantics** — `.ai/skills/` must stay committed even where
-    other `.ai/` content is local. If the repo ignores `.ai/` wholesale, rewrite
-    that entry to the exception-safe pair:
-
-    ```
-    .ai/*
-    !.ai/skills/
-    ```
-
-    (A bare `!.ai/skills/` under an ignored `.ai/` has no effect — git never
-    descends into ignored directories.) Path-specific ignores like `.ai/specs/`
-    need no change.
+- **Project skills scaffold** — TBD(project-skills): the convention for a repo's
+  own agent skills (canonical home, discovery wiring, docs pointer) is parked
+  while it is redesigned. Init scaffolds nothing for it — do not create skill
+  directories, symlinks, or pointer sections.
 
 ### 5. Connect Linear (optional)
 
@@ -202,9 +170,6 @@ Summarize what you created and tell the user the immediate next moves:
 ## Boundaries
 
 - **Never** overwrite an existing root `CLAUDE.md` without explicit confirmation.
-- **Never** move or delete an existing `.claude/skills/` directory (or its
-  contents) without explicit confirmation — the retrofit to a symlink is always
-  offered, never assumed.
 - **Ask First** before inventing validation commands you could not find — a wrong
   build command is worse than an empty one.
 - **Always** fill placeholders from real detection; leave a `TODO(adlc)` marker
@@ -223,10 +188,8 @@ Summarize what you created and tell the user the immediate next moves:
 
 `CLAUDE.md`, `.claude/lessons.md`, and a `.worktrees/` gitignore
 entry exist, the Task Router and Validation Commands reflect this specific
-project, and you've told the user what to review. The project-skills convention
-is in place: `.ai/skills/README.md` exists, `.claude/skills` is a relative
-symlink to `../.ai/skills` (or the Windows fallback was reported), `AGENTS.md`
-carries the pointer section, and `.ai/skills/` is not gitignored. Permissions
+project, and you've told the user what to review. (Project-skills scaffolding
+is parked — TBD(project-skills) — and intentionally absent.) Permissions
 are scaffolded: `.claude/settings.json` carries the git/gh allowlist (or the
 user declined), `settings.local.json` carries grants for the MCP servers that
 were actually detected, and `.gitignore` covers `.claude/settings.local.json`.
