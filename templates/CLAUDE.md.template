@@ -74,8 +74,8 @@ Run the smallest set that proves your change:
 
 - **Small fixes:** just fix them — no ceremony.
 - **Non-trivial work (3+ steps or an architectural decision):** write a short spec
-  first on the task's Linear issue (`## Specification`), then implement. The
-  `/adlc:brainstorm` → `/adlc:spec` skills drive this.
+  first on the task's issue in the configured PM (`# Specification`), then
+  implement. The `/adlc:brainstorm` → `/adlc:spec` skills drive this.
 - **Verification:** run Validation Commands and confirm output before saying "done".
   Evidence before assertions.
 

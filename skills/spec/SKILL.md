@@ -1,17 +1,17 @@
 ---
 name: spec
-description: Use when an ADLC task has been brainstormed and needs its specification written — after /adlc:brainstorm. Researches and writes the spec into the task's Linear issue.
+description: Use when an ADLC task has been brainstormed and needs its specification written — after /adlc:brainstorm. Researches and writes the spec into the task's card in the configured PM.
 ---
 
 # Spec
 
-Turn a task's brainstorm artifact into a reviewed specification on the same Linear
+Turn a task's brainstorm artifact into a reviewed specification on the same
 card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan → execute
 → pr`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)).
 
 ## Arguments
 
-- `taskRef` (optional) — the Linear issue URL or identifier to spec. If omitted:
+- `taskRef` (optional) — the issue URL or identifier to spec. If omitted:
   1. Use the `taskRef` already held in the session's context (set by a prior
      `/adlc:brainstorm` in this same session).
   2. Otherwise call `findTasks(brainstormed but not specced)` per
@@ -34,7 +34,7 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
    existing specs relevant to the brainstorm artifact, and read them before
    drafting. Do not invent architecture the repo's own conventions already
    answer.
-4. **Draft the specification** per the seam's Linear Data Model layout. Each
+4. **Draft the specification** per the seam's Card Data Model layout. Each
    part carries an explicit quality bar — together they are the review rubric
    the hand-off gate checks:
    - **Summary paragraph** — a small paragraph, directly under the
@@ -63,9 +63,9 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
    seam's boundary rules; re-running this stage overwrites it cleanly rather
    than duplicating it, and never disturbs the brainstorm preamble above it.
 6. **Apply the `spec` label.** Call `applyLabel(taskRef, "spec")` per
-   `reference/pm-seam.md` — this auto-creates the team label if missing and
+   `reference/pm-seam.md` — this auto-creates the label if missing and
    applies it idempotently, so the card signals the artifact at a glance.
-7. **Report and hand off.** Point the user at the Linear issue and summarize the
+7. **Report and hand off.** Point the user at the issue and summarize the
    key design decisions and any open risks, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: spec` and the
    `taskRef`. The bridge's prompt *is* this stage's review gate, and the

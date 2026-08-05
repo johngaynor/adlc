@@ -27,8 +27,9 @@ a `.claude/lessons.md`, and permission settings (a committed git/gh allowlist
 plus per-user MCP grants for the servers it detects) — a strong starting
 point you grow from: lessons
 accumulate, recurring ones become `CLAUDE.md` rules, and whole workflows graduate
-into project skills via `/adlc:add-skill`. It can also optionally connect the
-repo to Linear, which unlocks the lifecycle below.
+into project skills via `/adlc:add-skill`. It can also connect the repo to a
+PM — **Linear or GitHub Issues**, your choice — which unlocks the lifecycle
+below.
 
 ## The ADLC lifecycle
 
@@ -39,7 +40,7 @@ brainstorm → spec → plan → execute → pr
 ```
 
 - **`/adlc:brainstorm`** — sharpen a rough idea into a crisp problem statement and
-  create (or retrofit) the task's Linear issue: a brief 1–2 sentence description
+  create (or retrofit) the task's issue: a brief 1–2 sentence description
   with key findings in a collapsed `### Notes` block, status `Backlog`.
 - **`/adlc:spec`** — research and write the specification onto that same issue
   (`# Specification` — summary paragraph, collapsible topic sections, and a
@@ -49,8 +50,9 @@ brainstorm → spec → plan → execute → pr
 - **`/adlc:execute`** — create the task's branch and git worktree, then work the
   plan phase by phase, ticking `# Progress` live as each phase lands, status
   `In Progress`.
-- **`/adlc:pr`** — validate, commit, push, and open the PR; the branch name lets
-  Linear auto-link it, and the issue advances to `In Review`. A background
+- **`/adlc:pr`** — validate, commit, push, and open the PR; it links back to the
+  task's issue (Linear auto-links from the branch name; GitHub via a
+  `Closes #<number>` body line), and the issue advances to `In Review`. A background
   poller then watches the PR, clears trivial merge conflicts via
   `/adlc:resolve-conflict`, and moves the issue to `Done` when it merges
   (`/adlc:cleanup` is the safety net if the session ends first).
@@ -64,41 +66,43 @@ open PR, which becomes your review surface. The execute→pr hop never prompts i
 any mode — once a plan is approved and executed, the PR follows immediately —
 so the plan hand-off is the last decision point in every task's lifecycle.
 
-**Linear is the live workspace.** One Linear issue is the whole record for a task
+**The task's issue is the live workspace.** One issue — in Linear or GitHub
+Issues, whichever the repo chose at init — is the whole record for a task
 while it's in flight — its description holds the canonical artifacts (the
 brainstorm preamble with its Notes dropdown, the `# Specification` block, and the
 `# Technical plan` / `# Progress` / `# Outcome` sections), upserted in place as each
-stage runs. Every lifecycle skill talks to Linear through a single
-seam (`reference/pm-seam.md`) instead of calling it ad hoc, so a future PM adapter
-could replace Linear without any skill changing.
+stage runs. Every lifecycle skill talks to the PM through a single
+seam (`reference/pm-seam.md`) with one mapping per provider, so a future PM
+adapter (Notion, Jira, ...) could be added without any skill changing.
 
 **The issue is the durable record.** When the PR merges, the card simply closes —
-the full spec, plan, and progress history stay on the (now `Done`) Linear issue;
+the full spec, plan, and progress history stay on the (now `Done`) issue;
 the repo carries only the merged code and its PR description.
 
 Task identity is derived, never a shared pointer: before code exists it's the
-Linear issue held in the agent's own session; once `/adlc:execute` creates the
+issue held in the agent's own session; once `/adlc:execute` creates the
 task branch, the branch name (`<initials>/<issue-identifier>-<slug>`) is what
 every later stage parses to find the task. Parallel tasks never collide.
 
-> **Requires: Linear MCP.** `/adlc:brainstorm` through `/adlc:execute` need a
-> Linear MCP server configured for the target repo — set it up via `/adlc:init`'s
-> optional Linear step. Without it, `/adlc:pr` and `/adlc:add-lesson` still work
-> standalone with no PM configured.
+> **Requires: a configured PM provider.** `/adlc:brainstorm` through
+> `/adlc:execute` need a PM connected for the target repo — Linear (via the
+> Linear MCP) or GitHub Issues (via the GitHub MCP or the `gh` CLI), chosen in
+> `/adlc:init`'s PM step and recorded in `.adlc/config.json`. Without one,
+> `/adlc:pr` and `/adlc:add-lesson` still work standalone with no PM configured.
 
 ## Skills
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo (incl. permission settings); optionally connect Linear | ✅ implemented |
-| `/adlc:brainstorm` | Sharpen an idea into the task's Linear issue (brief description + collapsed Notes) | ✅ implemented |
-| `/adlc:spec` | Research and write the task's specification into Linear (`# Specification`) | ✅ implemented |
-| `/adlc:plan` | Write the phased plan and progress checklist into Linear (`# Technical plan`, `# Progress`) | ✅ implemented |
-| `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking Linear live | ✅ implemented |
-| `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved Linear task to `In Review` and spawns the post-merge poller that closes it | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. permission settings); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
+| `/adlc:brainstorm` | Sharpen an idea into the task's issue (brief description + collapsed Notes) | ✅ implemented |
+| `/adlc:spec` | Research and write the task's specification into its issue (`# Specification`) | ✅ implemented |
+| `/adlc:plan` | Write the phased plan and progress checklist into the issue (`# Technical plan`, `# Progress`) | ✅ implemented |
+| `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking the issue live | ✅ implemented |
+| `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved task to `In Review` and spawns the post-merge poller that closes it | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
 | `/adlc:add-skill` | Author a project skill (home TBD(project-skills) — asks where to write); graduates skill-sized lessons | ✅ implemented |
-| `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR Linear issues to `Done` | ✅ implemented |
+| `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR issues to `Done` | ✅ implemented |
 | `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
 
 ## Project skills — extending the harness
@@ -142,7 +146,7 @@ adlc/
 │   └── project-skills-README.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
-    ├── brainstorm/          # lifecycle: idea → Linear issue
+    ├── brainstorm/          # lifecycle: idea → task issue
     ├── spec/                # lifecycle: idea → specification
     ├── plan/                # lifecycle: spec → phased plan + progress checklist
     ├── execute/             # lifecycle: plan → branch/worktree → committed code
@@ -154,7 +158,7 @@ adlc/
 ## Contributing / parallel work streams
 
 The original four v0.1 skills (streams A–D below) are implemented, and the
-Linear-lifecycle skills (see "The ADLC lifecycle" above) have since been added
+lifecycle skills (see "The ADLC lifecycle" above) have since been added
 alongside them. When adding or changing a skill, read
 [`CONVENTIONS.md`](./CONVENTIONS.md) (skill format) and
 [`METHODOLOGY.md`](./METHODOLOGY.md) (vocabulary), and use `skills/init/SKILL.md` as
@@ -163,7 +167,7 @@ the worked example.
 | Stream | File | Status |
 |--------|------|--------|
 | **A — Init scaffolder** | `skills/init/SKILL.md` + `templates/` | ✅ implemented (reference skill) |
-| **B — Spec workflow** | `skills/spec/SKILL.md` — superseded by the lifecycle; specs live on the Linear issue | ✅ implemented |
+| **B — Spec workflow** | `skills/spec/SKILL.md` — superseded by the lifecycle; specs live on the task's issue | ✅ implemented |
 | **C — PR workflow** | `skills/pr/SKILL.md` | ✅ implemented |
 | **D — Lessons loop** | `skills/add-lesson/SKILL.md` | ✅ implemented |
 | **E — Docs & dogfood** | this README + a throwaway test repo | ⏳ in progress |

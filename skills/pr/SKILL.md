@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". This is the ADLC `pr` lifecycle stage: runs validation, commits on a fresh branch, pushes, opens a PR with a structured description, and — when a Linear task resolves — advances it to `In Review` and spawns a background poller that moves it to `Done` once the PR merges.
+description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". This is the ADLC `pr` lifecycle stage: runs validation, commits on a fresh branch, pushes, opens a PR with a structured description, and — when a task resolves in the configured PM — advances it to `In Review` and spawns a background poller that moves it to `Done` once the PR merges.
 ---
 
 # Open a PR
@@ -10,7 +10,7 @@ validation green, a clean branch, a clear description — the fifth and final st
 of the ADLC lifecycle (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). This skill commits and pushes — it runs
 only when the user has explicitly asked to open a PR. It works standalone with no PM
-configured, exactly as it did before the lifecycle existed; when a Linear task
+configured, exactly as it did before the lifecycle existed; when a task
 resolves from the current branch, it also advances that task to `In Review` and
 leaves a background poller behind to move it to `Done` when the PR merges.
 
@@ -25,14 +25,14 @@ current checkout isn't on the task branch, `cd` into that worktree first.
    failure — do **not** open a PR on red. Show the actual output.
 2. **Check task progress, if one resolves.** Call `resolveCurrentTask()` per
    [`reference/pm-seam.md`](../../reference/pm-seam.md) — it parses the current
-   branch name (`<initials>/<issue-identifier>-<slug>`) to find the Linear issue.
-   This is best-effort, not a precondition: `pr` also works with no PM/Linear
-   configured at all.
+   branch name (`<initials>/<issue-identifier>-<slug>`) to find the issue in the
+   configured PM. This is best-effort, not a precondition: `pr` also works with
+   no PM configured at all.
    - If it resolves to an issue, call `readTask(taskRef)` and check the
      `# Progress` checklist. If any box is still unchecked, warn the user that
      not every planned phase is done and ask for confirmation before proceeding
      — do not hard-block; shipping partial work as a PR can be intentional.
-   - If no task resolves (no PM/Linear configured, or the current branch doesn't
+   - If no task resolves (no PM configured, or the current branch doesn't
      match the task branch format), proceed with no further action here — this
      stage still works as a plain PR opener.
 3. **Branch if needed.** Get on a proper feature branch (kebab-case, prefixed by
@@ -51,19 +51,24 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 6. **Push & open.** Push the branch, then `gh pr create` against the default branch
    with a body that states: **what** changed, **why**, **how it was validated**, and
    any follow-ups. Honor `.github/pull_request_template.md` if present. Apply the
-   project's PR labels if it uses a label convention.
+   project's PR labels if it uses a label convention. When the task resolved
+   through the **GitHub Issues provider**, include `Closes #<number>` in the
+   body — GitHub does not auto-link from branch names, and this line both links
+   the PR to the issue and closes it natively on merge (see the seam's GitHub
+   mapping).
 7. **Report** the PR URL. If working in an isolated workspace (worktree), note
    that it is now disposable — the branch lives on the remote.
 8. **Advance the task, if one resolved.** Reuse the `taskRef` resolved in step 2.
    - If it resolved to an issue, call `setStatus(taskRef, "In Review")`. The
-     branch name is also what let Linear auto-link this PR to the issue, so no
-     separate linking step is needed.
-   - If no PM/Linear is configured, or the current branch doesn't match the task
+     PR↔issue link needs no separate step either way: Linear auto-links from
+     the task branch name, and the GitHub provider's link is the
+     `Closes #<number>` line added in step 6.
+   - If no PM is configured, or the current branch doesn't match the task
      branch format (an ordinary `feat/...`-style branch with no issue identifier),
-     skip this step silently — no error, no prompt to configure Linear. Behave
+     skip this step silently — no error, no prompt to configure a PM. Behave
      exactly as the generic PR opener in the rest of this workflow.
 9. **Spawn the post-merge poller, if a task resolved.** Only when step 2
-   resolved a Linear issue — with no task there is nothing to close, so skip
+   resolved an issue — with no task there is nothing to close, so skip
    this step silently. Spawn a **background subagent** (the harness's background
    agent facility) whose sole job is:
    - Hold an **active polling loop for its entire lifetime**: check, wait
@@ -79,7 +84,10 @@ current checkout isn't on the task branch, `cd` into that worktree first.
      checks): `gh pr view <pr-url> --json state,mergedAt,mergeable,mergeStateStatus`.
    - When the PR reports merged, call `closeTask(taskRef)` per
      [`reference/pm-seam.md`](../../reference/pm-seam.md) — the issue moves to
-     `Done` — and report that it did so.
+     `Done` — and report that it did so. (With the GitHub provider the
+     `Closes #<number>` line already closed the issue on merge; `closeTask`
+     then verifies and finishes the `status:*` label cleanup rather than being
+     the sole closer.)
    - When the PR reports `mergeable: CONFLICTING`, run the
      [`resolve-conflict`](../resolve-conflict/SKILL.md) procedure in its
      background mode: trivial conflicts are resolved, validated, and plain-pushed;
@@ -131,7 +139,7 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 ## Done when
 
 The PR is open, validation passed with evidence, and the URL is reported. When
-`resolveCurrentTask()` resolved a Linear issue from the branch, its status is now
+`resolveCurrentTask()` resolved an issue from the branch, its status is now
 `In Review` and the background poller is watching the PR — moving it to `Done` on
 merge, and clearing trivial merge conflicts along the way via
 [`resolve-conflict`](../resolve-conflict/SKILL.md); when it didn't (no PM

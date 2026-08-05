@@ -1,12 +1,12 @@
 ---
 name: execute
-description: Use when an ADLC task is planned and it's time to write code — after /adlc:plan. Creates the task branch/worktree and works the plan phase-by-phase, ticking progress live in Linear.
+description: Use when an ADLC task is planned and it's time to write code — after /adlc:plan. Creates the task branch/worktree and works the plan phase-by-phase, ticking progress live on the task's card.
 ---
 
 # Execute
 
 Turn a task's approved `# Technical plan` into committed code, one phase at a time, with
-live progress ticked in the same Linear issue — the fourth stage of the ADLC
+live progress ticked in the same issue — the fourth stage of the ADLC
 lifecycle (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). This is the first stage where code
 changes happen, and the first stage to have a git identity of its own: it is
@@ -14,7 +14,7 @@ where the task branch and its worktree are born.
 
 ## Arguments
 
-- `taskRef` (optional) — the Linear issue URL or identifier to execute.
+- `taskRef` (optional) — the issue URL or identifier to execute.
 
 Resolve the task before anything else, in this order:
 
@@ -39,7 +39,9 @@ Resolve the task before anything else, in this order:
    for this task (see Arguments step 1 above):
    - Derive `<initials>` (the acting engineer's initials, lowercase — ask the
      user if they are not already known from git config), `<issue-identifier>`
-     (the Linear issue's identifier, lowercase, e.g. `eng-142`), and `<slug>` (a
+     (the provider's issue identity, lowercase — a Linear identifier like
+     `eng-142`, or a bare GitHub issue number like `142` — per the seam's Task
+     Identity Resolution), and `<slug>` (a
      short kebab-case slug from the issue title) to build the branch name
      `<initials>/<issue-identifier>-<slug>` exactly per
      [`reference/pm-seam.md`](../../reference/pm-seam.md).

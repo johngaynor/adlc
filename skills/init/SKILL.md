@@ -67,17 +67,20 @@ resolvable at runtime), render and write:
   while it is redesigned. Init scaffolds nothing for it — do not create skill
   directories, symlinks, or pointer sections.
 
-### 5. Connect Linear (optional)
+### 5. Connect a PM (optional)
 
-Offer to connect this repo to Linear for issue tracking. If the user declines,
-skip this step entirely — write nothing Linear-related.
+Offer to connect this repo to a project-management system for issue tracking —
+the user picks **Linear** or **GitHub Issues**, and that choice becomes the
+provider the whole ADLC lifecycle manages its issues through (see
+[`reference/pm-seam.md`](../../reference/pm-seam.md) § Provider Mappings). If
+the user declines, skip this step entirely — write nothing PM-related.
 
-If they accept:
+**If they choose Linear:**
 
 1. **Verify the Linear MCP with a live call** — list the workspace's teams via
    the Linear MCP. If the MCP is not configured or the call fails, give the
    user exact setup instructions for adding the Linear MCP server, then
-   continue init without Linear — they can re-run `/adlc:init` later to
+   continue init without a PM — they can re-run `/adlc:init` later to
    retrofit just this step.
 2. **Choose the team** — exactly one team returned: use it and say which.
    Multiple teams: ask the user to pick one.
@@ -98,15 +101,40 @@ If they accept:
    }
    ```
 
-   If `.adlc/config.json` already exists with a `pm` block, show it and ask
-   before changing it.
-5. **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/*` and
-   `!.adlc/config.json` (the config is shared; anything else under `.adlc/`
-   is per-machine). Add the lines only if missing.
+**If they choose GitHub Issues:**
 
-If any MCP call fails mid-flow, report it plainly, write nothing partial, and
-finish the rest of init normally. Never write a config containing unverified
-IDs.
+1. **Derive `owner`/`repo`** from the repo's `origin` remote URL. No `origin`
+   remote (or not a GitHub one): tell the user plainly and skip the PM step —
+   GitHub Issues needs a GitHub-hosted repo.
+2. **Verify access with a live call** — via the GitHub MCP if configured,
+   otherwise the `gh` CLI (both work; see the seam's GitHub mapping): confirm
+   the authenticated user and read the issue list (or a label) of
+   `owner/repo`. If neither transport is available or the call fails, give
+   exact setup instructions (`gh auth login`, or adding the GitHub MCP
+   server), then continue init without a PM — re-running `/adlc:init` later
+   retrofits just this step.
+3. **Write `.adlc/config.json`** in the repo root:
+
+   ```json
+   {
+     "pm": {
+       "provider": "github",
+       "owner": "<owner>",
+       "repo": "<repo>"
+     }
+   }
+   ```
+
+**Either way:**
+
+- If `.adlc/config.json` already exists with a `pm` block, show it and ask
+  before changing it — including when the change would switch providers.
+- **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/*` and
+  `!.adlc/config.json` (the config is shared; anything else under `.adlc/`
+  is per-machine). Add the lines only if missing.
+- If any MCP/`gh` call fails mid-flow, report it plainly, write nothing
+  partial, and finish the rest of init normally. Never write a config
+  containing unverified values.
 
 ### 6. Scaffold permissions
 
@@ -132,14 +160,15 @@ ones, so a re-run of `/adlc:init` produces zero diff.
    claude.ai connector named `X` appears as `mcp__claude_ai_X__<tool>`).
    Merge into the file with the same additive-if-missing rule, creating it
    if absent:
-   - **linear** (required by the PM seam) — allow exactly the seam's tool
+   - **linear** (used by the PM seam's Linear provider) — allow exactly the seam's tool
      set: `get_issue`, `save_issue`, `list_issues`, `list_issue_labels`,
      `create_issue_label`, `list_issue_statuses`, `list_teams`, `get_team`,
      `list_projects`, `save_project`, `list_milestones`, `get_milestone`,
      `list_comments`, `save_comment` — each as
      `mcp__<server>__<tool>`. Never grant `delete_*` tools; those keep
-     prompting. If no Linear server is configured, report the setup
-     instructions and skip — same posture as step 5.
+     prompting. If no Linear server is configured, skip — and report the
+     setup instructions when the repo's PM provider is (or is about to be)
+     Linear; same posture as step 5.
    - **github** — read-only grants: `mcp__<server>__get_*`,
      `mcp__<server>__list_*`, `mcp__<server>__search_*`,
      `mcp__<server>__pull_request_read`, `mcp__<server>__issue_read`
@@ -163,8 +192,8 @@ Summarize what you created and tell the user the immediate next moves:
   their account across repos can promote them to `~/.claude/settings.json`
   themselves; init never writes outside the repo.
 - The harness ships more skills: the lifecycle (`/adlc:brainstorm` →
-  `/adlc:pr`, Linear required for all but `/adlc:pr`), `/adlc:add-lesson`.
-  Mention they're available.
+  `/adlc:pr`, a configured PM provider required for all but `/adlc:pr`),
+  `/adlc:add-lesson`. Mention they're available.
 - Suggest committing the scaffold.
 
 ## Boundaries
@@ -174,9 +203,10 @@ Summarize what you created and tell the user the immediate next moves:
   build command is worse than an empty one.
 - **Always** fill placeholders from real detection; leave a `TODO(adlc)` marker
   where you genuinely could not determine a value, so it's greppable.
-- **Never** write `.adlc/config.json` with team or project IDs that did not
-  come from a live Linear MCP response.
-- **Ask First** before replacing an existing `pm` block in `.adlc/config.json`.
+- **Never** write `.adlc/config.json` with values (Linear team/project IDs,
+  GitHub owner/repo) that were not confirmed by a live call to that provider.
+- **Ask First** before replacing an existing `pm` block in `.adlc/config.json` —
+  especially when the change would switch providers.
 - **Ask First** before writing the committed `.claude/settings.json` — it sets
   the whole team's permission posture.
 - **Never** write permission rules outside the repo (`~/.claude/` stays the
@@ -193,6 +223,7 @@ is parked — TBD(project-skills) — and intentionally absent.) Permissions
 are scaffolded: `.claude/settings.json` carries the git/gh allowlist (or the
 user declined), `settings.local.json` carries grants for the MCP servers that
 were actually detected, and `.gitignore` covers `.claude/settings.local.json`.
-If the user opted into Linear:
-`.adlc/config.json` exists with the `pm` block, every ID in it came from a live
-Linear MCP response, and `.gitignore` covers `.adlc/` (except `config.json`).
+If the user opted into a PM:
+`.adlc/config.json` exists with the `pm` block naming the chosen provider
+(`linear` or `github`), every value in it was confirmed by a live call to that
+provider, and `.gitignore` covers `.adlc/` (except `config.json`).
