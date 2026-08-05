@@ -23,8 +23,10 @@ Then, inside any project you want to harness:
 ```
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
-a `.claude/lessons.md`, and the project-skills convention (`.ai/skills/` +
-discovery symlink, see below) — a strong starting point you grow from: lessons
+a `.claude/lessons.md`, permission settings (a committed git/gh allowlist plus
+per-user MCP grants for the servers it detects), and the project-skills
+convention (`.ai/skills/` + discovery symlink, see below) — a strong starting
+point you grow from: lessons
 accumulate, recurring ones become `CLAUDE.md` rules, and whole workflows graduate
 into project skills via `/adlc:add-skill`. It can also connect the repo to a
 PM — **Linear or GitHub Issues**, your choice — which unlocks the lifecycle
@@ -89,7 +91,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention and permission settings); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's issue (brief description + collapsed Notes) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into its issue (`# Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into the issue (`# Technical plan`, `# Progress`) | ✅ implemented |
@@ -141,6 +143,7 @@ adlc/
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
 │   ├── skill.md.template    # skeleton /adlc:add-skill renders into .ai/skills/
+│   ├── settings.json.template # committed git/gh permission allowlist init scaffolds
 │   └── project-skills-README.md.template
 └── skills/
     ├── init/                # the opinionated scaffolder (reference skill)
