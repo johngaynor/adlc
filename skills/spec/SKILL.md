@@ -34,16 +34,30 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
    existing specs relevant to the brainstorm artifact, and read them before
    drafting. Do not invent architecture the repo's own conventions already
    answer.
-4. **Draft the specification** per the seam's Linear Data Model layout:
+4. **Draft the specification** per the seam's Linear Data Model layout. Each
+   part carries an explicit quality bar — together they are the review rubric
+   the hand-off gate checks:
    - **Summary paragraph** — a small paragraph, directly under the
-     `# Specification` heading, of what the specification discovered.
-   - **Topic collapsibles** — one `>>>` block per topic. Cover at minimum the
-     approach (proposed design, alternatives considered and why rejected) and
-     the blast radius (files, modules, contracts touched), plus a test/coverage
-     plan for what the work must prove.
+     `# Specification` heading, of what the specification discovered. *Bar:*
+     reads standalone and absorbs the problem/goal (the brainstorm preamble
+     sits just above — don't restate it as its own part); ends with an
+     explicit verdict — ready to plan, or blocked on X.
+   - **Approach collapsible** — the chosen design. *Bar:* decisions stated as
+     decisions ("we will X"), with enough resolved that planning is mechanical,
+     not creative; alternatives are real options someone might actually pick,
+     rejected with honest reasons — never strawmen.
+   - **Blast radius collapsible** — what the work touches. *Bar:* named files,
+     modules, and contracts; "the API layer" fails the bar.
+   - **Test / coverage collapsible** — what the work must prove. *Bar:*
+     commitments `execute` can verify mechanically — named checks or commands,
+     not intentions.
    - **Risks & unknowns** — after a `---` divider, a collapsed
      `>>> ### Risks & unknowns` block. Anything that is a blocker must be
      surfaced here and addressed before the task moves to `/adlc:plan`.
+   - **The spec/plan line** — the spec is what, why, and resolved design; the
+     technical plan is sequencing and phases. A spec containing a phase
+     breakdown fails review, as does one so thin `/adlc:plan` would have to
+     make design decisions itself.
 5. **Write it back.** Call `writeSection(taskRef, "Specification", md)` per
    `reference/pm-seam.md` — this upserts the `# Specification` block by the
    seam's boundary rules; re-running this stage overwrites it cleanly rather
@@ -54,9 +68,12 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
 7. **Report and hand off.** Point the user at the Linear issue and summarize the
    key design decisions and any open risks, then invoke the workflow bridge
    ([`/adlc:next`](../next/SKILL.md)) with `completedStage: spec` and the
-   `taskRef`. The bridge's prompt *is* this stage's review gate: choosing
+   `taskRef`. The bridge's prompt *is* this stage's review gate, and the
+   quality bars in step 4 are its rubric — before invoking the bridge,
+   self-check the draft against each bar and fix what falls short: choosing
    **Move to plan** is the user's explicit approval of the specification,
-   **Review first** shows the new `# Specification` before deciding.
+   **Review first** shows the new `# Specification` (judged against those same
+   bars) before deciding.
 
 ## Boundaries
 
@@ -77,6 +94,7 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
 ## Done when
 
 The card has a `# Specification` block (summary paragraph, topic collapsibles,
-and a Risks & unknowns dropdown), carries the `spec` label, and the hand-off has
-passed through the bridge — the user approved it (or auto mode chained on), or
-chose **Stop here** and the task rests cleanly at `Backlog`.
+and a Risks & unknowns dropdown) that clears every quality bar in step 4,
+carries the `spec` label, and the hand-off has passed through the bridge — the
+user approved it (or auto mode chained on), or chose **Stop here** and the task
+rests cleanly at `Backlog`.
