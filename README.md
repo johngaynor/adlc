@@ -23,9 +23,8 @@ Then, inside any project you want to harness:
 ```
 
 `/adlc:init` detects your stack and scaffolds an opinionated `CLAUDE.md`,
-a `.claude/lessons.md`, permission settings (a committed git/gh allowlist plus
-per-user MCP grants for the servers it detects), and the project-skills
-convention (`.ai/skills/` + discovery symlink, see below) — a strong starting
+a `.claude/lessons.md`, and permission settings (a committed git/gh allowlist
+plus per-user MCP grants for the servers it detects) — a strong starting
 point you grow from: lessons
 accumulate, recurring ones become `CLAUDE.md` rules, and whole workflows graduate
 into project skills via `/adlc:add-skill`. It can also connect the repo to a
@@ -91,28 +90,24 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo (incl. the project-skills convention and permission settings); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. permission settings); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's issue (brief description + collapsed Notes) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into its issue (`# Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into the issue (`# Technical plan`, `# Progress`) | ✅ implemented |
 | `/adlc:execute` | Branch/worktree the task and work the plan phase-by-phase, ticking the issue live | ✅ implemented |
 | `/adlc:pr` | Validate, branch, commit, and open a PR; advances a resolved task to `In Review` and spawns the post-merge poller that closes it | ✅ implemented |
 | `/adlc:add-lesson` | Capture a correction as a durable lesson | ✅ implemented |
-| `/adlc:add-skill` | Author a project skill in `.ai/skills/`; graduates skill-sized lessons | ✅ implemented |
+| `/adlc:add-skill` | Author a project skill (home TBD(project-skills) — asks where to write); graduates skill-sized lessons | ✅ implemented |
 | `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR issues to `Done` | ✅ implemented |
 | `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
 
 ## Project skills — extending the harness
 
-A harnessed repo can ship its *own* agent skills alongside the plugin's. The
-canonical home is tool-neutral and committed: `.ai/skills/<name>/SKILL.md`,
-in the open agent-skills format. `/adlc:init` scaffolds the plumbing: a
-committed relative symlink `.claude/skills → ../.ai/skills` (so Claude Code
-discovers project skills natively and `/<name>` invokes them), an `AGENTS.md`
-pointer for other harnesses, a README seed that keeps the symlink from dangling
-on fresh clones, and gitignore rules that keep `.ai/skills/` committed even
-where the rest of `.ai/` stays local. See METHODOLOGY.md § "Extending the
-harness with project skills" (including the Windows symlink caveat).
+A harnessed repo can ship its *own* agent skills alongside the plugin's, in the
+open agent-skills format. **TBD(project-skills):** the convention for where
+they live and how they're discovered is parked while it is redesigned —
+`/adlc:init` scaffolds nothing for it and `/adlc:add-skill` asks where to
+write. See METHODOLOGY.md § "Extending the harness with project skills".
 
 ## Updating
 
@@ -142,7 +137,7 @@ adlc/
 ├── templates/               # files the skills render into a target repo
 │   ├── CLAUDE.md.template
 │   ├── lessons.md.template
-│   ├── skill.md.template    # skeleton /adlc:add-skill renders into .ai/skills/
+│   ├── skill.md.template    # skeleton /adlc:add-skill renders project skills from
 │   ├── settings.json.template # committed git/gh permission allowlist init scaffolds
 │   └── project-skills-README.md.template
 └── skills/
