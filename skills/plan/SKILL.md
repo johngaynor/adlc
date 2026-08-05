@@ -5,7 +5,7 @@ description: Use when an ADLC task has an approved spec and needs its technical 
 
 # Plan
 
-Turn a task's `## Specification` into a phased technical plan and a live progress
+Turn a task's `# Specification` into a phased technical plan and a live progress
 checklist on the same Linear issue — the third stage of the ADLC lifecycle
 (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)).
@@ -15,7 +15,7 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 - `taskRef` (optional) — the Linear issue URL or identifier to plan. If omitted:
   1. Use the `taskRef` already held in the session's context (set by a prior
      `/adlc:spec` in this same session).
-  2. Otherwise call `findTasks(has "## Specification", no "## Plan")` per
+  2. Otherwise call `findTasks(has "# Specification", no "## Plan")` per
      [`reference/pm-seam.md`](../../reference/pm-seam.md) and ask the user which
      candidate to plan — do not guess when more than one matches.
 
@@ -23,9 +23,11 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 
 1. **Resolve the task.** Determine `taskRef` per the Arguments rule above.
 2. **Read and gate on the precondition.** Call `readTask(taskRef)`. It must have
-   `## Specification`. If it does not, refuse and tell the user to run `/adlc:spec`
-   first — never draft a plan against an unspecified task.
-3. **Break the work into phases.** Split `## Specification` into ordered,
+   `# Specification`. If it does not, refuse and tell the user to run `/adlc:spec`
+   first — never draft a plan against an unspecified task. If the spec's
+   `Risks & unknowns` block lists an unresolved blocker, surface it — blockers
+   are resolved or explicitly accepted by the user before planning proceeds.
+3. **Break the work into phases.** Split `# Specification` into ordered,
    independently-committable phases. Each phase should be small enough to verify and
    commit on its own, and named clearly enough that its text can double as a
    checklist item later.
@@ -53,10 +55,10 @@ checklist on the same Linear issue — the third stage of the ADLC lifecycle
 
 - **Never** start writing code, create a branch, or touch a worktree in this
   stage — that is `/adlc:execute`.
-- **Ask First** before changing the agreed `## Specification` — if the plan
+- **Ask First** before changing the agreed `# Specification` — if the plan
   surfaces a gap or a needed scope change, flag it to the user rather than quietly
   reshaping the spec.
-- **Never** invent a Linear section name outside the five canonical ones in
+- **Never** invent an artifact outside the canonical layout in
   `reference/pm-seam.md`.
 - **Never** let coding start on an unapproved plan — approval arrives through
   the bridge (**Move to execute**, or an explicit auto-mode opt-in per the

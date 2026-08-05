@@ -5,34 +5,53 @@ talks to the project-management system through this seam and nothing else — no
 calls Linear ad hoc. Linear is the only implementation for v1: one Linear issue is the
 whole record for a task, and its description is the canonical living document. A future
 PM adapter (Notion, Jira, ...) would implement the same nine operations against a
-different backend; skills would not change.
+different backend; skills would not change. One caveat: the card layout itself (see
+[Linear Data Model](#linear-data-model)) uses Linear-flavored markdown — `>>>`
+collapsible sections — so an adapter must translate the layout, not just the
+operations.
 
 ## Operations
 
 Nine operations make up the seam. Each is documented below with its signature, what
 it does, and the concrete Linear MCP action it maps to.
 
-### `createTask(title, ideaMarkdown) → taskRef`
+### `createTask(title, brainstormMarkdown) → taskRef`
 
-Creates a new Linear issue with the given title, status `Backlog`, and description
-seeded with a `## Idea` section containing `ideaMarkdown`. Returns a `taskRef` (the
-issue identifier/URL) for the caller to hold in session context.
+Create-or-retrofit. With no existing card: creates a new Linear issue with the given
+title, status `Backlog`, and description seeded with the brainstorm artifact — the
+brief 1–2 sentence preamble plus its collapsed `>>> ### Notes` block (see
+[Linear Data Model](#linear-data-model)). With an existing card (the caller passes
+the card's `taskRef` in): replaces the description with that same layout, carrying
+the old description's content into the Notes dropdown so nothing is lost. Returns
+the `taskRef` (the issue identifier/URL) for the caller to hold in session context.
 
-- **Linear MCP action:** create issue.
+- **Linear MCP actions:** create issue, or read issue → update issue description.
 
 ### `writeSection(taskRef, sectionName, markdown)`
 
-Idempotent upsert of a single `## <sectionName>` block in the issue's description. If
-the section already exists, its content is replaced in place; if not, it is appended.
-Re-running a stage never duplicates a section.
+Idempotent upsert of one artifact block in the issue's description. If the block
+already exists, its content is replaced in place; if not, it is appended. Re-running
+a stage never duplicates a block. Block boundaries per artifact (layout under
+[Linear Data Model](#linear-data-model)):
+
+- `Brainstorm` — from the start of the description to the first `---` divider (the
+  untitled preamble plus its collapsed Notes block).
+- `Specification` — from the `---` divider immediately before the `# Specification`
+  heading to the next `## <name>` heading (`## Plan`, `## Progress`, `## Outcome`)
+  or, if none exists yet, the end of the description.
+- `Plan` / `Progress` / `Outcome` — legacy `##` sections: from the `## <name>`
+  heading line to the next `##` heading or end of description.
 
 - **Linear MCP action:** update issue description.
 
 ### `readTask(taskRef) → { sections: {name→markdown}, checklist: [{text, done}], status }`
 
-Reads the issue and parses its description into a map of section name → markdown body,
-the `## Progress` checklist as a list of `{text, done}` entries, and the issue's current
-status. This is how every stage determines its precondition before acting.
+Reads the issue and parses its description into a map of artifact name → markdown
+body using the block boundaries defined under `writeSection` — the untitled preamble
+parses as `Brainstorm`, the `# Specification` block as `Specification`, the legacy
+`##` sections under their own names — plus the `## Progress` checklist as a list of
+`{text, done}` entries, and the issue's current status. This is how every stage
+determines its precondition before acting.
 
 - **Linear MCP action:** read issue.
 
@@ -75,9 +94,11 @@ poller `pr` spawns when the PR merges, and by `/adlc:cleanup` as the safety net.
 
 ### `findTasks(filter) → taskRef[]`
 
-Queries Linear for issues matching `filter` — for example, "has `## Specification`, no
+Queries Linear for issues matching `filter` — for example, "has `# Specification`, no
 `## Plan`" — so a stage can offer a resume candidate when the caller has no `taskRef`
-in hand.
+in hand. "Brainstormed but not specced" means a non-empty description with no
+`# Specification` heading; where Linear's search cannot express a filter reliably,
+fall back to label presence (`spec`, `plan`) as the signal.
 
 - **Linear MCP action:** search issues.
 
@@ -94,39 +115,56 @@ issue. See [Task Identity Resolution](#task-identity-resolution).
 ## Linear Data Model
 
 One Linear issue is the whole record for one task. Its description is a markdown
-document divided into named `##` sections, filled in progressively as the task moves
-through the lifecycle:
+document that accumulates one artifact per lifecycle stage. The two early artifacts
+use a glanceable layout — brief prose visible, detail tucked into Linear `>>>`
+collapsibles, stages separated by `---` dividers — while the later artifacts keep
+plain `##` sections:
 
 ```
 Title:  <feature name>
 Status: Backlog → Todo → In Progress → In Review → Done
 
 Description:
-  ## Idea            ← written by brainstorm
-  ## Specification   ← written by spec
-  ## Plan            ← written by plan
-  ## Progress        ← written by plan (checklist), ticked by execute
-  ## Outcome         ← written when a task closes without a code PR (optional)
+  <brief 1–2 sentence task description>  ← brainstorm (untitled preamble)
+  >>> ### Notes … >>>                    ← brainstorm (collapsed key findings)
+  ---
+  # Specification                        ← spec: small summary paragraph…
+  >>> ### <topic> … >>> (one per topic)  ← …with detail per collapsible
+  ---
+  >>> ### Risks & unknowns … >>>         ← spec (blockers resolved before plan)
+  ---
+  ## Plan                                ← written by plan
+  ## Progress                            ← written by plan (checklist), ticked by execute
+  ## Outcome                             ← written when a task closes without a code PR (optional)
 ```
 
-The five canonical section names, exact and case-sensitive, are `## Idea`,
-`## Specification`, `## Plan`, `## Progress`, and `## Outcome`. No skill invents a
-section name outside this list.
+The canonical artifacts, exact and case-sensitive where named, are:
+
+- **`Brainstorm`** — the untitled preamble: 1–2 sentences that stand alone as a task
+  description at a glance, plus a collapsed `>>> ### Notes` block whose bullets carry
+  problem, motivation, and success criteria sharply enough that a fresh session could
+  spec from the card alone.
+- **`Specification`** — the `# Specification` H1 block: a small summary paragraph of
+  what the spec discovered, one `>>>` collapsible per topic, then a `---` and a
+  collapsed `>>> ### Risks & unknowns` block. Anything listed there as a blocker must
+  be resolved before the technical plan.
+- **`## Plan`, `## Progress`, `## Outcome`** — legacy `##` sections, unchanged.
+
+No skill invents an artifact outside this list.
 
 `## Progress` holds a markdown checklist, one `- [ ]` line per plan phase, with line
 text matching the phase names from `## Plan`. `execute` flips boxes to `- [x]` as
 phases complete via `tickPhase`. Phases live as a checklist inside the issue rather
 than as Linear sub-issues, to keep the whole task in one place.
 
-`writeSection` upserts by matching the `## <name>` heading line in the existing
-description: it locates that heading, replaces everything up to the next `##` heading
-(or end of description), and leaves every other section untouched. A stage that
-re-runs overwrites its own section cleanly — it never duplicates it or disturbs a
-neighboring section.
+`writeSection` upserts by the per-artifact block boundaries listed with the
+operation above: it replaces its own artifact's block cleanly and leaves every other
+block untouched. A stage that re-runs never duplicates its artifact or disturbs a
+neighboring one.
 
 Labels mirror artifact presence on the issue's card. `spec` and `plan` are the only
 canonical labels — applied by their namesake stages via `applyLabel` the moment
-their section lands (`## Specification` and `## Plan` + `## Progress` respectively).
+their artifact lands (`# Specification` and `## Plan` + `## Progress` respectively).
 They accumulate and are never removed: a rewritten spec keeps its `spec` label,
 because the artifact still exists. As with section names, no skill invents a label
 outside this list.
@@ -160,7 +198,7 @@ anywhere in the repo, so parallel agents cannot collide.
   code has changed. The task's identity is the Linear `taskRef` held in the invoking
   agent's own session context — returned by `createTask` in `brainstorm` and threaded
   forward. Cross-session resume (a different agent, or the same agent later) works by
-  calling `findTasks` with a filter like "has `## Specification`, no `## Plan`", or by
+  calling `findTasks` with a filter like "has `# Specification`, no `## Plan`", or by
   the user pasting the issue URL. There is no pointer file to read.
 - **Code stages (`execute`, `pr`):** `execute` creates a git branch named
   `<initials>/<issue-identifier>-<slug>` (for example `jg/eng-142-linear-lifecycle`) in
@@ -186,7 +224,7 @@ rather than refusing outright — see `skills/pr/SKILL.md`.
 | Stage | Requires (must already exist) |
 |---|---|
 | `brainstorm` | Nothing — this is the foundation stage; it creates the issue. |
-| `spec` | `## Idea`. |
-| `plan` | `## Specification`. |
+| `spec` | The brainstorm artifact — a non-empty description with no `# Specification` heading yet. |
+| `plan` | `# Specification`. |
 | `execute` | `## Plan` and `## Progress`. |
 | `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `## Progress` box is unchecked; if no task resolves, no precondition at all. |
