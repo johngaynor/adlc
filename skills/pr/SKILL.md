@@ -1,17 +1,18 @@
 ---
 name: pr
-description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". This is the ADLC `pr` lifecycle stage: runs validation, commits on a fresh branch, pushes, opens a PR with a structured description, and advances the task to `In Review` when a Linear task resolves.
+description: Use when work is complete and the user wants to open a pull request — "ship it", "open a PR", "put up a PR". This is the ADLC `pr` lifecycle stage: runs validation, commits on a fresh branch, pushes, opens a PR with a structured description, and — when a Linear task resolves — advances it to `In Review` and spawns a background poller that moves it to `Done` once the PR merges.
 ---
 
 # Open a PR
 
 Take completed work and ship it as a reviewable PR with the project's discipline:
-validation green, a clean branch, a clear description — the fifth stage of the ADLC
-lifecycle (`brainstorm → spec → plan → execute → pr → archive`, see
+validation green, a clean branch, a clear description — the fifth and final stage
+of the ADLC lifecycle (`brainstorm → spec → plan → execute → pr`, see
 [`METHODOLOGY.md`](../../METHODOLOGY.md)). This skill commits and pushes — it runs
 only when the user has explicitly asked to open a PR. It works standalone with no PM
 configured, exactly as it did before the lifecycle existed; when a Linear task
-resolves from the current branch, it also advances that task to `In Review`.
+resolves from the current branch, it also advances that task to `In Review` and
+leaves a background poller behind to move it to `Done` when the PR merges.
 
 When a task is in play, run this stage from the task worktree `execute`
 created — its branch is the task pointer `resolveCurrentTask` parses. If the
@@ -61,12 +62,28 @@ current checkout isn't on the task branch, `cd` into that worktree first.
      branch format (an ordinary `feat/...`-style branch with no issue identifier),
      skip this step silently — no error, no prompt to configure Linear. Behave
      exactly as the generic PR opener in the rest of this workflow.
-9. **Hand off.** Invoke the workflow bridge ([`/adlc:next`](../next/SKILL.md))
-   with `completedStage: pr` and the `taskRef` (when one resolved; with no
-   resolved task the bridge degrades silently, matching this stage's PM-optional
-   behavior). Per the bridge's own rules it will not chain into `/adlc:archive` —
-   that stage needs the PR *merged* — so it ends the turn with the after-merge
-   pointer instead.
+9. **Spawn the post-merge poller, if a task resolved.** Only when step 2
+   resolved a Linear issue — with no task there is nothing to close, so skip
+   this step silently. Spawn a **background subagent** (the harness's background
+   agent facility) whose sole job is:
+   - Poll the PR's merge state at a modest interval (a few minutes between
+     checks): `gh pr view <pr-url> --json state,mergedAt`.
+   - When the PR reports merged, call `closeTask(taskRef)` per
+     [`reference/pm-seam.md`](../../reference/pm-seam.md) — the issue moves to
+     `Done` — and report that it did so.
+   - If the PR is closed without merging, or the poll budget runs out (stop
+     after roughly a day of polling), report and leave the card untouched.
+   - The poller writes **nothing else** — no sections, no labels, no
+     worktree/branch removal.
+
+   Known limitation: the poller lives only as long as this session. If the
+   session ends before the PR merges, the card stays `In Review` until
+   `/adlc:cleanup` — the safety net — catches it.
+10. **Hand off.** Invoke the workflow bridge ([`/adlc:next`](../next/SKILL.md))
+    with `completedStage: pr` and the `taskRef` (when one resolved; with no
+    resolved task the bridge degrades silently, matching this stage's PM-optional
+    behavior). `pr` is the final lifecycle stage, so the bridge ends the turn —
+    noting that the poller will close the card on merge.
 
 ## Boundaries
 
@@ -79,10 +96,15 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 - **Never** let the `In Review` status update block or fail PR creation — task
   resolution is best-effort and always secondary to the PR itself, and its absence
   (no PM configured, or an unmapped branch) is not an error.
+- **Never** let the poller write anything beyond the `Done` status — no sections,
+  no labels, no worktree or branch removal.
+- **Never** let a poller spawn failure block or fail PR creation — report it and
+  point at `/adlc:cleanup` as the fallback.
 
 ## Done when
 
 The PR is open, validation passed with evidence, and the URL is reported. When
 `resolveCurrentTask()` resolved a Linear issue from the branch, its status is now
-`In Review`; when it didn't (no PM configured, or a non-task branch), the PR alone
-is the completed artifact.
+`In Review` and the background poller is watching the PR to move it to `Done` on
+merge; when it didn't (no PM configured, or a non-task branch), the PR alone is
+the completed artifact.
