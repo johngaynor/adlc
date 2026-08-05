@@ -7,7 +7,7 @@ description: Use when starting a new piece of work from a rough idea — the use
 
 Sharpen a rough idea into a crisp problem statement, then create the task's Linear
 issue — the first stage of the ADLC lifecycle (`brainstorm → spec → plan → execute →
-pr → archive`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)). This is the only
+pr`, see [`METHODOLOGY.md`](../../METHODOLOGY.md)). This is the only
 lifecycle stage that runs before a Linear issue exists; every later stage assumes one.
 
 ## Workflow
