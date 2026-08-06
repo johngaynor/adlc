@@ -27,9 +27,8 @@ a `.claude/lessons.md`, and permission settings (a committed git/gh allowlist
 plus per-user MCP grants for the servers it detects) — a strong starting
 point you grow from: lessons
 accumulate, recurring ones become `CLAUDE.md` rules, and whole workflows graduate
-into project skills via `/adlc:add-skill`. It can also connect the repo to a
-PM — **Linear or GitHub Issues**, your choice — which unlocks the lifecycle
-below.
+into project skills via `/adlc:add-skill`. It can also connect the repo to
+**Linear** — the one PM ADLC supports — which unlocks the lifecycle below.
 
 ## The ADLC lifecycle
 
@@ -51,8 +50,8 @@ brainstorm → spec → plan → execute → pr
   plan phase by phase, ticking `# Progress` live as each phase lands, status
   `In Progress`.
 - **`/adlc:pr`** — validate, commit, push, and open the PR; it links back to the
-  task's issue (Linear auto-links from the branch name; GitHub via a
-  `Closes #<number>` body line), and the issue advances to `In Review`. A background
+  task's issue (Linear auto-links from the branch name), and the issue
+  advances to `In Review`. A background
   poller then watches the PR, clears trivial merge conflicts via
   `/adlc:resolve-conflict`, and moves the issue to `Done` when it merges
   (`/adlc:cleanup` is the safety net if the session ends first).
@@ -66,14 +65,13 @@ open PR, which becomes your review surface. The execute→pr hop never prompts i
 any mode — once a plan is approved and executed, the PR follows immediately —
 so the plan hand-off is the last decision point in every task's lifecycle.
 
-**The task's issue is the live workspace.** One issue — in Linear or GitHub
-Issues, whichever the repo chose at init — is the whole record for a task
-while it's in flight — its description holds the canonical artifacts (the
-brainstorm preamble with its Notes dropdown, the `# Specification` block, and the
-`# Technical plan` / `# Progress` / `# Outcome` sections), upserted in place as each
-stage runs. Every lifecycle skill talks to the PM through a single
-seam (`reference/pm-seam.md`) with one mapping per provider, so a future PM
-adapter (Notion, Jira, ...) could be added without any skill changing.
+**The task's issue is the live workspace.** One Linear issue is the whole
+record for a task while it's in flight — its description holds the canonical
+artifacts (the brainstorm preamble with its Notes dropdown, the
+`# Specification` block, and the `# Technical plan` / `# Progress` / `# Outcome`
+sections), upserted in place as each stage runs. Every lifecycle skill talks to
+the PM through a single seam (`reference/pm-seam.md`), which keeps the PM
+touchpoint in one place while letting skills lean on Linear-native constructs.
 
 **The issue is the durable record.** When the PR merges, the card simply closes —
 the full spec, plan, and progress history stay on the (now `Done`) issue;
@@ -84,17 +82,16 @@ issue held in the agent's own session; once `/adlc:execute` creates the
 task branch, the branch name (`<initials>/<issue-identifier>-<slug>`) is what
 every later stage parses to find the task. Parallel tasks never collide.
 
-> **Requires: a configured PM provider.** `/adlc:brainstorm` through
-> `/adlc:execute` need a PM connected for the target repo — Linear (via the
-> Linear MCP) or GitHub Issues (via the GitHub MCP or the `gh` CLI), chosen in
-> `/adlc:init`'s PM step and recorded in `.adlc/config.json`. Without one,
-> `/adlc:pr` and `/adlc:add-lesson` still work standalone with no PM configured.
+> **Requires: Linear.** `/adlc:brainstorm` through `/adlc:execute` need Linear
+> connected for the target repo (via the Linear MCP), set up in `/adlc:init`'s
+> PM step and recorded in `.adlc/config.json`. Without it, `/adlc:pr` and
+> `/adlc:add-lesson` still work standalone with no PM configured.
 
 ## Skills
 
 | Skill | What it does | Status |
 |-------|--------------|--------|
-| `/adlc:init` | Scaffold the harness into the current repo (incl. permission settings); optionally connect a PM (Linear or GitHub Issues) | ✅ implemented |
+| `/adlc:init` | Scaffold the harness into the current repo (incl. permission settings); optionally connect Linear as the PM | ✅ implemented |
 | `/adlc:brainstorm` | Sharpen an idea into the task's issue (brief description + collapsed Notes) | ✅ implemented |
 | `/adlc:spec` | Research and write the task's specification into its issue (`# Specification`) | ✅ implemented |
 | `/adlc:plan` | Write the phased plan and progress checklist into the issue (`# Technical plan`, `# Progress`) | ✅ implemented |
