@@ -69,13 +69,13 @@ resolvable at runtime), render and write:
 
 ### 5. Connect a PM (optional)
 
-Offer to connect this repo to a project-management system for issue tracking —
-the user picks **Linear** or **GitHub Issues**, and that choice becomes the
-provider the whole ADLC lifecycle manages its issues through (see
-[`reference/pm-seam.md`](../../reference/pm-seam.md) § Provider Mappings). If
-the user declines, skip this step entirely — write nothing PM-related.
+Offer to connect this repo to **Linear** for issue tracking — the provider the
+whole ADLC lifecycle manages its issues through (see
+[`reference/pm-seam.md`](../../reference/pm-seam.md) § Provider Mapping).
+Linear is the only supported PM; if the user declines, skip this step
+entirely — write nothing PM-related.
 
-**If they choose Linear:**
+**If they opt in:**
 
 1. **Verify the Linear MCP with a live call** — list the workspace's teams via
    the Linear MCP. If the MCP is not configured or the call fails, give the
@@ -101,38 +101,14 @@ the user declines, skip this step entirely — write nothing PM-related.
    }
    ```
 
-**If they choose GitHub Issues:**
-
-1. **Derive `owner`/`repo`** from the repo's `origin` remote URL. No `origin`
-   remote (or not a GitHub one): tell the user plainly and skip the PM step —
-   GitHub Issues needs a GitHub-hosted repo.
-2. **Verify access with a live call** — via the GitHub MCP if configured,
-   otherwise the `gh` CLI (both work; see the seam's GitHub mapping): confirm
-   the authenticated user and read the issue list (or a label) of
-   `owner/repo`. If neither transport is available or the call fails, give
-   exact setup instructions (`gh auth login`, or adding the GitHub MCP
-   server), then continue init without a PM — re-running `/adlc:init` later
-   retrofits just this step.
-3. **Write `.adlc/config.json`** in the repo root:
-
-   ```json
-   {
-     "pm": {
-       "provider": "github",
-       "owner": "<owner>",
-       "repo": "<repo>"
-     }
-   }
-   ```
-
-**Either way:**
+**Whether they opt in or decline:**
 
 - If `.adlc/config.json` already exists with a `pm` block, show it and ask
-  before changing it — including when the change would switch providers.
+  before changing it.
 - **Gitignore** — ensure the repo's `.gitignore` contains `.adlc/*` and
   `!.adlc/config.json` (the config is shared; anything else under `.adlc/`
   is per-machine). Add the lines only if missing.
-- If any MCP/`gh` call fails mid-flow, report it plainly, write nothing
+- If any MCP call fails mid-flow, report it plainly, write nothing
   partial, and finish the rest of init normally. Never write a config
   containing unverified values.
 
@@ -203,10 +179,9 @@ Summarize what you created and tell the user the immediate next moves:
   build command is worse than an empty one.
 - **Always** fill placeholders from real detection; leave a `TODO(adlc)` marker
   where you genuinely could not determine a value, so it's greppable.
-- **Never** write `.adlc/config.json` with values (Linear team/project IDs,
-  GitHub owner/repo) that were not confirmed by a live call to that provider.
-- **Ask First** before replacing an existing `pm` block in `.adlc/config.json` —
-  especially when the change would switch providers.
+- **Never** write `.adlc/config.json` with values (Linear team/project IDs)
+  that were not confirmed by a live call to Linear.
+- **Ask First** before replacing an existing `pm` block in `.adlc/config.json`.
 - **Ask First** before writing the committed `.claude/settings.json` — it sets
   the whole team's permission posture.
 - **Never** write permission rules outside the repo (`~/.claude/` stays the
@@ -224,6 +199,6 @@ are scaffolded: `.claude/settings.json` carries the git/gh allowlist (or the
 user declined), `settings.local.json` carries grants for the MCP servers that
 were actually detected, and `.gitignore` covers `.claude/settings.local.json`.
 If the user opted into a PM:
-`.adlc/config.json` exists with the `pm` block naming the chosen provider
-(`linear` or `github`), every value in it was confirmed by a live call to that
-provider, and `.gitignore` covers `.adlc/` (except `config.json`).
+`.adlc/config.json` exists with the `pm` block naming `linear`, every value in
+it was confirmed by a live call to Linear, and `.gitignore` covers `.adlc/`
+(except `config.json`).
