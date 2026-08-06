@@ -51,18 +51,13 @@ current checkout isn't on the task branch, `cd` into that worktree first.
 6. **Push & open.** Push the branch, then `gh pr create` against the default branch
    with a body that states: **what** changed, **why**, **how it was validated**, and
    any follow-ups. Honor `.github/pull_request_template.md` if present. Apply the
-   project's PR labels if it uses a label convention. When the task resolved
-   through the **GitHub Issues provider**, include `Closes #<number>` in the
-   body — GitHub does not auto-link from branch names, and this line both links
-   the PR to the issue and closes it natively on merge (see the seam's GitHub
-   mapping).
+   project's PR labels if it uses a label convention.
 7. **Report** the PR URL. If working in an isolated workspace (worktree), note
    that it is now disposable — the branch lives on the remote.
 8. **Advance the task, if one resolved.** Reuse the `taskRef` resolved in step 2.
    - If it resolved to an issue, call `setStatus(taskRef, "In Review")`. The
-     PR↔issue link needs no separate step either way: Linear auto-links from
-     the task branch name, and the GitHub provider's link is the
-     `Closes #<number>` line added in step 6.
+     PR↔issue link needs no separate step: Linear auto-links from the task
+     branch name.
    - If no PM is configured, or the current branch doesn't match the task
      branch format (an ordinary `feat/...`-style branch with no issue identifier),
      skip this step silently — no error, no prompt to configure a PM. Behave
@@ -84,10 +79,7 @@ current checkout isn't on the task branch, `cd` into that worktree first.
      checks): `gh pr view <pr-url> --json state,mergedAt,mergeable,mergeStateStatus`.
    - When the PR reports merged, call `closeTask(taskRef)` per
      [`reference/pm-seam.md`](../../reference/pm-seam.md) — the issue moves to
-     `Done` — and report that it did so. (With the GitHub provider the
-     `Closes #<number>` line already closed the issue on merge; `closeTask`
-     then verifies and finishes the `status:*` label cleanup rather than being
-     the sole closer.)
+     `Done` — and report that it did so.
    - When the PR reports `mergeable: CONFLICTING`, run the
      [`resolve-conflict`](../resolve-conflict/SKILL.md) procedure in its
      background mode: trivial conflicts are resolved, validated, and plain-pushed;

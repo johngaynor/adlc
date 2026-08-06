@@ -39,9 +39,8 @@ Resolve the task before anything else, in this order:
    for this task (see Arguments step 1 above):
    - Derive `<initials>` (the acting engineer's initials, lowercase — ask the
      user if they are not already known from git config), `<issue-identifier>`
-     (the provider's issue identity, lowercase — a Linear identifier like
-     `eng-142`, or a bare GitHub issue number like `142` — per the seam's Task
-     Identity Resolution), and `<slug>` (a
+     (the Linear issue identifier, lowercase — e.g. `eng-142` — per the seam's
+     Task Identity Resolution), and `<slug>` (a
      short kebab-case slug from the issue title) to build the branch name
      `<initials>/<issue-identifier>-<slug>` exactly per
      [`reference/pm-seam.md`](../../reference/pm-seam.md).
