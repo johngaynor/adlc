@@ -34,26 +34,35 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
    existing specs relevant to the brainstorm artifact, and read them before
    drafting. Do not invent architecture the repo's own conventions already
    answer.
-4. **Draft the specification** per the seam's Card Data Model layout. Each
-   part carries an explicit quality bar — together they are the review rubric
-   the hand-off gate checks:
+4. **Draft the specification** per the pinned `# Specification` skeleton in
+   [`reference/pm-seam.md`](../../reference/pm-seam.md) § Artifact skeletons —
+   reproduce its headings, collapsibles, and order verbatim; never invent or
+   reshape the structure here, and give a section with nothing to say the line
+   `None.` rather than omitting it. The skeleton's two content rules govern the
+   whole draft: **engineering-only** (product rationale and product decisions
+   live at the project/milestone; a product question surfaced mid-spec goes to
+   `Risks & unknowns` and escalates — it is not settled on the card) and
+   **brevity** (minimal necessary context; link out to deeper discussion
+   instead of inlining it). Each skeleton part carries an explicit quality
+   bar — together they are the review rubric the hand-off gate checks:
    - **Summary paragraph** — a small paragraph, directly under the
      `# Specification` heading, of what the specification discovered. *Bar:*
      reads standalone and absorbs the problem/goal (the brainstorm preamble
-     sits just above — don't restate it as its own part); ends with an
-     explicit verdict — ready to plan, or blocked on X.
-   - **Approach collapsible** — the chosen design. *Bar:* decisions stated as
+     sits just above — don't restate it as its own part); ends with the
+     skeleton's explicit verdict line — ready to plan, or blocked on X.
+   - **`### Approach`** — the chosen design. *Bar:* decisions stated as
      decisions ("we will X"), with enough resolved that planning is mechanical,
      not creative; alternatives are real options someone might actually pick,
-     rejected with honest reasons — never strawmen.
-   - **Blast radius collapsible** — what the work touches. *Bar:* named files,
+     rejected with honest reasons — never strawmen; engineering substance
+     only — a product decision here fails the bar.
+   - **`### Blast radius`** — what the work touches. *Bar:* named files,
      modules, and contracts; "the API layer" fails the bar.
-   - **Test / coverage collapsible** — what the work must prove. *Bar:*
+   - **`### Test & coverage`** — what the work must prove. *Bar:*
      commitments `execute` can verify mechanically — named checks or commands,
      not intentions.
-   - **Risks & unknowns** — after a `---` divider, a collapsed
-     `>>> ### Risks & unknowns` block. Anything that is a blocker must be
-     surfaced here and addressed before the task moves to `/adlc:plan`.
+   - **`### Risks & unknowns`** — the skeleton's final collapsible, after its
+     `---` divider. Anything that is a blocker must be surfaced here and
+     addressed before the task moves to `/adlc:plan`.
    - **The spec/plan line** — the spec is what, why, and resolved design; the
      technical plan is sequencing and phases. A spec containing a phase
      breakdown fails review, as does one so thin `/adlc:plan` would have to
@@ -93,8 +102,8 @@ card — the second stage of the ADLC lifecycle (`brainstorm → spec → plan �
 
 ## Done when
 
-The card has a `# Specification` block (summary paragraph, topic collapsibles,
-and a Risks & unknowns dropdown) that clears every quality bar in step 4,
+The card has a `# Specification` block matching the pinned skeleton in
+`reference/pm-seam.md` § Artifact skeletons that clears every quality bar in step 4,
 carries the `spec` label, and the hand-off has passed through the bridge — the
 user approved it (or their Run-to-PR horizon chained on), or chose **Stop here**
 and the task rests cleanly at `Backlog`.

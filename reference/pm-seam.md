@@ -128,8 +128,10 @@ Description:
   <brief 1–2 sentence task description>  ← brainstorm (untitled preamble)
   >>> ### Notes … >>>                    ← brainstorm (collapsed key findings)
   ---
-  # Specification                        ← spec: small summary paragraph…
-  >>> ### <topic> … >>> (one per topic)  ← …with detail per collapsible
+  # Specification                        ← spec: summary paragraph ending in a verdict…
+  >>> ### Approach … >>>                 ← …then its three fixed collapsibles
+  >>> ### Blast radius … >>>
+  >>> ### Test & coverage … >>>
   ---
   >>> ### Risks & unknowns … >>>         ← spec (blockers resolved before plan)
   ---
@@ -147,9 +149,10 @@ The canonical artifacts, exact and case-sensitive where named, are:
   problem, motivation, and success criteria sharply enough that a fresh session could
   spec from the card alone.
 - **`Specification`** — the `# Specification` H1 block: a small summary paragraph of
-  what the spec discovered, one `>>>` collapsible per topic, then a `---` and a
-  collapsed `>>> ### Risks & unknowns` block. Anything listed there as a blocker must
-  be resolved before the technical plan.
+  what the spec discovered, the fixed collapsibles `### Approach`,
+  `### Blast radius`, and `### Test & coverage`, then a `---` and a collapsed
+  `>>> ### Risks & unknowns` block (see [Artifact skeletons](#artifact-skeletons)).
+  Anything listed there as a blocker must be resolved before the technical plan.
 - **`Technical plan`** — the `# Technical plan` H1 block: the phased plan written by
   `plan`.
 - **`Progress`** — the `# Progress` H1 block: the phase checklist written by `plan`
@@ -159,10 +162,11 @@ The canonical artifacts, exact and case-sensitive where named, are:
 
 No skill invents an artifact outside this list.
 
-`# Progress` holds a markdown checklist, one `- [ ]` line per plan phase, with line
-text matching the phase names from `# Technical plan`. `execute` flips boxes to `- [x]` as
-phases complete via `tickPhase`. Phases live as a checklist inside the issue rather
-than as sub-issues, to keep the whole task in one place.
+`# Progress` holds a markdown checklist, one `- [ ] Phase <n>: <name>` line per
+plan phase, its text matching the phase heading in `# Technical plan` exactly
+(minus the `##`) — that text is `tickPhase`'s lookup key. `execute` flips boxes
+to `- [x]` as phases complete via `tickPhase`. Phases live as a checklist inside
+the issue rather than as sub-issues, to keep the whole task in one place.
 
 `writeSection` upserts by the per-artifact block boundaries listed with the
 operation above: it replaces its own artifact's block cleanly and leaves every other
@@ -176,6 +180,95 @@ respectively; the label keeps the name `plan` even though its section is titled
 `# Technical plan`). They accumulate and are never removed: a rewritten spec keeps its `spec` label,
 because the artifact still exists. As with section names, no skill invents a label
 outside this list.
+
+### Artifact skeletons
+
+The `# Specification`, `# Technical plan`, and `# Progress` blocks each have
+exactly one canonical skeleton, pinned here and nowhere else. A stage writing one
+of these blocks reproduces its skeleton verbatim — same headings, same
+collapsibles, same order — varying only content depth with the task. A section
+with nothing to say states `None.`; it is never omitted, so any two cards are
+structurally identical.
+
+Two content rules, taken from the
+[Linear Method](https://linear.app/method/write-issues-not-user-stories)'s
+issue-writing lens, govern both artifacts:
+
+- **Engineering-only.** A card is a plain-language engineering task with a
+  clear, defined outcome. Product rationale and product decisions never appear
+  in these blocks — they live upstream at the project/milestone. A product
+  question surfaced mid-stage goes to `Risks & unknowns` and escalates; it is
+  not settled on the card. The brainstorm preamble's 1–2 sentences remain the
+  card's only "why".
+- **Brevity.** Minimal necessary context; link out to deeper discussion
+  instead of inlining it.
+
+`# Specification` skeleton (written by `spec`):
+
+```markdown
+# Specification
+
+<summary paragraph — reads standalone, absorbs the problem/goal, ends with an
+explicit verdict: **Verdict: ready to plan.** or **Verdict: blocked on <X>.**>
+
+>>> ### Approach
+
+<decisions stated as decisions — "we will X"; real alternatives with honest
+rejection reasons>
+
+>>>
+
+>>> ### Blast radius
+
+<named files, modules, and contracts touched — plus what is deliberately
+untouched>
+
+>>>
+
+>>> ### Test & coverage
+
+<commitments execute can verify mechanically — named checks or commands>
+
+>>>
+
+---
+
+>>> ### Risks & unknowns
+
+<risks with mitigations; blockers flagged explicitly; `None.` if empty>
+
+>>>
+```
+
+`# Technical plan` and `# Progress` skeletons (written by `plan`, ticked by
+`execute`):
+
+```markdown
+# Technical plan
+
+<one or two sentences on the phase ordering rationale>
+
+## Phase 1: <name>
+
+<plain-language prose/bullets of what changes>
+
+**Verify:** <the mechanical check that proves this phase>
+
+## Phase 2: <name>
+
+…
+
+---
+
+# Progress
+
+- [ ] Phase 1: <name>
+- [ ] Phase 2: <name>
+```
+
+Every phase ends with its `**Verify:**` line, and every `# Progress` line
+matches its `## Phase <n>: <name>` heading text exactly (minus the `##`) —
+that exact match is `tickPhase`'s contract.
 
 ## Status Mapping
 

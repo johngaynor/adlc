@@ -73,7 +73,9 @@ block of its issue, written by the lifecycle skills through the PM seam
 (`reference/pm-seam.md`) — never in repo-local spec files. The issue is the single
 source of truth while the task is in flight and its durable record after: when
 the PR merges, the card simply closes — the repo carries the merged code and its
-PR description, not a duplicate write-up. Small fixes skip this — just fix them.
+PR description, not a duplicate write-up. Issue-level artifacts are
+engineering-level: product direction and product decisions live upstream at the
+project/milestone, not on the card. Small fixes skip this — just fix them.
 
 **The lessons loop.** Corrections are captured, not lost. When the agent is
 corrected on something that will recur, it appends a structured entry to

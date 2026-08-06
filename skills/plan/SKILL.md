@@ -30,14 +30,22 @@ checklist on the same issue — the third stage of the ADLC lifecycle
 3. **Break the work into phases.** Split `# Specification` into ordered,
    independently-committable phases. Each phase should be small enough to verify and
    commit on its own, and named clearly enough that its text can double as a
-   checklist item later.
+   checklist item later. Phases are plain-language engineering tasks with a
+   clear, defined outcome — the pinned skeleton's content rules
+   (engineering-only, brevity) apply here as in the spec.
 4. **Write the plan.** Call `writeSection(taskRef, "Technical plan", md)` per
-   `reference/pm-seam.md` with the phase-by-phase plan — this upserts the
-   `# Technical plan` block; re-running this stage overwrites it cleanly rather than
-   duplicating it.
+   `reference/pm-seam.md`, following the pinned `# Technical plan` skeleton in
+   its § Artifact skeletons exactly — a short ordering rationale, then one
+   `## Phase <n>: <name>` heading per phase whose body says in plain language
+   what changes and ends with a `**Verify:**` line naming that phase's
+   mechanical check. Never invent or reshape the structure here. This upserts
+   the `# Technical plan` block; re-running this stage overwrites it cleanly
+   rather than duplicating it.
 5. **Write the progress checklist.** Call `writeSection(taskRef, "Progress",
-   checklist)` with one `- [ ]` line per phase, its text matching the phase name
-   from `# Technical plan` exactly — `/adlc:execute` ticks these boxes by that same text.
+   checklist)` per the pinned `# Progress` skeleton — one
+   `- [ ] Phase <n>: <name>` line per phase, its text matching the
+   `## Phase <n>: <name>` heading exactly (minus the `##`) —
+   `/adlc:execute` ticks these boxes by that same text.
 6. **Advance the status.** Call `setStatus(taskRef, "Todo")` per the seam's Status
    Mapping — this is the exact point the lifecycle marks the task ready to be
    worked.
@@ -68,7 +76,8 @@ checklist on the same issue — the third stage of the ADLC lifecycle
 
 ## Done when
 
-The issue has `# Technical plan` and `# Progress` (one `- [ ]` per phase), carries the
+The issue has `# Technical plan` and `# Progress` matching the pinned skeletons
+in `reference/pm-seam.md` § Artifact skeletons (one `- [ ]` per phase), carries the
 `plan` label, its status is `Todo`, and the hand-off has passed through the
 bridge — the user approved the plan (or their Run-to-PR horizon chained on), or
 chose **Stop here** and the task rests cleanly at `Todo`.
