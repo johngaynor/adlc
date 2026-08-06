@@ -2,36 +2,33 @@
 
 Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`)
 talks to the project-management system through this seam and nothing else — no skill
-calls the PM ad hoc. The seam has two implementations, chosen per repo at
-`/adlc:init` and recorded as `pm.provider` in `.adlc/config.json`:
+calls the PM ad hoc. The seam has exactly one implementation — **Linear**
+(`"provider": "linear"`), connected per repo at `/adlc:init` and recorded as
+`pm.provider` in `.adlc/config.json`. One Linear issue is the whole record for a
+task, and its description is the canonical living document.
 
-- **Linear** (`"provider": "linear"`) — one Linear issue is the whole record for a
-  task.
-- **GitHub Issues** (`"provider": "github"`) — one GitHub issue is the whole record
-  for a task.
-
-Either way, the issue's description/body is the canonical living document. Skills
-speak only in the nine operations and the canonical card layout below; the concrete
-API calls, status representation, and markdown rendering for each backend live in
-[Provider Mappings](#provider-mappings), and a skill follows the mapping for the
-configured provider. A future PM adapter (Notion, Jira, ...) would implement the
-same nine operations as a third mapping; skills would not change. One caveat: the
-canonical card layout is written in Linear-flavored markdown — `>>>` collapsible
-sections — so every mapping must state how that layout renders in its backend, not
-just how the operations map.
+Skills speak in the nine operations and the canonical card layout below; the
+concrete Linear MCP calls live in [Provider Mapping](#provider-mapping). Because
+Linear is the seam's only backend, skills may also lean on Linear-native
+constructs directly — `>>>` collapsibles, workflow states, milestones, branch
+auto-linking — where a step needs them: the seam is an architectural discipline
+(one PM touchpoint), not a lowest-common-denominator abstraction. If a second PM
+ever becomes necessary, it would arrive as a new mapping behind these same nine
+operations.
 
 **No provider configured:** a stage whose preconditions require the PM (see
 [Preconditions Contract](#preconditions-contract)) first verifies that
-`.adlc/config.json` has a `pm` block. If it does not, the stage refuses with:
-"No PM provider is configured for this repo — run `/adlc:init` to connect one."
-Setup lives in exactly one place (`init`); no other skill carries an inline setup
-flow.
+`.adlc/config.json` has a `pm` block with `"provider": "linear"` — any other
+provider value is treated the same as no PM at all. If the check fails, the
+stage refuses with: "No PM provider is configured for this repo — run
+`/adlc:init` to connect one." Setup lives in exactly one place (`init`); no
+other skill carries an inline setup flow.
 
 ## Operations
 
 Nine operations make up the seam. Each is documented below with its signature and
-semantics; the concrete backend actions per provider are tabulated under
-[Provider Mappings](#provider-mappings).
+semantics; the concrete Linear MCP actions are tabulated under
+[Provider Mapping](#provider-mapping).
 
 ### `createTask(title, brainstormMarkdown) → taskRef`
 
@@ -83,9 +80,9 @@ the section untouched.
 Idempotently ensures a label named `labelName` exists and is applied to the issue.
 If the label does not exist in the backend, it is created first (default color).
 Applying a label the issue already has is a no-op — a stage that re-runs never
-duplicates a label or errors. The concrete create/apply semantics differ per
-provider (see the mappings — Linear's label update replaces the full set, GitHub's
-appends), and the mapping states how to apply safely.
+duplicates a label or errors. Linear's label update replaces the issue's full
+label set, so the mapping's append-before-write rule is mandatory (see
+[Provider Mapping](#provider-mapping)).
 
 ### `setStatus(taskRef, status)`
 
@@ -120,8 +117,8 @@ One issue is the whole record for one task. Its description is a markdown
 document that accumulates one artifact per lifecycle stage, every artifact in the
 same glanceable layout — brief prose visible, detail tucked into collapsible
 sections, blocks separated by `---` dividers, one H1 heading per block after
-the untitled preamble. The layout is written here in Linear-flavored markdown
-(`>>>` collapsibles); each provider mapping states how it renders in that backend:
+the untitled preamble. The layout is written in Linear-flavored markdown
+(`>>>` collapsibles), which Linear renders natively:
 
 ```
 Title:  <feature name>
@@ -199,9 +196,9 @@ Backlog → Todo → In Progress → In Review → Done
 `spec` does not change status; the issue stays `Backlog` while it gathers a
 specification. Status is a stakeholder-visible progress signal as much as it is task
 state — never skip a value or set one out of order. These five names are the seam's
-canonical vocabulary; how each is represented in the backend (a Linear workflow
-state, a GitHub `status:*` label or the issue's open/closed state) is defined per
-provider under [Provider Mappings](#provider-mappings).
+canonical vocabulary; each is a real Linear workflow state (teams that renamed a
+state map by position in the lifecycle order — see
+[Provider Mapping](#provider-mapping)).
 
 ## Task Identity Resolution
 
@@ -216,14 +213,12 @@ anywhere in the repo, so parallel agents cannot collide.
   the user pasting the issue URL. There is no pointer file to read.
 - **Code stages (`execute`, `pr`):** `execute` creates a git branch named
   `<initials>/<issue-identifier>-<slug>` in its own git worktree the moment code
-  changes begin. The `<issue-identifier>` is the provider's issue identity,
-  lowercase — Linear's issue identifier (e.g. `jg/eng-142-linear-lifecycle`) or the
-  bare GitHub issue number (e.g. `jg/142-linear-lifecycle`). From that
+  changes begin. The `<issue-identifier>` is the Linear issue identifier,
+  lowercase (e.g. `jg/eng-142-linear-lifecycle`). From that
   point the branch is the per-agent task pointer: `resolveCurrentTask` parses the
   current branch name, extracts `<issue-identifier>`, and resolves it to the issue.
-  How the eventual PR gets linked back to the issue is per provider: Linear
-  auto-links from this branch format; GitHub links via `Closes #<number>` in the PR
-  body (see the mappings).
+  This branch format is also what lets Linear auto-link the eventual PR back to
+  the issue.
 - **No shared pointer file, ever.** Any local cache a stage keeps for its own
   convenience (for example, a resolved `taskRef` written to disk to avoid re-parsing)
   is worktree-local and listed in that worktree's gitignore — it is never committed and
@@ -250,11 +245,11 @@ check from the intro — and refuses with the standard message when it is absent
 | `execute` | `# Technical plan` and `# Progress`. |
 | `pr` | PM-optional / best-effort: if a task resolves, warns (does not refuse) when any `# Progress` box is unchecked; if no task resolves, no precondition at all. |
 
-## Provider Mappings
+## Provider Mapping
 
-`/adlc:init` writes the provider choice to `.adlc/config.json`. A skill reads it
-once per run and follows exactly one mapping below; nothing outside this section
-may name a provider-specific API.
+`/adlc:init` writes the connection details to `.adlc/config.json`. A skill reads
+them once per run and follows the mapping below; nothing outside this section
+may name a concrete PM API.
 
 ### Linear (`"provider": "linear"`)
 
@@ -293,53 +288,3 @@ Config shape (all values verified live at init):
 | `closeTask` | set state `Done` |
 | `findTasks` | search issues |
 | `resolveCurrentTask` | parse branch → look up issue by identifier |
-
-### GitHub Issues (`"provider": "github"`)
-
-Config shape (owner/repo derived from the `origin` remote and verified live at
-init):
-
-```json
-{
-  "pm": {
-    "provider": "github",
-    "owner": "<owner>",
-    "repo": "<repo>"
-  }
-}
-```
-
-- **Transport:** the GitHub MCP server when configured; otherwise the `gh` CLI
-  (`gh issue view/edit/list`, `gh api`) — the two are interchangeable here, and
-  `pr`/`cleanup` already shell out to `gh`.
-- **`taskRef`:** the issue number (`#142`) or issue URL, always within the
-  configured `owner`/`repo`.
-- **Card rendering:** GitHub markdown has no `>>>` collapsibles; every
-  `>>> ### <title> … >>>` block renders as
-  `<details><summary><b><title></b></summary>` … `</details>`, with a blank line
-  after `<summary>` and before `</details>` so the markdown inside still renders.
-  Everything else — `---` dividers, one H1 per block, artifact names, boundary
-  rules — is identical, and `writeSection`/`readTask` use the same
-  divider-before-H1 boundaries on the issue body.
-- **Statuses:** GitHub issues are natively only open/closed. `Backlog`, `Todo`,
-  `In Progress`, and `In Review` are mutually-exclusive repo labels
-  `status:backlog`, `status:todo`, `status:in-progress`, `status:in-review` —
-  `setStatus` removes the current `status:*` label and adds the new one, creating
-  it on first use. `Done` is the issue's closed state (close as completed), not a
-  label; `closeTask` also removes any lingering `status:*` label.
-- **PR linking:** GitHub does not auto-link from branch names; `pr` puts
-  `Closes #<number>` in the PR body. Merging then closes the issue natively, so
-  the post-merge poller's `closeTask` verifies (and finishes the label cleanup)
-  rather than being the sole closer.
-
-| Operation | GitHub action(s) (MCP or `gh`) |
-|---|---|
-| `createTask` | create issue with `status:backlog` label, or read issue → update issue body |
-| `writeSection` | read issue body → update issue body |
-| `readTask` | read issue (body, labels, open/closed state) |
-| `tickPhase` | read issue body → update the one checkbox → update issue body |
-| `applyLabel` | add label to issue (GitHub's add-label call appends and auto-creates the repo label — no read-modify-write needed) |
-| `setStatus` | remove old `status:*` label → add new `status:*` label |
-| `closeTask` | close issue (reason: completed) → remove `status:*` label |
-| `findTasks` | search issues (`repo:<owner>/<repo> is:issue` + `in:body` text); fall back to label presence (`spec`, `plan`, `status:*`) where body search is too fuzzy |
-| `resolveCurrentTask` | parse the leading `<number>` after `<initials>/` → look up issue `#<number>` |
