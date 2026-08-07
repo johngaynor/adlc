@@ -5,8 +5,10 @@ node_modules/
 .env.*
 .superpowers/
 
-# ADLC per-machine state stays local (points at a private PM workspace)
-.adlc/
+# ADLC state: config.json is shared (names the PM team/project); everything
+# else under .adlc/ is per-machine and stays local
+.adlc/*
+!.adlc/config.json
 
 # Claude Code local state (settings.json IS committed; local overrides are not)
 .claude/settings.local.json
