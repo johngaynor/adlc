@@ -1,7 +1,7 @@
 # The PM Seam
 
 Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`) and
-planning-layer skill (`project`)
+planning-layer skill (`project`, `add-milestone`)
 talks to the project-management system through this seam and nothing else — no skill
 calls the PM ad hoc. The seam has exactly one implementation — **Linear**
 (`"provider": "linear"`), connected per repo at `/adlc:init` and recorded as
@@ -58,8 +58,8 @@ The decision test, applied top-down:
 
 ## Operations
 
-Fourteen operations make up the seam — nine at the issue tier, then five at the
-planning tier (projects and initiatives). Each is documented below with its
+Sixteen operations make up the seam — nine at the issue tier, then seven at the
+planning tier (projects, milestones, and initiatives). Each is documented below with its
 signature and semantics; the concrete Linear MCP actions are tabulated under
 [Provider Mapping](#provider-mapping).
 
@@ -166,6 +166,23 @@ predates one), and initiative membership (empty if unattached). This is how
 Creates a document on the project. Used only for supporting material too heavy
 for the description — the PRD itself stays in the description per
 `saveProject`.
+
+### `createMilestone(projectRef, name, targetDate?, description?) → milestoneRef`
+
+Creates a milestone — an ordered checkpoint per [Hierarchy](#hierarchy) — in the
+given project, with an optional target date and an optional phase-level
+description. Create-only: it never updates an existing milestone, and callers
+pre-flight with `listMilestones` so a same-name hit becomes a question, not a
+silent overwrite. The new milestone lands at the provider's default position
+(the end of the checkpoint order); the seam exposes no reordering. Returns the
+`milestoneRef` (milestone ID) — the human-facing URL is constructed per
+[Provider Mapping](#provider-mapping).
+
+### `listMilestones(projectRef) → [{ milestoneRef, name, targetDate, description }]`
+
+Lists the project's milestones in checkpoint order — the pre-flight for
+`createMilestone` (same-name dedupe, and showing where a new checkpoint would
+land) and the lookup for anything that files issues into milestones.
 
 ### `listInitiatives() → initiativeRef[]`
 
@@ -437,6 +454,8 @@ Config shape (all values verified live at init):
 - **`taskRef`:** the Linear issue identifier (e.g. `ENG-142`) or issue URL.
 - **`projectRef` / `initiativeRef`:** the Linear project / initiative ID, slug,
   or URL.
+- **Milestone URLs:** the API exposes no URL field on milestones — report
+  `<project-url>/milestone/<milestoneRef>` built from the project's URL.
 - **Card rendering:** the canonical layout verbatim — Linear renders `>>>`
   collapsibles natively.
 - **Statuses:** real workflow states; `setStatus` updates the issue state to the
@@ -459,5 +478,7 @@ Config shape (all values verified live at init):
 | `saveProject` | create project (team from config), or update project description; initiative attach via the project's initiative fields |
 | `readProject` | get project |
 | `attachProjectDoc` | create project document |
+| `createMilestone` | create milestone — **never pass the update `id` parameter**: it accepts a milestone *name*, so an accidental pass turns create into a silent update of an existing milestone |
+| `listMilestones` | list project milestones |
 | `listInitiatives` | no MCP action exists — best-effort: harvest initiative names from `list_projects`' initiative fields (covers initiatives with ≥1 attached project), merge `.ai/product/initiatives/` drafts, else ask the user |
 | `readInitiative` | no MCP action exists — content comes from the user or the `.ai/product/initiatives/` draft |
