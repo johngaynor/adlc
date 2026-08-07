@@ -112,6 +112,7 @@ implemented).
 | `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
 | `/adlc:initiative` | Sharpen a strategic goal into a paste-ready initiative draft (templated Name + Description); with no PM configured, writes it to `.ai/product/initiatives/` | ✅ implemented |
 | `/adlc:project` | Define a shippable chunk and write its PRD as the Linear project's description (create or retrofit, initiative-anchored); with no PM configured, writes it to `.ai/product/projects/` | ✅ implemented |
+| `/adlc:add-milestone` | Create one ordered checkpoint in a Linear project (name, optional target date, phase-level description) after a confirm gate | ✅ implemented |
 
 ## Project skills — extending the harness
 
@@ -162,6 +163,7 @@ adlc/
     ├── next/                # the workflow bridge: stage → stage hand-off
     ├── initiative/          # planning layer: strategic goal → paste-ready initiative draft
     ├── project/             # planning layer: shippable chunk → PRD as the project description
+    ├── add-milestone/       # planning layer: one ordered checkpoint in a project
     ├── add-lesson/          # self-improvement: correction → lesson
     ├── add-skill/           # self-improvement: lesson/workflow → project skill
     ├── cleanup/             # utility: sweep merged worktrees, branches, and stale cards
