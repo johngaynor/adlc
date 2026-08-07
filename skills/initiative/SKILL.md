@@ -1,6 +1,6 @@
 ---
 name: initiative
-description: Use when the user wants to create or define an initiative — the strategic goal layer above projects ("create an initiative", "define an initiative", "new strategic goal"). Runs a sharpening dialogue and produces a paste-ready initiative Name + Description; creates nothing in Linear.
+description: Use when the user wants to create or define an initiative — the strategic goal layer above projects ("create an initiative", "define an initiative", "new strategic goal"). Runs a sharpening dialogue, produces a paste-ready initiative Name + Description (creation itself stays app-side), then hands off to attaching or breaking down its projects.
 ---
 
 # Initiative
@@ -8,10 +8,11 @@ description: Use when the user wants to create or define an initiative — the s
 Sharpen an outcome-level goal into a paste-ready initiative definition — the
 strategic layer above projects, where one goal is served by several shippable
 chunks. This is a standalone utility skill, not a lifecycle stage: it runs the
-defining dialogue and hands back the finished content, but creates nothing in
-any PM — the Linear MCP server has no initiative operations, so the initiative
-itself is created manually from the skill's output. Attaching contributing
-projects and defining their PRDs happens downstream, not here.
+defining dialogue and hands back the finished content — the Linear MCP server
+has no initiative operations, so the initiative itself is created manually
+from the skill's output. Once it exists, the closing hand-off can attach
+existing projects or invoke `/adlc:breakdown-projects` to enumerate new ones;
+PRD depth stays downstream with `/adlc:project`.
 
 ## Arguments
 
@@ -52,21 +53,38 @@ projects and defining their PRDs happens downstream, not here.
      `.ai/product/initiatives/<kebab-slug>.md` (slug derived from the Name),
      creating directories as needed, and report the path. This is the only
      file write this skill makes.
-6. **Point downstream.** Close by noting the next step in the top-down flow:
-   defining the contributing projects (the PRD stage), which is where chunks
-   get enumerated and attached to the initiative.
+6. **Hand off.** After delivery, present the next step as a prompt (use the
+   AskUserQuestion tool; fall back to a plain-text question if unavailable):
+   - **Add existing projects** — offered only when Linear is configured *and*
+     the user confirms the initiative now exists in the app (the attach needs
+     a real target). List the configured team's projects (Linear MCP
+     `list_projects`), let the user pick any number, then attach each via
+     `saveProject`'s initiative fields per `reference/pm-seam.md` —
+     referencing the initiative by the approved Name, or the exact name the
+     user gives if they renamed it in the app. Verify and report each attach
+     result; a failed attach (name mismatch) is reported with the corrective
+     step (paste the exact name), never silently dropped.
+   - **Breakdown into new projects** — invoke `/adlc:breakdown-projects`,
+     threading the initiative's name. Its own no-PM fallback covers the
+     draft-only path, so this option is available in both modes.
+   - **Stop here** — end cleanly; the initiative stands alone with no
+     projects yet.
 
 ## Boundaries
 
-- **Never** write to Linear or invoke the PM seam — this skill's output is a
-  draft, delivered as chat output or the no-PM fallback file, nothing else.
+- **Never** write to any PM before the hand-off — the draft itself is chat
+  output or the no-PM fallback file. The only PM writes this skill ever makes
+  are the hand-off's project attaches, and only after the user confirms the
+  initiative exists in the app.
 - **Never** enumerate the project breakdown or design solutions — the dialogue
-  ends at the goal level.
+  ends at the goal level; enumeration is `/adlc:breakdown-projects`' job.
 - **Ask First** before widening scope beyond the goal the user described.
 
 ## Done when
 
 The user has the approved draft in the templated format — as a paste-ready
 block when Linear is configured, or written to
-`.ai/product/initiatives/<kebab-slug>.md` when no PM is — and nothing has been
-created or modified in any PM.
+`.ai/product/initiatives/<kebab-slug>.md` when no PM is — and the hand-off
+prompt has resolved: existing projects attached (each result reported),
+`/adlc:breakdown-projects` invoked, or Stop here chosen. The initiative itself
+is never created or modified by this skill.
