@@ -170,13 +170,19 @@ for the description — the PRD itself stays in the description per
 ### `listInitiatives() → initiativeRef[]`
 
 Lists the workspace's initiatives, for a dialogue's "which initiative does this
-serve?" question.
+serve?" question. Best-effort by necessity: the Linear MCP server has no
+initiative-listing action, so the mapping harvests names indirectly (see
+[Provider Mapping](#provider-mapping)) — a brand-new initiative with no attached
+projects is invisible to it, and the user supplies the name in that case.
 
 ### `readInitiative(initiativeRef) → { name, description }`
 
 Reads one initiative's content — its outcome statement and success criteria —
-as context for downstream dialogue. There is deliberately no `createInitiative`:
-initiative creation is app-only (see [Hierarchy](#hierarchy)).
+as context for downstream dialogue. Best-effort by necessity: the Linear MCP
+server has no initiative-read action, so the content comes from the user or a
+local draft (see [Provider Mapping](#provider-mapping)). There is deliberately
+no `createInitiative`: initiative creation is app-only (see
+[Hierarchy](#hierarchy)).
 
 ## Card Data Model
 
@@ -453,5 +459,5 @@ Config shape (all values verified live at init):
 | `saveProject` | create project (team from config), or update project description; initiative attach via the project's initiative fields |
 | `readProject` | get project |
 | `attachProjectDoc` | create project document |
-| `listInitiatives` | list initiatives |
-| `readInitiative` | get initiative |
+| `listInitiatives` | no MCP action exists — best-effort: harvest initiative names from `list_projects`' initiative fields (covers initiatives with ≥1 attached project), merge `.ai/product/initiatives/` drafts, else ask the user |
+| `readInitiative` | no MCP action exists — content comes from the user or the `.ai/product/initiatives/` draft |
