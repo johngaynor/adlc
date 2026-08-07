@@ -1,19 +1,20 @@
 # The PM Seam
 
-Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`)
+Every ADLC lifecycle skill (`brainstorm`, `spec`, `plan`, `execute`, `pr`) and
+planning-layer skill (`project`)
 talks to the project-management system through this seam and nothing else — no skill
 calls the PM ad hoc. The seam has exactly one implementation — **Linear**
 (`"provider": "linear"`), connected per repo at `/adlc:init` and recorded as
 `pm.provider` in `.adlc/config.json`. One Linear issue is the whole record for a
 task, and its description is the canonical living document.
 
-Skills speak in the nine operations and the canonical card layout below; the
+Skills speak in the operations and the canonical card layout below; the
 concrete Linear MCP calls live in [Provider Mapping](#provider-mapping). Because
 Linear is the seam's only backend, skills may also lean on Linear-native
 constructs directly — `>>>` collapsibles, workflow states, milestones, branch
 auto-linking — where a step needs them: the seam is an architectural discipline
 (one PM touchpoint), not a lowest-common-denominator abstraction. If a second PM
-ever becomes necessary, it would arrive as a new mapping behind these same nine
+ever becomes necessary, it would arrive as a new mapping behind these same
 operations.
 
 **No provider configured:** a stage whose preconditions require the PM (see
@@ -24,10 +25,42 @@ stage refuses with: "No PM provider is configured for this repo — run
 `/adlc:init` to connect one." Setup lives in exactly one place (`init`); no
 other skill carries an inline setup flow.
 
+## Hierarchy
+
+Work lives at exactly one of four levels. These definitions are the seam's
+shared vocabulary — planning-layer skills apply them as a sizing gate, and no
+skill redefines them inline:
+
+- **Initiative** — an outcome-phrased strategic goal served by several
+  projects. Contains projects only, never issues. Its content is why + success
+  criteria + health updates — no solution design. Creation is app-only
+  (`/adlc:initiative` drafts the content); the seam can read initiatives and
+  attach projects to them, but never create one.
+- **Project** — one shippable chunk of work with a clear outcome and an end.
+  Contains issues, documents, and milestones, and is designed to complete —
+  progress graphs and predicted completion assume it. The **PRD** lives here:
+  in the project description, with heavier supporting material as project
+  documents. `/adlc:project` owns this level.
+- **Milestone** — an ordered checkpoint inside one project, grouping a subset
+  of its issues. Project-scoped — a milestone never spans projects.
+- **Issue** — one task-sized change: the lifecycle card whose description is
+  the canonical living document (see [Card Data Model](#card-data-model)).
+
+The decision test, applied top-down:
+
+- Needs **more than one shippable chunk** → initiative; exactly one → project.
+- Has a **deliverable and an end** → project; a domain that never completes
+  ("training", "billing") → a label, not a project.
+- A **phase within one chunk** → milestone; something that spans chunks →
+  initiative or label (milestones can't span projects).
+- **One agent can spec → plan → PR it** → issue; anything that outgrows that →
+  split it, or promote it a level.
+
 ## Operations
 
-Nine operations make up the seam. Each is documented below with its signature and
-semantics; the concrete Linear MCP actions are tabulated under
+Fourteen operations make up the seam — nine at the issue tier, then five at the
+planning tier (projects and initiatives). Each is documented below with its
+signature and semantics; the concrete Linear MCP actions are tabulated under
 [Provider Mapping](#provider-mapping).
 
 ### `createTask(title, brainstormMarkdown) → taskRef`
@@ -110,6 +143,40 @@ Resolves the task for the current agent without a shared pointer. Pre-code stage
 context. Code stages (`execute`, `pr`) parse the current git branch
 (`<initials>/<issue-identifier>-<slug>`), extract the issue identifier, and look up the
 issue. See [Task Identity Resolution](#task-identity-resolution).
+
+### `saveProject(projectRef?, name, prdMarkdown, initiative?) → projectRef`
+
+Create-or-retrofit, mirroring `createTask` one level up the
+[Hierarchy](#hierarchy). With no `projectRef`: creates a project on the
+configured team with the given name and the PRD as its description, attached to
+`initiative` when one is given. With a `projectRef`: replaces that project's
+description with the approved PRD and attaches the initiative if given. The PRD
+always lives in the description — never only in a document. Returns the
+`projectRef` (project URL or identifier) for the caller to hold in session
+context; like `taskRef`, it is never persisted to a shared pointer file.
+
+### `readProject(projectRef) → { name, description, initiative }`
+
+Reads a project — its name, description (the PRD, or whatever freehand content
+predates one), and initiative membership (empty if unattached). This is how
+`/adlc:project` decides between retrofit input and a linkage prompt.
+
+### `attachProjectDoc(projectRef, title, markdown)`
+
+Creates a document on the project. Used only for supporting material too heavy
+for the description — the PRD itself stays in the description per
+`saveProject`.
+
+### `listInitiatives() → initiativeRef[]`
+
+Lists the workspace's initiatives, for a dialogue's "which initiative does this
+serve?" question.
+
+### `readInitiative(initiativeRef) → { name, description }`
+
+Reads one initiative's content — its outcome statement and success criteria —
+as context for downstream dialogue. There is deliberately no `createInitiative`:
+initiative creation is app-only (see [Hierarchy](#hierarchy)).
 
 ## Card Data Model
 
@@ -362,6 +429,8 @@ Config shape (all values verified live at init):
 
 - **Transport:** the Linear MCP server.
 - **`taskRef`:** the Linear issue identifier (e.g. `ENG-142`) or issue URL.
+- **`projectRef` / `initiativeRef`:** the Linear project / initiative ID, slug,
+  or URL.
 - **Card rendering:** the canonical layout verbatim — Linear renders `>>>`
   collapsibles natively.
 - **Statuses:** real workflow states; `setStatus` updates the issue state to the
@@ -381,3 +450,8 @@ Config shape (all values verified live at init):
 | `closeTask` | set state `Done` |
 | `findTasks` | search issues |
 | `resolveCurrentTask` | parse branch → look up issue by identifier |
+| `saveProject` | create project (team from config), or update project description; initiative attach via the project's initiative fields |
+| `readProject` | get project |
+| `attachProjectDoc` | create project document |
+| `listInitiatives` | list initiatives |
+| `readInitiative` | get initiative |

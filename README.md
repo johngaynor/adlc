@@ -82,11 +82,19 @@ issue held in the agent's own session; once `/adlc:execute` creates the
 task branch, the branch name (`<initials>/<issue-identifier>-<slug>`) is what
 every later stage parses to find the task. Parallel tasks never collide.
 
+**Above the issue lifecycle sits the planning layer** — initiative → project →
+milestone → issue, delineated in `reference/pm-seam.md` § Hierarchy.
+`/adlc:initiative` drafts the strategic goal; `/adlc:project` creates (or
+retrofits) the Linear project one level down, writing the **PRD** as its
+description and anchoring it to its initiative. Breaking a PRD down into
+issues and milestones is the next stage of that top-down flow (not yet
+implemented).
+
 > **Requires: Linear.** `/adlc:brainstorm` through `/adlc:execute` need Linear
 > connected for the target repo (via the Linear MCP), set up in `/adlc:init`'s
 > PM step and recorded in `.adlc/config.json`. Without it, `/adlc:pr`,
-> `/adlc:add-lesson`, and `/adlc:initiative` still work standalone with no PM
-> configured.
+> `/adlc:add-lesson`, `/adlc:initiative`, and `/adlc:project` still work
+> standalone with no PM configured.
 
 ## Skills
 
@@ -103,6 +111,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR issues to `Done` | ✅ implemented |
 | `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
 | `/adlc:initiative` | Sharpen a strategic goal into a paste-ready initiative draft (templated Name + Description); with no PM configured, writes it to `.ai/product/initiatives/` | ✅ implemented |
+| `/adlc:project` | Define a shippable chunk and write its PRD as the Linear project's description (create or retrofit, initiative-anchored); with no PM configured, writes it to `.ai/product/projects/` | ✅ implemented |
 
 ## Project skills — extending the harness
 
@@ -152,6 +161,7 @@ adlc/
     ├── pr/                  # lifecycle: validate → branch → commit → PR → post-merge poller
     ├── next/                # the workflow bridge: stage → stage hand-off
     ├── initiative/          # planning layer: strategic goal → paste-ready initiative draft
+    ├── project/             # planning layer: shippable chunk → PRD as the project description
     ├── add-lesson/          # self-improvement: correction → lesson
     ├── add-skill/           # self-improvement: lesson/workflow → project skill
     ├── cleanup/             # utility: sweep merged worktrees, branches, and stale cards
