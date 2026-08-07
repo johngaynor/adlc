@@ -77,6 +77,14 @@ PR description, not a duplicate write-up. Issue-level artifacts are
 engineering-level: product direction and product decisions live upstream at the
 project/milestone, not on the card. Small fixes skip this — just fix them.
 
+**The planning layer above issues.** The issue sits at the bottom of a small
+hierarchy — initiative → project → milestone → issue — delineated, with its
+decision test, in `reference/pm-seam.md` § Hierarchy. The product-level spec
+(the **PRD**) lives one level up from the card, as the project's description,
+written by `/adlc:project`; the strategic goal above that is the initiative,
+drafted by `/adlc:initiative`. Issue-level artifacts stay engineering-only
+because the product reasoning already has these homes.
+
 **The lessons loop.** Corrections are captured, not lost. When the agent is
 corrected on something that will recur, it appends a structured entry to
 `.claude/lessons.md`:
