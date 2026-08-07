@@ -84,8 +84,9 @@ every later stage parses to find the task. Parallel tasks never collide.
 
 > **Requires: Linear.** `/adlc:brainstorm` through `/adlc:execute` need Linear
 > connected for the target repo (via the Linear MCP), set up in `/adlc:init`'s
-> PM step and recorded in `.adlc/config.json`. Without it, `/adlc:pr` and
-> `/adlc:add-lesson` still work standalone with no PM configured.
+> PM step and recorded in `.adlc/config.json`. Without it, `/adlc:pr`,
+> `/adlc:add-lesson`, and `/adlc:initiative` still work standalone with no PM
+> configured.
 
 ## Skills
 
@@ -101,6 +102,7 @@ every later stage parses to find the task. Parallel tasks never collide.
 | `/adlc:add-skill` | Author a project skill (home TBD(project-skills) — asks where to write); graduates skill-sized lessons | ✅ implemented |
 | `/adlc:cleanup` | Sweep merged task worktrees (and their branches) and move merged-PR issues to `Done` | ✅ implemented |
 | `/adlc:resolve-conflict` | Resolve a PR's trivial merge conflicts (merge-from-main, validated, plain push); escalate anything non-trivial | ✅ implemented |
+| `/adlc:initiative` | Sharpen a strategic goal into a paste-ready initiative draft (templated Name + Description); with no PM configured, writes it to `.ai/product/initiatives/` | ✅ implemented |
 
 ## Project skills — extending the harness
 
@@ -148,8 +150,12 @@ adlc/
     ├── plan/                # lifecycle: spec → phased plan + progress checklist
     ├── execute/             # lifecycle: plan → branch/worktree → committed code
     ├── pr/                  # lifecycle: validate → branch → commit → PR → post-merge poller
+    ├── next/                # the workflow bridge: stage → stage hand-off
+    ├── initiative/          # planning layer: strategic goal → paste-ready initiative draft
     ├── add-lesson/          # self-improvement: correction → lesson
-    └── add-skill/           # self-improvement: lesson/workflow → project skill
+    ├── add-skill/           # self-improvement: lesson/workflow → project skill
+    ├── cleanup/             # utility: sweep merged worktrees, branches, and stale cards
+    └── resolve-conflict/    # utility: trivial PR merge-conflict resolution
 ```
 
 ## Contributing / parallel work streams
